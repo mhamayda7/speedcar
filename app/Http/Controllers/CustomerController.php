@@ -356,7 +356,7 @@ class CustomerController extends Controller
             return $this->sendError($validator->errors());
         }
 
-        $result = Customer::select('id', 'first_name', 'last_name','phone_number', 'phone_with_code','gender','email','profile_picture','password','status')->where('id',$input['customer_id'])->first();
+        $result = Customer::select('id', 'first_name', 'last_name', 'phone_with_code','gender','email','status')->where('id',$input['customer_id'])->first();
 
         if (is_object($result)) {
             if($result->gender == 0){
