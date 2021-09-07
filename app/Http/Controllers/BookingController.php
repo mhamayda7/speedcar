@@ -1573,7 +1573,7 @@ class BookingController extends Controller
             "full_name" => $name,
             "phone" => $phone,
             "distance" => $data,
-            "trips_count" => count($count),
+            // "trips_count" => count($count),
             "wallet" => $wallet,
             "message" => 'Success',
             "status" => 1
