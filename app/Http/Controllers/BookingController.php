@@ -1414,7 +1414,7 @@ class BookingController extends Controller
             $instant_id = rand(1,$instant_count);
             $instant = InstantOffer::where('id',$instant_id)->first();
             $data['customer_id'] = $trip->customer_id;
-            $data['title'] = $instant->offer_name;
+            // $data['title'] = $instant->offer_name;
             $data['description'] = $instant->offer_description;
             $data['view_status'] = 0;
             $data['ref_id'] = $instant_id;
