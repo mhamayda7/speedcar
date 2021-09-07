@@ -50,6 +50,7 @@ Route::post('customer/payment_method', 'App\Http\Controllers\CustomerController@
 Route::post('customer/wallet_payment_methods', 'App\Http\Controllers\CustomerController@wallet_payment_methods');
 Route::post('customer/trip_cancel', 'App\Http\Controllers\BookingController@trip_cancel_by_customer');
 Route::post('customer/get_status', 'App\Http\Controllers\BookingController@get_statuses');
+Route::post('customer/distance', 'App\Http\Controllers\BookingController@customer_distance');
 
 //driver
 Route::post('driver/login', 'App\Http\Controllers\DriverController@login');

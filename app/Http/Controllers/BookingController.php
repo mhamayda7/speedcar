@@ -1552,4 +1552,27 @@ class BookingController extends Controller
              return 0;
          }
     }
+
+    public function customer_distance(Request $request)
+    {
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'customer_id' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors());
+        }
+
+        $data = Trip::where('trips.customer_id',$input['customer_id'])->sum('distance');
+        $count = Trip::where('trips.customer_id',$input['customer_id'])->get('distance');
+        $wallet = Customer::where('customers.id',$input['customer_id'])->value('wallet');
+        $award = Customer::where('customers.id',$input['customer_id'])->value('wallet');
+        return response()->json([
+            "distance" => $data,
+            "trips_count" => count($count),
+            "wallet" => $wallet,
+            "message" => 'Success',
+            "status" => 1
+        ]);
+    }
 }
