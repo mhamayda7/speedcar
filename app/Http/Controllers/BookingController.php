@@ -899,7 +899,7 @@ class BookingController extends Controller
             $new_status = BookingStatus::where('id',$input['status'])->first();
 
             $this->calculate_earnings($input['trip_id']);
-            $this->create_reward($input['trip_id']);
+            // $this->create_reward($input['trip_id']);
         }
 
         $fcm_token = Customer::where('id',$trip->customer_id)->value('fcm_token');
