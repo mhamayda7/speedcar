@@ -1566,8 +1566,12 @@ class BookingController extends Controller
         $data = Trip::where('trips.customer_id',$input['customer_id'])->sum('distance');
         $count = Trip::where('trips.customer_id',$input['customer_id'])->get('distance');
         $wallet = Customer::where('customers.id',$input['customer_id'])->value('wallet');
-        $award = Customer::where('customers.id',$input['customer_id'])->value('wallet');
+        $name = Customer::where('customers.id',$input['customer_id'])->value('full_name');
+        $phone = Customer::where('customers.id',$input['customer_id'])->value('phone_with_code');
+        // $award = Customer::where('customers.id',$input['customer_id'])->value('wallet');
         return response()->json([
+            "full_name" => $name,
+            "phone" => $phone,
             "distance" => $data,
             "trips_count" => count($count),
             "wallet" => $wallet,
