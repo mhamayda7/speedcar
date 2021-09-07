@@ -166,7 +166,8 @@ class BookingController extends Controller
             'pickup_address' => $input['pickup_address'],
             'drop_address' => $input['drop_address'],
             'total' => $fares['total_fare'],
-            'customer_name' => Customer::where('id',$input['customer_id'])->value('first_name'),
+            // 'customer_name' => Customer::where('id',$input['customer_id'])->value('first_name'),
+            'customer_name' => Customer::where('id',$input['customer_id'])->value('full_name'),
             'static_map' => $img,
             'trip_type'=>DB::table('trip_types')->where('id',$input['trip_type'])->value('name')
         ]);
@@ -270,7 +271,8 @@ class BookingController extends Controller
             'drop_address' => $trip_request->drop_address,
             'total' => $trip_request->total,
             'static_map' => $trip_request->static_map,
-            'customer_name' => Customer::where('id',$trip_request->customer_id)->value('first_name'),
+            // 'customer_name' => Customer::where('id',$trip_request->customer_id)->value('first_name'),
+            'customer_name' => Customer::where('id',$trip_request->customer_id)->value('full_name'),
             'trip_type'=>DB::table('trip_types')->where('id',$trip_request->trip_type)->value('name')
         ]);
 
@@ -440,11 +442,13 @@ class BookingController extends Controller
         $data['trip_id'] = $trip_id;
         $data['trip_type'] = $trip_details->trip_type;
         $data['customer_id'] = $trip_details->customer_id;
-        $data['customer_name'] = $customer->first_name;
+        // $data['customer_name'] = $customer->first_name;
+        $data['customer_name'] = $customer->full_name;
         $data['customer_profile_picture'] = $customer->profile_picture;
         $data['customer_phone_number'] = $customer->phone_number;
         $data['driver_id'] = $trip_details->driver_id;
-        $data['driver_name'] = $driver->first_name;
+        // $data['driver_name'] = $driver->first_name;
+        $data['driver_name'] = $driver->full_name;
         $data['driver_profile_picture'] = $driver->profile_picture;
         $data['driver_phone_number'] = $driver->phone_number;
         $data['pickup_address'] = $trip_details->pickup_address;
@@ -789,7 +793,8 @@ class BookingController extends Controller
                 ->leftJoin('driver_vehicles','driver_vehicles.id','trips.vehicle_id')
                 ->leftJoin('vehicle_categories','vehicle_categories.id','driver_vehicles.vehicle_type')
                 ->leftJoin('booking_statuses','booking_statuses.id','trips.status')
-                ->select('trips.*','customers.full_name as customer_name','drivers.first_name as driver_name','drivers.profile_picture','payment_methods.payment','driver_vehicles.brand','driver_vehicles.color','driver_vehicles.vehicle_name','driver_vehicles.vehicle_number','trip_types.name as trip_type','booking_statuses.status_name','vehicle_categories.vehicle_type')
+                // ->select('trips.*','customers.first_name as customer_name','drivers.first_name as driver_name','drivers.profile_picture','payment_methods.payment','driver_vehicles.brand','driver_vehicles.color','driver_vehicles.vehicle_name','driver_vehicles.vehicle_number','trip_types.name as trip_type','booking_statuses.status_name','vehicle_categories.vehicle_type')
+                ->select('trips.*','customers.full_name as customer_name','drivers.full_name as driver_name','drivers.profile_picture','payment_methods.payment','driver_vehicles.brand','driver_vehicles.color','driver_vehicles.vehicle_name','driver_vehicles.vehicle_number','trip_types.name as trip_type','booking_statuses.status_name','vehicle_categories.vehicle_type')
                 ->where('trips.customer_id',$input['customer_id'])->orderBy('id', 'DESC')
                 ->get();
 
@@ -818,7 +823,8 @@ class BookingController extends Controller
                 ->leftJoin('driver_vehicles','driver_vehicles.id','trips.vehicle_id')
                 ->leftJoin('vehicle_categories','vehicle_categories.id','driver_vehicles.vehicle_type')
                 ->leftJoin('booking_statuses','booking_statuses.id','trips.status')
-                ->select('trips.*','customers.first_name as customer_name','drivers.first_name as driver_name','customers.profile_picture','payment_methods.payment','driver_vehicles.brand','driver_vehicles.color','driver_vehicles.vehicle_name','driver_vehicles.vehicle_number','booking_statuses.status_name','vehicle_categories.vehicle_type')
+                // ->select('trips.*','customers.first_name as customer_name','drivers.first_name as driver_name','customers.profile_picture','payment_methods.payment','driver_vehicles.brand','driver_vehicles.color','driver_vehicles.vehicle_name','driver_vehicles.vehicle_number','booking_statuses.status_name','vehicle_categories.vehicle_type')
+                ->select('trips.*','customers.full_name as customer_name','drivers.full_name as driver_name','customers.profile_picture','payment_methods.payment','driver_vehicles.brand','driver_vehicles.color','driver_vehicles.vehicle_name','driver_vehicles.vehicle_number','booking_statuses.status_name','vehicle_categories.vehicle_type')
                 ->where('trips.driver_id',$input['driver_id'])->orderBy('id', 'DESC')
                 ->get();
 
@@ -1138,7 +1144,8 @@ class BookingController extends Controller
             $country = Country::where('id',$driver->country_id)->first();
             $currency = Currency::where('country_id',$country->id)->first();
 
-            $customer['first_name'] = $input['customer_name'];
+            // $customer['first_name'] = $input['customer_name'];
+            $customer['full_name'] = $input['customer_name'];
             $customer['country_id'] = $country->id;
             $customer['country_code'] = $country->phone_code;
             $customer['currency'] = $currency->currency;
@@ -1208,7 +1215,8 @@ class BookingController extends Controller
             'booking_id' => $id,
             'booking_status' => 1,
             'pickup_address' => $data['pickup_address'],
-            'customer_name' => $customer->first_name,
+            // 'customer_name' => $customer->first_name,
+            'customer_name' => $customer->full_name,
             'drop_address' => $data['drop_address'],
             'total' => $booking_request['total'],
             'static_map' => $booking_request['static_map'],
@@ -1288,11 +1296,13 @@ class BookingController extends Controller
         $data['trip_id'] = $trip_id;
         $data['trip_type'] = $trip_details->trip_type;
         $data['customer_id'] = $trip_details->customer_id;
-        $data['customer_name'] = $customer->first_name;
+        // $data['customer_name'] = $customer->first_name;
+        $data['customer_name'] = $customer->full_name;
         $data['customer_profile_picture'] = $customer->profile_picture;
         $data['customer_phone_number'] = $customer->phone_number;
         $data['driver_id'] = $trip_details->driver_id;
-        $data['driver_name'] = $driver->first_name;
+        // $data['driver_name'] = $driver->first_name;
+        $data['driver_name'] = $driver->full_name;
         $data['driver_profile_picture'] = $driver->profile_picture;
         $data['driver_phone_number'] = $driver->phone_number;
         $data['pickup_address'] = $trip_details->pickup_address;
@@ -1480,14 +1490,16 @@ class BookingController extends Controller
             $data = array();
             $data['logo'] = $app_setting->logo;
             $data['booking_id'] = $booking_details->trip_id;
-            $data['customer_name'] = Customer::where('id',$booking_details->customer_id)->value('first_name');
+            // $data['customer_name'] = Customer::where('id',$booking_details->customer_id)->value('first_name');
+            $data['customer_name'] = Customer::where('id',$booking_details->customer_id)->value('full_name');
             $data['pickup_address'] = $booking_details->pickup_address;
             $data['drop_address'] = $booking_details->drop_address;
             $data['start_time'] = $booking_details->start_time;
             $data['end_time'] = $booking_details->end_time;
 
 
-            $data['driver'] = (Driver::where('id',$booking_details->driver_id)->value('first_name') != '' ) ? Driver::where('id',$booking_details->driver_id)->value('first_name') : "---" ;
+            // $data['driver'] = (Driver::where('id',$booking_details->driver_id)->value('first_name') != '' ) ? Driver::where('id',$booking_details->driver_id)->value('first_name') : "---" ;
+            $data['driver'] = (Driver::where('id',$booking_details->driver_id)->value('full_name') != '' ) ? Driver::where('id',$booking_details->driver_id)->value('full_name') : "---" ;
             $country = Country::where('phone_code',$input['country_code'])->value('id');
             $data['country_id'] = $country;
             $data['currency'] = Currency::where('country_id',$data['country_id'])->value('currency');

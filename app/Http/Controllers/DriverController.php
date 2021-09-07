@@ -100,8 +100,9 @@ class DriverController extends Controller
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-            'first_name' => 'required',
-            'last_name' => 'required',
+            // 'first_name' => 'required',
+            // 'last_name' => 'required',
+            'full_name' => 'required',
             'country_code' => 'required',
             'phone_with_code' => 'required',
             'phone_number' => 'required|numeric|digits_between:9,20|unique:customers,phone_number',
@@ -138,7 +139,7 @@ class DriverController extends Controller
             $newPost = $database
             ->getReference('drivers/'.$driver->id)
             ->update([
-            'driver_name' => $input['first_name'],
+            'driver_name' => $input['full_name'],
             'status' => $input['status'],
             'lat' => 0,
             'lng' => 0,
@@ -236,7 +237,8 @@ class DriverController extends Controller
                 $image->move($destinationPath, $name);
                 if(Driver::where('id',$input['driver_id'])->update([ 'profile_picture' => 'drivers/'.$name ])){
                     return response()->json([
-                        "result" => Driver::select('id', 'first_name', 'last_name', 'phone_with_code','email','profile_picture','password','status')->where('id',$input['driver_id'])->first(),
+                        // "result" => Driver::select('id', 'first_name', 'last_name', 'phone_with_code','email','profile_picture','password','status')->where('id',$input['driver_id'])->first(),
+                        "result" => Driver::select('id', 'full_name', 'phone_with_code','email','profile_picture','password','status')->where('id',$input['driver_id'])->first(),
                         "message" => 'Success',
                         "status" => 1
                     ]);
@@ -301,7 +303,8 @@ class DriverController extends Controller
 
             if (Driver::where('id',$input['id'])->update($input)) {
                 return response()->json([
-                    "result" => Driver::select('id', 'first_name', 'last_name', 'phone_with_code','email','profile_picture','password','daily','rental','outstation','status')->where('id',$input['id'])->first(),
+                    // "result" => Driver::select('id', 'first_name', 'last_name', 'phone_with_code','email','profile_picture','password','daily','rental','outstation','status')->where('id',$input['id'])->first(),
+                    "result" => Driver::select('id', 'full_name', 'phone_with_code','email','profile_picture','password','daily','rental','outstation','status')->where('id',$input['id'])->first(),
                     "message" => 'Success',
                     "status" => 1
                 ]);
@@ -686,7 +689,7 @@ class DriverController extends Controller
                 ->leftJoin('driver_vehicles','driver_vehicles.id','trips.vehicle_id')
                 ->leftJoin('vehicle_categories','vehicle_categories.id','driver_vehicles.vehicle_type')
                 ->leftJoin('booking_statuses','booking_statuses.id','trips.status')
-                ->select('trips.*','customers.first_name as customer_name','customers.email as email','drivers.first_name as driver_name','drivers.profile_picture','payment_methods.payment as payment_method','driver_vehicles.brand as vehicle_brand','driver_vehicles.color','driver_vehicles.vehicle_name as vehicle_name','driver_vehicles.vehicle_number as vehicle_number','booking_statuses.status_name','vehicle_categories.vehicle_type')
+                ->select('trips.*','customers.full_name as customer_name','customers.email as email','drivers.full_name as driver_name','drivers.profile_picture','payment_methods.payment as payment_method','driver_vehicles.brand as vehicle_brand','driver_vehicles.color','driver_vehicles.vehicle_name as vehicle_name','driver_vehicles.vehicle_number as vehicle_number','booking_statuses.status_name','vehicle_categories.vehicle_type')
                 ->where('trips.id',$ride_id)
                 ->first();
         $mail_header = array("data" => $data);
@@ -774,8 +777,9 @@ class DriverController extends Controller
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-            'first_name' => 'required',
-            'last_name' => 'required',
+            // 'first_name' => 'required',
+            // 'last_name' => 'required',
+            'full_name' => 'required',
             'phone_number' => 'required|numeric|digits_between:9,20',
             'email' => 'required|email|regex:/^[a-zA-Z]{1}/',
             'description' =>'required'
