@@ -789,7 +789,7 @@ class BookingController extends Controller
                 ->leftJoin('driver_vehicles','driver_vehicles.id','trips.vehicle_id')
                 ->leftJoin('vehicle_categories','vehicle_categories.id','driver_vehicles.vehicle_type')
                 ->leftJoin('booking_statuses','booking_statuses.id','trips.status')
-                ->select('trips.*','customers.first_name as customer_name','drivers.first_name as driver_name','drivers.profile_picture','payment_methods.payment','driver_vehicles.brand','driver_vehicles.color','driver_vehicles.vehicle_name','driver_vehicles.vehicle_number','trip_types.name as trip_type','booking_statuses.status_name','vehicle_categories.vehicle_type')
+                ->select('trips.*','customers.full_name as customer_name','drivers.first_name as driver_name','drivers.profile_picture','payment_methods.payment','driver_vehicles.brand','driver_vehicles.color','driver_vehicles.vehicle_name','driver_vehicles.vehicle_number','trip_types.name as trip_type','booking_statuses.status_name','vehicle_categories.vehicle_type')
                 ->where('trips.customer_id',$input['customer_id'])->orderBy('id', 'DESC')
                 ->get();
 
