@@ -131,8 +131,9 @@ class CustomerController extends Controller
         $refered_by = $input['referral_code'];
 
         $validator = Validator::make($input, [
-            'first_name' => 'required',
-            'last_name' => 'required',
+            // 'first_name' => 'required',
+            // 'last_name' => 'required',
+            'full_name' => 'required',
             'country_code' => 'required',
             'phone_with_code' => 'required',
             'phone_number' => 'required|numeric|digits_between:9,20|unique:customers,phone_number',
@@ -189,42 +190,30 @@ class CustomerController extends Controller
 
 
             $unique = false;
-
             // Store tested results in array to not test them again
             $tested = [];
-
             do {
-
                 // Generate random string of characters
                 $random = Str::random(5);
-
                 // Check if it's already testing
                 // If so, don't query the database again
                 if (in_array($random, $tested)) {
                     continue;
                 }
-
                 // Check if it is unique in the database
                 $count = DB::table('customers')->where('referral_code', '=', $random)->count();
-
                 // Store the random character in the tested array
                 // To keep track which ones are already tested
                 $tested[] = $random;
-
                 // String appears to be unique
                 if ($count == 0) {
                     // Set unique to true to break the loop
                     $unique = true;
                 }
-
                 // If unique is still false at this point
                 // it will just repeat all the steps until
                 // it has generated a random string of characters
-
             } while (!$unique);
-
-
-
 
             $customer->referral_code = $random;
             Customer::where('id', $customer->id)->update(['referral_code' => $customer->referral_code]);
@@ -234,7 +223,8 @@ class CustomerController extends Controller
                 ->update([
                     'booking_id' => 0,
                     'booking_status' => 0,
-                    'customer_name' => $customer->first_name
+                    'customer_name' => $customer->full_name
+                    // 'customer_name' => $customer->first_name
                 ]);
 
             return response()->json([
@@ -378,7 +368,8 @@ class CustomerController extends Controller
             $image->move($destinationPath, $name);
             if (Customer::where('id', $input['customer_id'])->update(['profile_picture' => 'images/' . $name])) {
                 return response()->json([
-                    "result" => Customer::select('id', 'first_name', 'last_name', 'phone_with_code', 'email', 'profile_picture', 'password', 'status')->where('id', $input['customer_id'])->first(),
+                    // "result" => Customer::select('id', 'first_name', 'last_name', 'phone_with_code', 'email', 'profile_picture', 'password', 'status')->where('id', $input['customer_id'])->first(),
+                    "result" => Customer::select('id', 'full_name', 'phone_with_code', 'email', 'profile_picture', 'password', 'status')->where('id', $input['customer_id'])->first(),
                     "message" => 'Success',
                     "status" => 1
                 ]);
@@ -402,7 +393,8 @@ class CustomerController extends Controller
             return $this->sendError($validator->errors());
         }
 
-        $result = Customer::select('id', 'first_name', 'last_name', 'phone_with_code', 'gender', 'email', 'status')->where('id', $input['customer_id'])->first();
+        // $result = Customer::select('id', 'first_name', 'last_name', 'phone_with_code', 'gender', 'email', 'status')->where('id', $input['customer_id'])->first();
+        $result = Customer::select('id', 'full_name', 'phone_with_code', 'gender', 'email', 'status')->where('id', $input['customer_id'])->first();
 
         if (is_object($result)) {
             if ($result->gender == 0) {
@@ -430,7 +422,6 @@ class CustomerController extends Controller
         $input = $request->all();
         $validator = Validator::make($input, [
             'id' => 'required'
-
         ]);
 
         if ($validator->fails()) {
@@ -448,7 +439,8 @@ class CustomerController extends Controller
 
         if (Customer::where('id', $input['id'])->update($input)) {
             return response()->json([
-                "result" => Customer::select('id', 'first_name', 'last_name', 'email', 'gender', 'phone_with_code')->where('id', $input['id'])->first(),
+                // "result" => Customer::select('id', 'first_name', 'last_name', 'email', 'gender', 'phone_with_code')->where('id', $input['id'])->first(),
+                "result" => Customer::select('id', 'full_name', 'email', 'gender', 'phone_with_code')->where('id', $input['id'])->first(),
                 "message" => 'Success',
                 "status" => 1
             ]);
@@ -792,7 +784,8 @@ class CustomerController extends Controller
         $contacts = CustomerSosContact::where('customer_id', $input['customer_id'])->get();
         $trip = Trip::where('id', $input['booking_id'])->first();
         $location = "https://maps.google.com/?ll=" . $input['latitude'] . "," . $input['longitude'];
-        $message = "Hi, this is  " . $customer->first_name . "  i believe i am in danger near " . $location . " . Please help me by contacting the authorities.";
+        // $message = "Hi, this is  " . $customer->first_name . "  i believe i am in danger near " . $location . " . Please help me by contacting the authorities.";
+        $message = "Hi, this is  " . $customer->full_name . "  i believe i am in danger near " . $location . " . Please help me by contacting the authorities.";
 
         $country_code = $customer->country_code;
         if (count($contacts) > 0) {
