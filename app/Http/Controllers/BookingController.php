@@ -893,7 +893,7 @@ class BookingController extends Controller
 
         if($input['status'] != 5){
             $current_status = BookingStatus::where('id',$input['status'])->first();
-            $new_status = BookingStatus::where('id',$input['status']+1)->first();
+            $new_status = BookingStatus::where('id',$input['status'])->first();
         }else{
             $current_status = BookingStatus::where('id',$input['status'])->first();
             $new_status = BookingStatus::where('id',$input['status'])->first();
