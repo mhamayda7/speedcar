@@ -146,7 +146,7 @@ class CustomerController extends Controller
             return $this->sendError($validator->errors());
         }
 
-        $otp = rand(0000, 9999);
+        $otp = rand(1000, 9999);
         // $message = "Hi" . env('APP_NAME') . "  , Your OTP code is:" . $otp;
         // $this->sendSms($input['phone_with_code'], $message);
 
