@@ -953,8 +953,9 @@ class BookingController extends Controller
         }
         $id = $input['customer_id'];
         $trip_request = TripRequest::select('status')->where('customer_id',$id)->get()->last();
-        $status = $trip_request->status;
-        if (is_null($status)) {
+        // $status = $trip_request->status;
+
+        if (is_null($trip_request)) {
             return response()->json([
                 "message" => 'Not have any request trip',
                 "status" => 1
@@ -962,7 +963,7 @@ class BookingController extends Controller
         }
         // $trip_request = TripRequest::findOrFail($id);
         // $status = $trip_request->status;
-        elseif ($status == 3) {
+        elseif ($trip_request->status == 3) {
             $trip = Trip::select('trip_id', 'customer_id', 'driver_id', 'vehicle_id', 'status')->where('customer_id',$id)->get()->last();
             return response()->json([
                 "result" => $trip,
