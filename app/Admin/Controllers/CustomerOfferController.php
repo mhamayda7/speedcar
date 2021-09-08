@@ -33,7 +33,7 @@ class CustomerOfferController extends AdminController
 
         $grid->column('id', __('Id'));
         $grid->column('customer_id', __('Customer id'))->display(function($customer_id){
-            return Customer::where('id',$customer_id)->value('first_name');
+            return Customer::where('id',$customer_id)->value('full_name');
         });
         $grid->column('title', __('Title'));
         $grid->column('description', __('Description'))->hide();
@@ -45,7 +45,7 @@ class CustomerOfferController extends AdminController
                 return "<span class='label label-info'>Viewed by Customer</span>";
             }
         });
-        
+
         $grid->column('status', __('Status'))->display(function($status){
             $status_name = Status::where('id',$status)->value('name');
             if ($status == 1) {
@@ -54,7 +54,7 @@ class CustomerOfferController extends AdminController
                 return "<span class='label label-danger'>$status_name</span>";
             }
         });
-       
+
         $grid->column('created_at', __('Created at'))->hide();
         $grid->column('updated_at', __('Updated at'))->hide();
         $grid->disableExport();
@@ -62,15 +62,15 @@ class CustomerOfferController extends AdminController
         $actions->disableView();
         });
         $grid->filter(function ($filter) {
-            $statuses = Status::pluck('name','id'); 
-            $customers = Customer::pluck('first_name', 'id');
+            $statuses = Status::pluck('name','id');
+            $customers = Customer::pluck('full_name', 'id');
 
            $filter->equal('customer_id', 'Customer id')->select($customers);
-            $filter->like('title', 'Title');        
-            $filter->like('description', 'Description');        
+            $filter->like('title', 'Title');
+            $filter->like('description', 'Description');
             //$filter->like('expiry_date', 'Expiry date');
             $filter->equal('status', 'Status')->select($statuses);
-        
+
         });
 
         return $grid;
@@ -107,8 +107,8 @@ class CustomerOfferController extends AdminController
     {
         $form = new Form(new CustomerOffer());
 
-         $statuses = Status::pluck('name','id'); 
-         $customers = Customer::pluck('first_name', 'id');
+         $statuses = Status::pluck('name','id');
+         $customers = Customer::pluck('full_name', 'id');
          $types = OfferType::pluck('type', 'id');
          $get_offer = OfferType::pluck('type', 'id');
 
@@ -124,7 +124,7 @@ class CustomerOfferController extends AdminController
         /*$form->date('expiry_date', __('Expiry date'))->default(date('Y-m-d'))->rules(function ($form) {
                     return 'required';
                 });*/
-        
+
         $form->select('type', __('Type'))->load('ref_id', '/admin/get_offers', 'id', 'offer_name')->options($types)->rules(function ($form) {
             return 'required';
         });
@@ -135,7 +135,7 @@ class CustomerOfferController extends AdminController
                 return LuckyOffer::pluck('offer_name','id');
             }
         });
-        
+
         $form->select('view_status', __('View Status'))->options(['0' => 'Not Viewed', '1'=> 'Viewed by Customer'])->default(0)->rules(function ($form) {
             return 'required';
         });
@@ -143,7 +143,7 @@ class CustomerOfferController extends AdminController
             return 'required';
         });
         $form->tools(function (Form\Tools $tools) {
-            $tools->disableDelete(); 
+            $tools->disableDelete();
             $tools->disableView();
         });
         $form->footer(function ($footer) {

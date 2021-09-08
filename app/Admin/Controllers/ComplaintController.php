@@ -34,11 +34,11 @@ class ComplaintController extends AdminController
         $grid->column('id', __('Id'));
         $grid->column('trip_id', __('Trip id'));
         $grid->column('customer_id', __('Customer id'))->display(function(){
-            $value = Customer::where('id',$this->customer_id)->value('first_name');
+            $value = Customer::where('id',$this->customer_id)->value('full_name');
             return $value;
         });
         $grid->column('driver_id', __('Driver id'))->display(function(){
-            $value = Driver::where('id',$this->driver_id)->value('first_name');
+            $value = Driver::where('id',$this->driver_id)->value('full_name');
             return $value;
         });
         $grid->column('complaint_category', __('Complaint category'))->display(function(){
@@ -72,8 +72,8 @@ class ComplaintController extends AdminController
         });
         $grid->filter(function ($filter) {
             $statuses = Status::pluck('name', 'id');
-            $customers = Customer::where('status',1)->pluck('first_name','id');
-            $drivers = Driver::where('status',1)->pluck('first_name','id');
+            $customers = Customer::where('status',1)->pluck('full_name','id');
+            $drivers = Driver::where('status',1)->pluck('full_name','id');
 
             $filter->disableIdFilter();
             $filter->like('trip_id', 'Trip id');
@@ -82,7 +82,7 @@ class ComplaintController extends AdminController
             $filter->like('complaint_category', 'Complaint category');
             $filter->like('complaint_sub_category', 'Complaint sub category');
             $filter->equal('status', 'Status')->select($statuses);
-        
+
         });
 
         return $grid;
@@ -121,8 +121,8 @@ class ComplaintController extends AdminController
     {
         $form = new Form(new Complaint);
         $statuses = Status::where('type','general')->pluck('name','id');
-        $customers = Customer::where('status',1)->pluck('first_name','id');
-        $drivers = Driver::where('status',1)->pluck('first_name','id');
+        $customers = Customer::where('status',1)->pluck('full_name','id');
+        $drivers = Driver::where('status',1)->pluck('full_name','id');
         $complaint_categories = complaintCategory::pluck('complaint_category_name','id');
         $complaint_sub_categories = complaintSubCategory::pluck('complaint_sub_category_name','id');
 

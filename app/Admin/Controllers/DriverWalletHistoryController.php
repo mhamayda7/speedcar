@@ -30,11 +30,11 @@ class DriverWalletHistoryController extends AdminController
 
         $grid->column('id', __('Id'));
         $grid->column('driver_id', __('Driver name'))->display(function($driver_id){
-            return Driver::where('id',$driver_id)->value('first_name');
+            return Driver::where('id',$driver_id)->value('full_name');
         });
         $grid->column('message', __('Message'));
         $grid->column('amount', __('Amount'));
-        
+
         $grid->disableExport();
         $grid->disableCreation();
         $grid->actions(function ($actions) {
@@ -42,11 +42,11 @@ class DriverWalletHistoryController extends AdminController
         });
         $grid->filter(function ($filter) {
             //Get All status
-            $drivers = Driver::pluck('first_name', 'id');
-            
+            $drivers = Driver::pluck('full_name', 'id');
+
             $filter->like('message', 'Message');
             $filter->like('driver_id', 'Driver')->select($drivers);
-            
+
         });
 
         return $grid;
@@ -80,7 +80,7 @@ class DriverWalletHistoryController extends AdminController
     protected function form()
     {
         $form = new Form(new DriverWalletHistory);
-        $driver = Driver::pluck('first_name', 'id');
+        $driver = Driver::pluck('full_name', 'id');
 
         $form->select('driver_id', __('Driver name'))->options($driver)->rules(function ($form) {
             return 'required';
@@ -96,7 +96,7 @@ class DriverWalletHistoryController extends AdminController
         });
 
         $form->tools(function (Form\Tools $tools) {
-         $tools->disableDelete(); 
+         $tools->disableDelete();
          $tools->disableView();
      });
         $form->footer(function ($footer) {

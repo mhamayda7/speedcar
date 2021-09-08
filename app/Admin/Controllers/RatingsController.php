@@ -35,22 +35,22 @@ class RatingsController extends AdminController
                 return "$trip_id";
         });
         $grid->column('customer_id', __('Customer Id'))->display(function($customers){
-            $country_name = Customer::where('id',$customers)->value('first_name');
-                return "$first_name";
+            $country_name = Customer::where('id',$customers)->value('full_name');
+                return "$full_name";
         });
         $grid->column('driver_id', __('Driver Id'))->display(function($drivers){
-            $country_name = Driver::where('id',$countries)->value('first_name');
-                return "$first_name";
+            $country_name = Driver::where('id',$countries)->value('full_name');
+                return "$full_name";
         });
         $grid->column('rating', __('Rating'));
         $grid->column('feedback', __('Feedback'));
-        
+
         $grid->disableExport();
         $grid->actions(function ($actions) {
            $actions->disableView();
         });
 
-        $grid->filter(function ($filter) { 
+        $grid->filter(function ($filter) {
 
 
            $filter->disableIdFilter();
@@ -58,11 +58,11 @@ class RatingsController extends AdminController
 
            $filter->equal('trip_id', __('Trip id'))->select($trips);
             $filter->equal('customer_id', __('Customer id'))->select($customers);
-            $filter->equal('driver_id', __('Driver id'))->select($drivers);     
+            $filter->equal('driver_id', __('Driver id'))->select($drivers);
            $filter->like('rating', __('Rating'));
            $filter->like('feedback', __('Feedback'));
 
-               
+
         });
 
 
@@ -110,9 +110,9 @@ class RatingsController extends AdminController
                 });
 
         $form->tools(function (Form\Tools $tools) {
-            $tools->disableDelete(); 
+            $tools->disableDelete();
             $tools->disableView();
-        });    
+        });
         $form->footer(function ($footer) {
             $footer->disableViewCheck();
             $footer->disableEditingCheck();

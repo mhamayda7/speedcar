@@ -952,16 +952,33 @@ class BookingController extends Controller
             return $this->sendError($validator->errors());
         }
         $id = $input['customer_id'];
-        $trip = Trip::select('trip_id', 'customer_id', 'driver_id', 'vehicle_id', 'status')->where('customer_id',$id)->get()->last();
+        $trip_request = TripRequest::select('status')->where('customer_id',$id)->get()->last();
+        $status = $trip_request->status;
+        if (is_null($status)) {
+            return response()->json([
+                "message" => 'Not have any request trip',
+                "status" => 1
+            ]);
+        }
+        // $trip_request = TripRequest::findOrFail($id);
+        // $status = $trip_request->status;
+        elseif ($status == 3) {
+            $trip = Trip::select('trip_id', 'customer_id', 'driver_id', 'vehicle_id', 'status')->where('customer_id',$id)->get()->last();
+            return response()->json([
+                "result" => $trip,
+                "message" => 'Success',
+                "status" => 1
+            ]);
+        } else {
+            $trip_request->status = 0;
+            return response()->json([
+                "result" => $trip_request,
+                "message" => 'Success',
+                "status" => 1
+            ]);
+        }
 
         // $show = TripRequest::findOrFail($id);
-
-        return response()->json([
-            "result" => $trip,
-            "message" => 'Success',
-            "status" => 1
-        ]);
-
     }
     public function calculate_fare($trip_id)
     {

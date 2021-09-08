@@ -9,7 +9,7 @@ class DriverQuery extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'id', 'first_name','last_name','phone_number','email', 'description','status'
+        'id', 'full_name','phone_number','email', 'description','status'
     ];
 
 }

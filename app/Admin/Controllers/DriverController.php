@@ -38,8 +38,8 @@ class DriverController extends AdminController
             $country_name = Country::where('id',$countries)->value('country_name');
                 return "$country_name";
         });
-        $grid->column('first_name', __('First Name'));
-        $grid->column('last_name', __('Last Name'));
+        $grid->column('full_name', __('Full Name'));
+        // $grid->column('last_name', __('Last Name'));
         $grid->column('phone_number', __('Phone number'));
         $grid->column('phone_with_code', __('Phone number with Code'));
         $grid->column('email', __('Email'));
@@ -82,7 +82,7 @@ class DriverController extends AdminController
                 return "<span class='label label-danger'>$status_name</span>";
             }
         });
-        
+
         $grid->disableExport();
         //$grid->disableCreateButton();
         $grid->actions(function ($actions) {
@@ -95,16 +95,16 @@ class DriverController extends AdminController
 
             $filter->disableIdFilter();
             $filter->equal('country_id', 'Country')->select($countries);
-            $filter->like('first_name', 'First Name');
-            $filter->like('last_name', 'Last Name');        
-            $filter->equal('phone_number', 'Phone number');        
+            $filter->like('full_name', 'Full Name');
+            // $filter->like('last_name', 'Last Name');
+            $filter->equal('phone_number', 'Phone number');
             $filter->like('email', 'Email');
             $filter->equal('licence_number', 'Licence number');
             $filter->equal('daily', 'Daily')->select([1 => 'Yes', 0 => 'No']);
             $filter->equal('rental', 'Rental')->select([1 => 'Yes', 0 => 'No']);
             $filter->equal('outstation', 'Outstation')->select([1 => 'Yes', 0 => 'No']);
             $filter->equal('status', 'Status')->select($statuses);
-        
+
         });
 
 
@@ -122,8 +122,8 @@ class DriverController extends AdminController
         $show = new Show(Driver::findOrFail($id));
 
         $show->field('id', __('Id'));
-        $show->field('first_name', __('First Name'));
-        $show->field('last_name', __('Last Name'));
+        $show->field('full_name', __('Full Name'));
+        // $show->field('last_name', __('Last Name'));
         $show->field('phone_number', __('Phone number'));
         $show->field('phone_with_code', __('Phone number'));
         $show->field('email', __('Email'));
@@ -136,7 +136,7 @@ class DriverController extends AdminController
         $show->field('status', __('Status'));
         $show->field('created_at', __('Created at'));
         $show->field('updated_at', __('Updated at'));
-        
+
         return $show;
     }
 
@@ -153,8 +153,8 @@ class DriverController extends AdminController
         $currencies = Currency::pluck('currency', 'currency');
 
         $form->select('country_id','Country')->options($countries)->rules('required');
-        $form->text('first_name', __('First name'))->rules('required|max:250');
-        $form->text('last_name', __('Last name'))->rules('required|max:250');
+        $form->text('full_name', __('Full name'))->rules('required|max:250');
+        // $form->text('last_name', __('Last name'))->rules('required|max:250');
         $form->select('gender','Gender')->options([1 => 'Male', 2 => 'Female'])->rules('required');
         $form->text('phone_number', __('Phone number'))->rules(function ($form) {
                 return 'numeric|digits_between:9,20|required';
@@ -176,7 +176,7 @@ class DriverController extends AdminController
         $form->select('rental','Rental')->options([1 => 'Yes', 0 => 'No'])->rules('required');
         $form->select('outstation','Outstation')->options([1 => 'Yes', 0 => 'No'])->rules('required');
         $form->select('status','Status')->options($statuses)->rules('required');
-        
+
 
         $form->saving(function ($form) {
             if($form->password && $form->model()->password != $form->password)
@@ -185,11 +185,11 @@ class DriverController extends AdminController
             }
         });
         $form->tools(function (Form\Tools $tools) {
-            $tools->disableDelete(); 
+            $tools->disableDelete();
             $tools->disableView();
         });
         $form->saved(function (Form $form) {
-            $this->update_status($form->model()->id,$form->model()->status,$form->model()->first_name);
+            $this->update_status($form->model()->id,$form->model()->status,$form->model()->full_name);
         });
         $form->footer(function ($footer) {
             $footer->disableViewCheck();
@@ -208,7 +208,7 @@ class DriverController extends AdminController
         }
         return crypt($input, sprintf('$2y$%2d$', $rounds) . $salt);
     }
-    
+
     public function update_status($id,$status,$driver_name){
         //$factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));

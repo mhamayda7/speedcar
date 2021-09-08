@@ -28,7 +28,7 @@ class DriverQueryController extends AdminController
         $grid = new Grid(new DriverQuery());
 
         $grid->column('id', __('Id'));
-        $grid->column('first_name', __('First Name'));
+        $grid->column('full_name', __('Full Name'));
         $grid->column('email', __('Email'));
         $grid->column('last_name', __('Last Name'));
         $grid->column('phone_number', __('Phone Number'));
@@ -42,7 +42,7 @@ class DriverQueryController extends AdminController
         $grid->column('created_at', __('Created at'))->hide();
         $grid->column('updated_at', __('Updated at'))->hide();
         });
-        
+
         $grid->disableExport();
         $grid->disableCreateButton();
         $grid->actions(function ($actions) {
@@ -50,12 +50,12 @@ class DriverQueryController extends AdminController
             $actions->disableDelete();
         });
          $grid->filter(function ($filter) {
-        
+
             $statuses = Status::where('type','general')->pluck('name','id');
-         
+
             $filter->like('phone_number', 'Phone Number');
             $filter->equal('status', 'Status')->select($statuses);
-        
+
         });
 
 
@@ -73,7 +73,7 @@ class DriverQueryController extends AdminController
         $show = new Show(DriverQuery::findOrFail($id));
 
         $show->field('id', __('Id'));
-        $show->field('first_name', __('First name'));
+        $show->field('full_name', __('Full name'));
         $show->field('phone_number', __('Phone number'));
         $show->field('status', __('Status'));
         $show->field('email', __('Email'));
@@ -95,14 +95,14 @@ class DriverQueryController extends AdminController
 
         $statuses = Status::where('type','general')->pluck('name','id');
 
-        $form->text('first_name', __('First Name'));
+        $form->text('full_name', __('Full Name'));
         $form->text('phone_number', __('Phone Number'));
         $form->select('status', __('Status'))->options($statuses)->rules('required');
         $form->email('email', __('Email'));
         $form->text('last_name', __('Last Name'));
 
         $form->tools(function (Form\Tools $tools) {
-            $tools->disableDelete(); 
+            $tools->disableDelete();
             $tools->disableView();
         });
         $form->footer(function ($footer) {

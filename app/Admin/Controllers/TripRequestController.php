@@ -34,7 +34,7 @@ class TripRequestController extends AdminController
 
         $grid->column('id', __('Id'));
         $grid->column('customer_id', __('Customer'))->display(function($customer_id){
-            return Customer::where('id',$customer_id)->value('first_name');
+            return Customer::where('id',$customer_id)->value('full_name');
         });
         $grid->column('distance', __('Distance'));
         $grid->column('vehicle_type', __('Vehicle type'))->display(function($vehicle_type){
@@ -58,9 +58,9 @@ class TripRequestController extends AdminController
         $grid->column('tax', __('Tax'));
         $grid->column('status', __('Status'))->display(function($status){
             $name = TripRequestStatus::where('id',$status)->value('status');
-            
+
                 return "$name";
-            
+
        });
         $grid->disableExport();
         $grid->actions(function ($actions) {
@@ -72,7 +72,7 @@ class TripRequestController extends AdminController
             $statuses = TripRequestStatus::pluck('status', 'id');
             $promo_codes = PromoCode::pluck('promo_code', 'id');
             $payment_methods = PaymentMethod::pluck('payment', 'id');
-            $customers = Customer::pluck('first_name', 'id');
+            $customers = Customer::pluck('full_name', 'id');
             $vehicle_categories = VehicleCategory::pluck('vehicle_type', 'id');
 
             $filter->equal('customer_id', 'Customer')->select($customers);
@@ -130,7 +130,7 @@ class TripRequestController extends AdminController
         $statuses = TripRequestStatus::pluck('status', 'id');
         $promo_codes = PromoCode::pluck('promo_code', 'id');
         $payment_methods = PaymentMethod::pluck('payment', 'id');
-        $customers = Customer::pluck('first_name', 'id');
+        $customers = Customer::pluck('full_name', 'id');
         $vehicle_categories = VehicleCategory::pluck('vehicle_type', 'id');
 
 
@@ -183,7 +183,7 @@ class TripRequestController extends AdminController
             return 'required';
         });
         $form->tools(function (Form\Tools $tools) {
-            $tools->disableDelete(); 
+            $tools->disableDelete();
             $tools->disableView();
         });
         $form->footer(function ($footer) {

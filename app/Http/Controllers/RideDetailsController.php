@@ -93,8 +93,8 @@ class RideDetailsController extends Controller
         $trip['base_fare'] = $vehicle_type['base_fare'];
         $trip['price_per_km'] = $vehicle_type['price_per_km'];
         $customer_name = Customer::where('id',$dar->customer_id)->first();
-        $trip['first_name'] = $customer_name['first_name'];
-        $trip['last_name'] = $customer_name['last_name'];
+        $trip['full_name'] = $customer_name['full_name'];
+        // $trip['last_name'] = $customer_name['last_name'];
         $rating = Rating::where('trip_id',$dar->id)->where('customer_id',$dar->customer_id)->where('driver_id',$dar->driver_id)->first();
         $trip['rating'] = $rating['rating'];
         $trip['rating_feedback'] = $rating['rating_feedback'];
@@ -187,8 +187,8 @@ class RideDetailsController extends Controller
         $trip['base_fare'] = $vehicle_type['base_fare'];
         $trip['price_per_km'] = $vehicle_type['price_per_km'];
         $customer_name = Customer::where('id',$dar->customer_id)->first();
-        $trip['first_name'] = $customer_name['first_name'];
-        $trip['last_name'] = $customer_name['last_name'];
+        $trip['full_name'] = $customer_name['full_name'];
+        // $trip['last_name'] = $customer_name['last_name'];
         $rating = Rating::where('trip_id',$dar->id)->where('customer_id',$dar->customer_id)->where('driver_id',$dar->driver_id)->first();
         $trip['rating'] = $rating['rating'];
         $trip['rating_feedback'] = $rating['rating_feedback'];

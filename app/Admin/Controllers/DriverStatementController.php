@@ -28,14 +28,14 @@ class DriverStatementController extends AdminController
 
         $grid->column('id', __('Id'));
         $grid->column('driver_id', __('Driver id'))->display(function($driver){
-            $first_name = Driver::where('id',$driver)->value('first_name');
-            return "$first_name";
+            $full_name = Driver::where('id',$driver)->value('full_name');
+            return "$full_name";
         });
         $grid->column('total_rides', __('Total Rides'));
         $grid->column('total_earnings', __('Total Earnings'));
         $grid->column('commission', __('Commission'));
         $grid->column('commission_amount', __('Commission Amount'));
-        
+
 
 
         $grid->disableExport();
@@ -45,19 +45,19 @@ class DriverStatementController extends AdminController
 
         $grid->filter(function ($filter) {
             //Get All status
-            
-            $drivers = Driver::pluck('first_name', 'id');
+
+            $drivers = Driver::pluck('full_name', 'id');
             $filter->eqval('driver', 'Driver')->select($drivers);
             $filter->like('total_rides', 'Total_Rides');
             $filter->like('total_earnings', 'Total_Earning');
             $filter->like('commission', 'Commission');
             $filter->like('commission_amount', 'Commission_Amount');
-            
-            
-            
+
+
+
         });
 
-       
+
         return $grid;
     }
 
@@ -93,7 +93,7 @@ class DriverStatementController extends AdminController
     {
         $form = new Form(new DriverStatement());
 
-         $drivers = Driver::pluck('first_name', 'id');
+         $drivers = Driver::pluck('full_name', 'id');
         $form->select('driver_id', __('Driver id'))->options($drivers)->rules(function ($form) {
             return 'required';
         });
@@ -111,7 +111,7 @@ class DriverStatementController extends AdminController
         });
 
          $form->tools(function (Form\Tools $tools) {
-            $tools->disableDelete(); 
+            $tools->disableDelete();
             $tools->disableView();
         });
         $form->footer(function ($footer) {
@@ -120,7 +120,7 @@ class DriverStatementController extends AdminController
             $footer->disableCreatingCheck();
         });
 
-        
+
         return $form;
     }
 }

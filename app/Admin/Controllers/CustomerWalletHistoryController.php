@@ -34,29 +34,29 @@ class CustomerWalletHistoryController extends AdminController
             return Country::where('id',$customer_id)->value('country_name');
         });
         $grid->column('customer_id', __('Customer'))->display(function($customer_id){
-            return Customer::where('id',$customer_id)->value('first_name');
+            return Customer::where('id',$customer_id)->value('full_name');
         });
         $grid->column('type', __('Type'))->display(function($type){
-            
+
             if ($type == 1) {
                 return "<span class='label label-warning'>Credit</span>";
             }if ($type == 2) {
                 return "<span class='label label-success'>Debit</span>";
-            } 
+            }
         });
         $grid->column('message', __('Message'));
         $grid->column('amount', __('Amount'));
         $grid->column('transaction_type', __('Transaction type'))->display(function($amount_type){
-            
+
             if ($amount_type == 1) {
                 return "Customer added amount";
             }if ($amount_type == 2) {
                 return "Refund amount";
             }if ($amount_type == 3) {
                 return "Amount debited for booking";
-            } 
+            }
         });
-        
+
         $grid->disableExport();
         $grid->disableCreateButton();
         $grid->actions(function ($actions) {
@@ -66,14 +66,14 @@ class CustomerWalletHistoryController extends AdminController
         });
         $grid->filter(function ($filter) {
             //Get All status
-            $customers = Customer::pluck('first_name', 'id');
+            $customers = Customer::pluck('full_name', 'id');
             $countries = Country::pluck('country_name', 'id');
-            
+
             $filter->equal('customer_id', 'Customer')->select($customers);
             $filter->equal('country_id', 'Country')->select($countries);
-            
+
         });
-        
+
 
         return $grid;
     }
@@ -108,9 +108,9 @@ class CustomerWalletHistoryController extends AdminController
     protected function form()
     {
         $form = new Form(new CustomerWalletHistory);
-        $customers = Customer::pluck('first_name', 'id');
+        $customers = Customer::pluck('full_name', 'id');
         $countries = Country::pluck('country_name', 'id');
-        
+
         $form->select('country_id', __('Country'))->options($countries)->rules(function ($form) {
             return 'required';
         });
@@ -129,9 +129,9 @@ class CustomerWalletHistoryController extends AdminController
         $form->select('transaction_type', __('Transaction type'))->options(['1' => 'Customer added amount', '2'=> 'Refund amount'])->rules(function ($form) {
             return 'required';
         });
-        
+
         $form->tools(function (Form\Tools $tools) {
-            $tools->disableDelete(); 
+            $tools->disableDelete();
             $tools->disableView();
         });
         $form->footer(function ($footer) {

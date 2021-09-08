@@ -35,8 +35,8 @@ class DriverCommissionController extends AdminController
               return "$booking_detail";
         });
         $grid->column('customer_id', __('Customer id'))->display(function($customer){
-            $first_name = Customer::where('id',$customer)->value('first_name');
-              return "$first_name";
+            $full_name = Customer::where('id',$customer)->value('full_name');
+              return "$full_name";
         });
         $grid->column('picked_up', __('Picked Up'));
         $grid->column('dropped', __('Dropped'));
@@ -62,10 +62,10 @@ class DriverCommissionController extends AdminController
 
         $grid->filter(function ($filter) {
             //Get All status
-            
+
             $statuses = Status::pluck('status_name', 'id');
             $bookings = Booking::pluck('booking_detail', 'id');
-            $customers = Customer::pluck('first_name', 'id');
+            $customers = Customer::pluck('full_name', 'id');
             $Payment_lists = PaymentList::pluck('payment_mode', 'id');
             $filter->equal('booking_id', 'Booking_id')->select($bookings);
             $filter->equal('customer_id', 'Customer_id')->select($customers);
@@ -75,10 +75,10 @@ class DriverCommissionController extends AdminController
             $filter->equal('mode_of_payment', 'mode_Of_Payment')->select($Payment_lists);
             $filter->like('date', 'Date');
             $filter->equal('status', 'Status')->select($statuses);
-            
+
         });
 
-        
+
         return $grid;
     }
 
@@ -117,7 +117,7 @@ class DriverCommissionController extends AdminController
         $form = new Form(new DriverCommission());
         $statuses = Status::pluck('status_name', 'id');
         $bookings = Booking::pluck('booking_detail', 'id');
-        $customers = Customer::pluck('first_name', 'id');
+        $customers = Customer::pluck('full_name', 'id');
         $Payment_lists = PaymentList::pluck('payment_mode', 'id');
         $form->select('booking_id', __('Booking id'))->options($bookings)->rules(function ($form) {
             return 'required';
@@ -145,7 +145,7 @@ class DriverCommissionController extends AdminController
         });
 
          $form->tools(function (Form\Tools $tools) {
-            $tools->disableDelete(); 
+            $tools->disableDelete();
             $tools->disableView();
         });
         $form->footer(function ($footer) {
@@ -154,7 +154,7 @@ class DriverCommissionController extends AdminController
             $footer->disableCreatingCheck();
         });
 
-       
+
         return $form;
     }
 }

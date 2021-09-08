@@ -19,22 +19,22 @@ class GeneralController extends Controller
         $country_id = Driver::where('id',$_GET['q'])->value('country_id');
         return VehicleCategory::where('country_id', $country_id)->get(['id', DB::raw('vehicle_type')]);
     }
-    
+
     public function GetDrivers()
     {
-        return Driver::where('status', 1)->where('country_id', $_GET['q'])->get(['id', DB::raw('first_name')]);
+        return Driver::where('status', 1)->where('country_id', $_GET['q'])->get(['id', DB::raw('full_name')]);
     }
-    
+
     public function GetComplaintCategory()
     {
         return ComplaintCategory::where('country_id', $_GET['q'])->get(['id', DB::raw('complaint_category_name')]);
     }
-    
+
     public function GetComplaintSubCategory()
     {
         return ComplaintSubCategory::where('complaint_category_id', $_GET['q'])->get(['id', DB::raw('complaint_sub_category_name')]);
     }
-    
+
     public function getOffers()
     {
         if($_GET['q'] == 1){
@@ -42,6 +42,6 @@ class GeneralController extends Controller
         }else if($_GET['q'] == 2){
         return LuckyOffer::get(['id', DB::raw('offer_name')]);
         }
-        
+
     }
 }

@@ -31,9 +31,9 @@ class DriverTripRequestController extends AdminController
 
         $grid->column('id', __('Id'));
         $grid->column('driver_id', __('Driver Id'))->display(function($driver_id){
-            return Driver::where('id',$driver_id)->value('first_name');
+            return Driver::where('id',$driver_id)->value('full_name');
         });
-        
+
         $grid->column('trip_request_id', __('Trip Request Id'))->display(function($trip_request_id){
             return TripRequest::where('id',$trip_request_id)->value('pickup_address');
         });
@@ -56,7 +56,7 @@ class DriverTripRequestController extends AdminController
             //Get All status
             $statuses = Status::pluck('name', 'id');
             $trip_requests = TripRequest::pluck('pickup_address', 'id');
-            $drivers = Driver::pluck('first_name', 'id');
+            $drivers = Driver::pluck('full_name', 'id');
 
             $filter->equal('trip_request_id', 'Trip request id')->select($trip_requests);
             $filter->equal('driver_id', 'Driver id')->select($drivers);
@@ -97,7 +97,7 @@ class DriverTripRequestController extends AdminController
 
          $statuses = Status::pluck('name', 'id');
             $trip_requests = TripRequest::pluck('pickup_address', 'id');
-            $drivers = Driver::pluck('first_name', 'id');
+            $drivers = Driver::pluck('full_name', 'id');
 
         $form->select('driver_id', __('Driver Id'))->rules(function ($form) {
             return 'required';
@@ -109,7 +109,7 @@ class DriverTripRequestController extends AdminController
             return 'required';
         });
         $form->tools(function (Form\Tools $tools) {
-            $tools->disableDelete(); 
+            $tools->disableDelete();
             $tools->disableView();
         });
         $form->footer(function ($footer) {

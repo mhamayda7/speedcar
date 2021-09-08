@@ -30,7 +30,7 @@ class DriverBankKycDetailController extends AdminController
 
         $grid->column('id', __('Id'));
         $grid->column('driver_id', __('Driver name'))->display(function($driver){
-            $driver_name = Driver::where('id',$driver)->value('first_name');
+            $driver_name = Driver::where('id',$driver)->value('full_name');
                 return "$driver_name";
         });
         $grid->column('bank_name', __('Bank name'));
@@ -72,7 +72,7 @@ class DriverBankKycDetailController extends AdminController
 
         $show->field('id', __('Id'));
         $show->field('driver_id', __('Driver Name'))->as(function($driver){
-            $driver_name = Driver::where('id',$driver)->value('first_name');
+            $driver_name = Driver::where('id',$driver)->value('full_name');
                 return "$driver_name";
         });
         $show->field('bank_name', __('Bank Name'));

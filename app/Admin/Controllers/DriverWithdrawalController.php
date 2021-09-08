@@ -28,10 +28,10 @@ class DriverWithdrawalController extends AdminController
     protected function grid()
     {
         $grid = new Grid(new DriverWithdrawal);
-        
+
         $grid->column('id', __('Id'));
         $grid->column('driver_id', __('Driver'))->display(function($vendor){
-            $driver = Driver::where('id',$driver)->value('first_name');
+            $driver = Driver::where('id',$driver)->value('full_name');
                 return $driver;
         });
         $grid->column('amount', __('Amount'));
@@ -47,14 +47,14 @@ class DriverWithdrawalController extends AdminController
                 return "<span class='label label-danger'>$status_name</span>";
             }
         });
-        
-        
+
+
         $grid->disableExport();
         $grid->disableCreation();
         $grid->actions(function ($actions) {
               $actions->disableView();
             //$actions->disableEdit();
-           
+
         });
         return $grid;
     }
@@ -89,8 +89,8 @@ class DriverWithdrawalController extends AdminController
     protected function form()
     {
         $form = new Form(new DriverWithdrawal);
-        $drivers = Driver::pluck('first_name', 'id');
-        
+        $drivers = Driver::pluck('full_name', 'id');
+
 
         $form->select('driver_id', __('Driver id'))->options($drivers)->rules(function ($form) {
                 return 'required';
@@ -102,7 +102,7 @@ class DriverWithdrawalController extends AdminController
             return 'required';
         });
         $form->tools(function (Form\Tools $tools) {
-            $tools->disableDelete(); 
+            $tools->disableDelete();
             $tools->disableView();
         });
         $form->footer(function ($footer) {

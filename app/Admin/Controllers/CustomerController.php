@@ -34,8 +34,8 @@ class CustomerController extends AdminController
             $country_name = Country::where('id',$countries)->value('country_name');
                 return "$country_name";
         });
-        $grid->column('first_name', __('First Name'));
-        $grid->column('last_name', __('Last Name'));
+        $grid->column('full_name', __('Full Name'));
+        // $grid->column('last_name', __('Last Name'));
         $grid->column('phone_number', __('Phone number'));
         $grid->column('email', __('Email'));
         $grid->column('password', __('Password'))->hide();
@@ -62,7 +62,7 @@ class CustomerController extends AdminController
                 return "<span class='label label-danger'>$status_name</span>";
             }
         });
-       
+
         $grid->column('created_at', __('Created at'))->hide();
         $grid->column('updated_at', __('Updated at'))->hide();
         $grid->disableExport();
@@ -72,19 +72,19 @@ class CustomerController extends AdminController
         //$actions->disableDelete();
         });
         $grid->filter(function ($filter) {
-            $statuses = Status::where('type','general')->pluck('name','id'); 
+            $statuses = Status::where('type','general')->pluck('name','id');
             $countries = Country::pluck('country_name', 'id');
 
             $filter->disableIdFilter();
-            $filter->like('first_name', 'First Name');
-            $filter->like('last_name', 'Last Name');        
-            $filter->equal('phone_number', 'Phone number');  
+            $filter->like('full_name', 'Full Name');
+            // $filter->like('last_name', 'Last Name');
+            $filter->equal('phone_number', 'Phone number');
             $filter->equal('gender', 'Gender')->select(['1' => 'Male', '2'=> 'Female']);
             $filter->like('email', 'Email');
             $filter->equal('country_id', 'Country');
             $filter->equal('country_code', 'Country code');
             $filter->equal('status', 'Status')->select($statuses);
-        
+
         });
 
 
@@ -108,8 +108,8 @@ class CustomerController extends AdminController
         $show->field('password', __('Password'));
         $show->field('status', __('Status'));
         $show->field('device_id', __('Device id'));
-        $show->field('first_name', __('First name'));
-        $show->field('last_name', __('Last name'));
+        $show->field('full_name', __('Full name'));
+        // $show->field('last_name', __('Last name'));
         $show->field('profile_update', __('Profile update'));
         $show->field('wallet', __('Wallet'));
         $show->field('country_code', __('Country code'));
@@ -127,11 +127,11 @@ class CustomerController extends AdminController
     protected function form()
     {
         $form = new Form(new Customer);
-        $statuses = Status::where('type','general')->pluck('name','id'); 
+        $statuses = Status::where('type','general')->pluck('name','id');
         $countries = Country::pluck('country_name', 'id');
         $currencies = Currency::pluck('currency', 'currency');
 
-        $form->text('first_name', __('First name'))->rules('required|max:250');
+        $form->text('full_name', __('Full name'))->rules('required|max:250');
         $form->text('last_name', __('Last name'))->rules('required|max:250');
         $form->text('phone_number', __('Phone number'))->rules('required|max:250');
         $form->email('email', __('Email'))->rules('required|max:250');
@@ -139,7 +139,7 @@ class CustomerController extends AdminController
         $form->password('password', __('Password'))->rules('required|max:250');
         $form->image('profile_picture', __('Profile picture'))->move('customers/')->uniqueName()->rules('required');
         $form->select('country_id','Country')->options($countries)->rules('required');
-        $form->text('country_code', __('Country code'))->rules('required|max:10');  
+        $form->text('country_code', __('Country code'))->rules('required|max:10');
         $form->select('currency','Currency')->options($currencies)->rules('required');
         $form->select('status','Status')->options($statuses)->rules('required');
 
@@ -148,9 +148,9 @@ class CustomerController extends AdminController
             {
                 $form->password = $this->getEncryptedPassword($form->password);
             }
-        });    
+        });
         $form->tools(function (Form\Tools $tools) {
-            $tools->disableDelete(); 
+            $tools->disableDelete();
             $tools->disableView();
         });
         $form->footer(function ($footer) {

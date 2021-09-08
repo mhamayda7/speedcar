@@ -34,10 +34,10 @@ class DriverEarningController extends AdminController
             return Trip::where('id',$trip_id)->value('trip_id');
         });
         $grid->column('driver_id', __('Driver name'))->display(function($vendor_id){
-            return Driver::where('id',$vendor_id)->value('first_name');
+            return Driver::where('id',$vendor_id)->value('full_name');
         });
         $grid->column('amount', __('Amount'));
-        
+
         $grid->disableExport();
         $grid->disableCreation();
         $grid->actions(function ($actions) {
@@ -48,7 +48,7 @@ class DriverEarningController extends AdminController
         $grid->filter(function ($filter) {
             //Get All status
             $trips = Trip::pluck('trip_id', 'id');
-            $drivers = Driver::pluck('first_name', 'id');
+            $drivers = Driver::pluck('full_name', 'id');
             $filter->like('trip_id', 'Trip')->select($trips);
             $filter->like('driver_id', 'Driver')->select($drivers);
         });
@@ -84,7 +84,7 @@ class DriverEarningController extends AdminController
     protected function form()
     {
         $form = new Form(new DriverEarning);
-        $driver = Driver::pluck('first_name', 'id');
+        $driver = Driver::pluck('full_name', 'id');
         $trip = Trip::pluck('trip_id', 'id');
 
         $form->select('trip_id', __('Trip id'))->options($trip)->rules(function ($form) {
@@ -99,7 +99,7 @@ class DriverEarningController extends AdminController
 
 
         $form->tools(function (Form\Tools $tools) {
-         $tools->disableDelete(); 
+         $tools->disableDelete();
          $tools->disableView();
      });
         $form->footer(function ($footer) {

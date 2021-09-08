@@ -27,7 +27,7 @@ class TripController extends AdminController
      * Make a grid builder.
      *
      * @return Grid
-     */ 
+     */
     protected function grid()
     {
         $grid = new Grid(new Trip());
@@ -36,11 +36,11 @@ class TripController extends AdminController
         $grid->column('id', __('Id'));
         $grid->column('trip_id', __('Trip id'));
         $grid->column('customer_id', __('Customer name'))->display(function($customer){
-            $customer_name = Customer::where('id',$customer)->value('first_name');
+            $customer_name = Customer::where('id',$customer)->value('full_name');
                 return "$customer_name";
         });
         $grid->column('driver_id', __('Driver name'))->display(function($driver){
-            $driver_name = Driver::where('id',$driver)->value('first_name');
+            $driver_name = Driver::where('id',$driver)->value('full_name');
                 return "$driver_name";
         });
         $grid->column('pickup_date', __('Pickup date'))->hide();
@@ -49,7 +49,7 @@ class TripController extends AdminController
         $grid->column('drop_location_address', __('Drop location address'))->hide();
         $grid->column('pickup_location_lat', __('Pickup location latitude'))->hide();
         $grid->column('pickup_location_lng', __('Pickup location longitute'))->hide();
-       
+
         $grid->column('vehicle_id', __('Vehicle number'))->display(function($vehicle){
             $vehicle_number = DriverVehicle::where('id',$vehicle)->value('vehicle_number');
                 return "$vehicle_number";
@@ -68,11 +68,11 @@ class TripController extends AdminController
         $grid->column('otp', __('Otp'))->hide();
         $grid->column('status', __('Status'))->display(function($status){
             $status_name = BookingStatus::where('id',$status)->value('status_name');
-            
+
                 return "$status_name";
-            
+
         });
-        
+
         $grid->disableExport();
         $grid->disableCreation();
         $grid->actions(function ($actions) {
@@ -81,18 +81,18 @@ class TripController extends AdminController
         });
          $grid->filter(function ($filter) {
          $statuses = BookingStatus::pluck('status_name','id');
-         $customer = Customer::pluck('first_name', 'id');
-         $driver = Driver::pluck('first_name', 'id');
+         $customer = Customer::pluck('full_name', 'id');
+         $driver = Driver::pluck('full_name', 'id');
          $payment_method = PaymentMethod::pluck('payment', 'id');
          $vehicle_number = DriverVehicle::pluck('vehicle_number', 'id');
 
             $filter->disableIdFilter();
             $filter->equal('customer-id', 'Customer name')->select($customer);
-            $filter->equal('driver-id', 'Driver name')->select($driver);        
+            $filter->equal('driver-id', 'Driver name')->select($driver);
             $filter->equal('payment_method', 'Payment Method')->select($payment_method);
             $filter->equal('vehicle-id', 'Vehicle number')->select($vehicle_number);
             $filter->equal('status', 'Status')->select($statuses);
-        
+
         });
 
         return $grid;
@@ -140,8 +140,8 @@ class TripController extends AdminController
     protected function form()
     {
         $form = new Form(new Trip());
-         $drivers = Driver::pluck('first_name', 'id');
-         $customer = Customer::pluck('first_name', 'id');
+         $drivers = Driver::pluck('full_name', 'id');
+         $customer = Customer::pluck('full_name', 'id');
          $payment = PaymentMethod::pluck('payment', 'id');
          $promo_code = PromoCode::pluck('promo_code', 'id');
          $vehicle_number = DriverVehicle::pluck('vehicle_number', 'id');
@@ -188,7 +188,7 @@ class TripController extends AdminController
         $form->decimal('total', __('Total Fare'))->rules(function ($form) {
             return 'required|max:100';
         });
-       
+
         $form->text('otp', __('Otp'));
         $form->select('status', __('Status'))->options($statuses)->rules(function ($form) {
             return 'required';

@@ -30,7 +30,7 @@ class CustomerSosContactController extends AdminController
 
         $grid->column('id', __('Id'));
         $grid->column('customer_id', __('Customer'))->display(function($customer_id){
-            return Customer::where('id',$customer_id)->value('first_name');
+            return Customer::where('id',$customer_id)->value('full_name');
         });
         $grid->column('name', __('Name'));
         $grid->column('phone_number', __('Phone Number'));
@@ -44,7 +44,7 @@ class CustomerSosContactController extends AdminController
         $grid->column('created_at', __('Created at'))->hide();
         $grid->column('updated_at', __('Updated at'))->hide();
         });
-        
+
         $grid->disableExport();
         $grid->disableCreateButton();
         $grid->actions(function ($actions) {
@@ -52,14 +52,14 @@ class CustomerSosContactController extends AdminController
             $actions->disableDelete();
         });
          $grid->filter(function ($filter) {
-        
+
             $statuses = Status::where('type','general')->pluck('name','id');
-            $customers = Customer::pluck('first_name', 'id');
-         
+            $customers = Customer::pluck('full_name', 'id');
+
             $filter->like('phone_number', 'Phone Number');
             $filter->equal('customer', 'Customer')->select($customers);
             $filter->equal('status', 'Status')->select($statuses);
-        
+
         });
         return $grid;
     }
@@ -95,14 +95,14 @@ class CustomerSosContactController extends AdminController
         $form = new Form(new CustomerSosContact());
 
          $statuses = Status::where('type','general')->pluck('name','id');
-         $customers = Customer::pluck('first_name', 'id');
+         $customers = Customer::pluck('full_name', 'id');
 
         $form->select('customer_id', __('Customer Id'))->options($customers)->rules('required');
         $form->text('name', __('Name'));
         $form->text('phone_number', __('Phone Number'));
         $form->select('status', __('Status'))->options($statuses)->rules('required');
         $form->tools(function (Form\Tools $tools) {
-            $tools->disableDelete(); 
+            $tools->disableDelete();
             $tools->disableView();
         });
         $form->footer(function ($footer) {

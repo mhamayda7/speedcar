@@ -39,7 +39,7 @@ class DriverVehicleController extends AdminController
                 return "$country_name";
         });
         $grid->column('driver_id', __('Driver'))->display(function($drivers){
-            $driver_name = Driver::where('id',$drivers)->value('first_name');
+            $driver_name = Driver::where('id',$drivers)->value('full_name');
                 return "$driver_name";
         });
         $grid->column('vehicle_type', __('Vehicle type'))->display(function(){
@@ -60,7 +60,7 @@ class DriverVehicleController extends AdminController
         });
         $grid->column('created_at', __('Created at'));
         $grid->column('updated_at', __('Updated at'));
-        
+
         $grid->column('created_at')->hide();
         $grid->column('updated_at')->hide();
         $grid->disableExport();
@@ -71,19 +71,19 @@ class DriverVehicleController extends AdminController
             $statuses = Status::where('type','general')->pluck('name','id');
             $vehicle_categories= VehicleCategory::pluck('vehicle_type','id');
             $countries = Country::pluck('country_name', 'id');
-            $drivers = Driver::pluck('first_name', 'id');
+            $drivers = Driver::pluck('full_name', 'id');
 
 
             $filter->disableIdFilter();
             $filter->equal('country_id', 'Country');
             $filter->equal('driver_id', 'Driver');
             $filter->like('vehicle_type', 'Vehicle type')->select($vehicle_categories);
-            $filter->like('brand', 'Brand');        
-            $filter->like('color', 'Color');        
+            $filter->like('brand', 'Brand');
+            $filter->like('color', 'Color');
             $filter->like('vehicle_name', 'Vehicle name');
             $filter->equal('vehicle_number', 'vehicle_number');
             $filter->equal('status', 'Status')->select($statuses);
-        
+
         });
 
         return $grid;
@@ -123,17 +123,17 @@ class DriverVehicleController extends AdminController
         $statuses = Status::where('type','general')->pluck('name','id');
         $vehicle_categories= VehicleCategory::pluck('vehicle_type','id');
         $countries = Country::pluck('country_name', 'id');
-        $drivers = Driver::pluck('first_name', 'id');
-        
-        $form->select('country_id','Country')->load('driver_id', '/admin/get-drivers', 'id', 'first_name')->options($countries)->rules(function ($form) {
+        $drivers = Driver::pluck('full_name', 'id');
+
+        $form->select('country_id','Country')->load('driver_id', '/admin/get-drivers', 'id', 'full_name')->options($countries)->rules(function ($form) {
             return 'required';
         });
-        
+
         $form->select('driver_id', __('Driver'))->load('vehicle_type', '/admin/get-vehicle-category', 'id', 'vehicle_type')->options(function ($id) {
             $driver = Driver::find($id);
 
             if ($driver) {
-                return [$driver->id => $driver->first_name];
+                return [$driver->id => $driver->full_name];
             }
         })->rules(function ($form) {
             return 'required';
@@ -153,12 +153,12 @@ class DriverVehicleController extends AdminController
         $form->text('vehicle_number', __('Vehicle Number'))->rules('required|max:250');
         $form->image('vehicle_image', __('Vehicle Image'))->uniqueName()->move('vehicle_images/');
         $form->select('status', __('status'))->options($statuses)->rules('required');
-        
+
         $form->saved(function (Form $form) {
             $this->update_status($form->model()->vehicle_type,$form->model()->driver_id);
         });
         $form->tools(function (Form\Tools $tools) {
-            $tools->disableDelete(); 
+            $tools->disableDelete();
             $tools->disableView();
         });
         $form->footer(function ($footer) {
@@ -166,10 +166,10 @@ class DriverVehicleController extends AdminController
             $footer->disableEditingCheck();
             $footer->disableCreatingCheck();
         });
-        
+
         return $form;
     }
-    
+
     public function update_status($vehicle_type,$driver_id){
        // $factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
@@ -180,7 +180,7 @@ class DriverVehicleController extends AdminController
             'booking_status' => 0,
             'driver_id' => $driver_id,
             'vehicle_type' => $vehicle_type,
-            'driver_name' => Driver::where('id',$driver_id)->value('first_name'),
+            'driver_name' => Driver::where('id',$driver_id)->value('full_name'),
             'gender' => Driver::where('id',$driver_id)->value('gender'),
             'lat' => 0,
             'lng' => 0,
@@ -193,7 +193,7 @@ class DriverVehicleController extends AdminController
             'booking_id' => 0,
             'customer_name' => 0,
             'trip_type' => ""
-            
+
         ]);
     }
 }
