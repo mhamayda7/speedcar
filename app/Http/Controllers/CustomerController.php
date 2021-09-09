@@ -147,8 +147,8 @@ class CustomerController extends Controller
         }
 
         $otp = rand(1000, 9999);
-        // $message = "Hi" . env('APP_NAME') . "  , Your OTP code is:" . $otp;
-        // $this->sendSms($input['phone_with_code'], $message);
+        $message = "Hi" . env('APP_NAME') . "  , Your OTP code is:" . $otp;
+        $this->sendSms($input['phone_with_code'], $message);
 
         $options = [
             'cost' => 12,
