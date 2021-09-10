@@ -148,9 +148,9 @@ class CustomerController extends Controller
         $input['phone_with_code'] = $input['country_code'].$input['phone_number'];
         $phone = '+'.$input['phone_with_code'];
         $otp = rand(1000, 9999);
-        $message = "Hi" . env('APP_NAME') . "  , Your OTP code is:" . $otp;
+        $message = "Hi " . env('APP_NAME') . "  , Your OTP code is:" . $otp;
         // $this->sendSms($input['phone_with_code'], $message);
-        // $this->sendSms($phone, $message);
+        $this->sendSms($phone, $message);
         $options = [
             'cost' => 12,
         ];
