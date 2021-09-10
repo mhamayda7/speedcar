@@ -36,6 +36,7 @@ use Kreait\Firebase\Database;
 use DateTime;
 use DateTimeZone;
 use App\CustomerWalletHistory;
+use App\PromoCode;
 use Encore\Admin\Show;
 
 
@@ -624,23 +625,33 @@ class BookingController extends Controller
             $data['fare'] = number_format((float)$fare, 2, '.', '');
 
             //Tax
-            $taxes = DB::table('tax_lists')->where('id',$country_id)->get();
-            $total_tax = 0.00;
-            if(count($taxes)){
-                foreach($taxes as $key => $value){
-                    $total_tax = $total_tax + ($value->percent / 100) * $data['fare'];
-                }
-            }
-            $data['tax'] = number_format((float)$total_tax, 2, '.', '');
-            $total_fare = $data['tax'] + $data['fare'];
-            $data['total_fare'] = number_format((float)$total_fare, 2, '.', '');
+            // $taxes = DB::table('tax_lists')->where('id',$country_id)->get();
+            // $total_tax = 0.00;
+            // if(count($taxes)){
+            //     foreach($taxes as $key => $value){
+            //         $total_tax = $total_tax + ($value->percent / 100) * $data['fare'];
+            //     }
+            // }
+            // $data['tax'] = number_format((float)$total_tax, 2, '.', '');
+            // $total_fare = $data['tax'] + $data['fare'];
+            // $data['total_fare'] = number_format((float)$total_fare, 2, '.', '');
+
+
+            // $data['tax'] = number_format((float)$total_tax, 2, '.', '');
+            // $total_fare = $data['tax'] + $data['fare'];
+            $data['total_fare'] = number_format((float)$fare, 2, '.', '');
         }
 
         if($promo == 0){
             $data['discount'] = 0.00;
         }else{
             $data['discount'] = 0.00;
-            $promo = DB::table('promo_codes')->where('id',$promo)->first();
+            $id_promo = PromoCode::where('promo_code', $promo)
+                ->value('id');
+            // if (is_null($id_promo)) {
+            //     $id_promo = 0;
+            // }
+            $promo = DB::table('promo_codes')->where('id',$id_promo)->first();
             if($promo->promo_type == 5){
                 $total_fare = $data['total_fare'] - $promo->discount;
                 if($total_fare > 0){
