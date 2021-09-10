@@ -1272,8 +1272,9 @@ class BookingController extends Controller
         $data['vehicle_type'] = $trip['vehicle_type'];
         $data['vehicle_id'] = DB::table('driver_vehicles')->where('driver_id',$input['driver_id'])->value('id');
         $data['otp'] = $otp = rand(1000,9999);
+        $phone = '+'.$phone_with_code;
         $message = "Hi ".env('APP_NAME')." , Your OTP code is:  ".$data['otp'];
-            $this->sendSms($phone_with_code,$message);
+            $this->sendSms($phone,$message);
         $id = Trip::create($data)->id;
 
         if($data['promo_code']){
