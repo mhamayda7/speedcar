@@ -18,26 +18,28 @@ use Kreait\Firebase\Database;
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
-    
-    public function sendError($message) {
+
+    public function sendError($message)
+    {
         $message = $message->all();
         $response['error'] = "validation_error";
-        $response['message'] = implode('',$message);
+        $response['message'] = implode('', $message);
         $response['status'] = "0";
         return response()->json($response, 200);
-    } 
-    
-    public function send_order_mail($mail_header,$subject,$to_mail){
-    Mail::send('mail_templates.trip_invoice', $mail_header, function ($message)
-		 use ($subject,$to_mail) {
-			$message->from(env('MAIL_USERNAME'), env('APP_NAME'));
-			$message->subject($subject);
-			$message->to($to_mail);
-        
-		});
     }
-    
-    public function send_fcm($title,$description,$token){
+
+    public function send_order_mail($mail_header, $subject, $to_mail)
+    {
+        Mail::send('mail_templates.trip_invoice', $mail_header, function ($message)
+        use ($subject, $to_mail) {
+            $message->from(env('MAIL_USERNAME'), env('APP_NAME'));
+            $message->subject($subject);
+            $message->to($to_mail);
+        });
+    }
+
+    public function send_fcm($title, $description, $token)
+    {
 
         /*$factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
         $messaging = $factory->createMessaging();
@@ -45,7 +47,7 @@ class Controller extends BaseController
         $message = CloudMessage::fromArray([
             'token' => $token,
             'notification' => [],
-            'data' => [], 
+            'data' => [],
         ]);
 
         $config = AndroidConfig::fromArray([
@@ -63,22 +65,54 @@ class Controller extends BaseController
 
         $messaging->send($message);*/
     }
-    
-    public function sendSms($phone_number,$message)
+
+    public function sendSms($phone_number, $message)
     {
-        $sid    = env( 'TWILIO_SID' );
-        $token  = env( 'TWILIO_TOKEN' );
-        $client = new Client( $sid, $token );
-        $client->messages->create($phone_number,[ 'from' => env( 'TWILIO_FROM' ),'body' => $message,]);
+        $sid    = env('TWILIO_SID');
+        $token  = env('TWILIO_TOKEN');
+        $client = new Client($sid, $token);
+        $client->messages->create($phone_number, ['from' => env('TWILIO_FROM'), 'body' => $message,]);
         return true;
-   }
-   
-   public function ride_completeion($mail_header,$subject,$to_mail){
+    }
+
+    public function ride_completeion($mail_header, $subject, $to_mail)
+    {
         Mail::send('mail_templates.ride_completeion_mail', $mail_header, function ($message)
-         use ($subject,$to_mail) {
+        use ($subject, $to_mail) {
             $message->from(env('MAIL_USERNAME'), env('APP_NAME'));
             $message->subject($subject);
             $message->to($to_mail);
         });
+    }
+
+    public function smsSe()
+    {
+        $url = "https://gatewayapi.com/rest/mtsms";
+        $api_token = "yC5hi64NSEm9P1lfR2ouiEC3IqyQS2XVuvIo3xtAay0-lMGb_DrPV7QPgGz57BEx";
+
+        //Set SMS recipients and content
+        $recipients = [970595509815];
+        $json = [
+            'sender' => 'Speed Car',
+            'message' => 'Hello world',
+            'recipients' => [],
+        ];
+        foreach ($recipients as $msisdn) {
+            $json['recipients'][] = ['msisdn' => $msisdn];
+        }
+
+        //Make and execute the http request
+        //Using the built-in 'curl' library
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
+        curl_setopt($ch, CURLOPT_USERPWD, $api_token . ":");
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($json));
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        print($result);
+        $json = json_decode($result);
+        print_r($json->ids);
     }
 }

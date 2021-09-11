@@ -646,12 +646,12 @@ class BookingController extends Controller
             $data['discount'] = 0.00;
         }else{
             $data['discount'] = 0.00;
-            $id_promo = PromoCode::where('promo_code', $promo)
+            // $id_promo = PromoCode::where('promo_code', $promo)
                 ->value('id');
             // if (is_null($id_promo)) {
             //     $id_promo = 0;
             // }
-            $promo = DB::table('promo_codes')->where('id',$id_promo)->first();
+            $promo = DB::table('promo_codes')->where('promo_code',$promo)->first();
             if($promo->promo_type == 5){
                 $total_fare = $data['total_fare'] - $promo->discount;
                 if($total_fare > 0){
