@@ -26,10 +26,12 @@ class HomeController extends Controller
             $data['drivers'] = Driver::where('status','!=',0)->count();
             $data['countries'] = Country::where('status','!=',0)->count();
 
-            
+
 
             $content->body(view('admin.dashboard', $data));
         });
 
     }
+
+
 }

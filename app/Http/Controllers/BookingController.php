@@ -899,7 +899,16 @@ class BookingController extends Controller
             $new_status = BookingStatus::where('id',$input['status'])->first();
 
             $this->calculate_earnings($input['trip_id']);
-            // $this->create_reward($input['trip_id']);
+//             $this->create_reward($input['trip_id']);
+
+            $distance = Trip::where('id',$input['trip_id'])->sum('distance');
+            $trip_customer = Trip::where('id',$input['trip_id'])->value('customer_id');
+            $customer = Customer::find($trip_customer);
+//            dd($distance);/
+            $customer->points += $distance;
+            $customer->save();
+            $points = Customer::where('id',$trip_customer)->value('points');
+
         }
 
         $fcm_token = Customer::where('id',$trip->customer_id)->value('fcm_token');
@@ -1507,16 +1516,16 @@ class BookingController extends Controller
             $data = array();
             $data['logo'] = $app_setting->logo;
             $data['booking_id'] = $booking_details->trip_id;
-            // $data['customer_name'] = Customer::where('id',$booking_details->customer_id)->value('first_name');
-            $data['customer_name'] = Customer::where('id',$booking_details->customer_id)->value('full_name');
+             $data['customer_name'] = Customer::where('id',$booking_details->customer_id)->value('first_name');
+//            $data['customer_name'] = Customer::where('id',$booking_details->customer_id)->value('full_name');
             $data['pickup_address'] = $booking_details->pickup_address;
             $data['drop_address'] = $booking_details->drop_address;
             $data['start_time'] = $booking_details->start_time;
             $data['end_time'] = $booking_details->end_time;
 
 
-            // $data['driver'] = (Driver::where('id',$booking_details->driver_id)->value('first_name') != '' ) ? Driver::where('id',$booking_details->driver_id)->value('first_name') : "---" ;
-            $data['driver'] = (Driver::where('id',$booking_details->driver_id)->value('full_name') != '' ) ? Driver::where('id',$booking_details->driver_id)->value('full_name') : "---" ;
+             $data['driver'] = (Driver::where('id',$booking_details->driver_id)->value('first_name') != '' ) ? Driver::where('id',$booking_details->driver_id)->value('first_name') : "---" ;
+//            $data['driver'] = (Driver::where('id',$booking_details->driver_id)->value('full_name') != '' ) ? Driver::where('id',$booking_details->driver_id)->value('full_name') : "---" ;
             $country = Country::where('phone_code',$input['country_code'])->value('id');
             $data['country_id'] = $country;
             $data['currency'] = Currency::where('country_id',$data['country_id'])->value('currency');
@@ -1585,11 +1594,13 @@ class BookingController extends Controller
         $wallet = Customer::where('customers.id',$input['customer_id'])->value('wallet');
         $name = Customer::where('customers.id',$input['customer_id'])->value('full_name');
         $phone = Customer::where('customers.id',$input['customer_id'])->value('phone_with_code');
+//        $points = Customer::where('customers.id',$input['customer_id'])->value('points');
         // $award = Customer::where('customers.id',$input['customer_id'])->value('wallet');
         return response()->json([
             "full_name" => $name,
             "phone" => $phone,
             "distance" => $data,
+//            "points" => $points,
             // "trips_count" => count($count),
             "wallet" => $wallet,
             "message" => 'Success',

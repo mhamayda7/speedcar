@@ -19432,8 +19432,8 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! E:\speedcar\code\codecanyon-29919332-cab2door-online-taxi-booking-app-template\admin\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! E:\speedcar\code\codecanyon-29919332-cab2door-online-taxi-booking-app-template\admin\resources\css\app.css */"./resources/css/app.css");
+__webpack_require__(/*! C:\wamp64\www\speedcar\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\wamp64\www\speedcar\resources\css\app.css */"./resources/css/app.css");
 
 
 /***/ })
