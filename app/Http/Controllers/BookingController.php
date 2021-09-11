@@ -36,6 +36,7 @@ use Kreait\Firebase\Database;
 use DateTime;
 use DateTimeZone;
 use App\CustomerWalletHistory;
+use App\PromoCode;
 use Encore\Admin\Show;
 
 
@@ -624,23 +625,33 @@ class BookingController extends Controller
             $data['fare'] = number_format((float)$fare, 2, '.', '');
 
             //Tax
-            $taxes = DB::table('tax_lists')->where('id',$country_id)->get();
-            $total_tax = 0.00;
-            if(count($taxes)){
-                foreach($taxes as $key => $value){
-                    $total_tax = $total_tax + ($value->percent / 100) * $data['fare'];
-                }
-            }
-            $data['tax'] = number_format((float)$total_tax, 2, '.', '');
-            $total_fare = $data['tax'] + $data['fare'];
-            $data['total_fare'] = number_format((float)$total_fare, 2, '.', '');
+            // $taxes = DB::table('tax_lists')->where('id',$country_id)->get();
+            // $total_tax = 0.00;
+            // if(count($taxes)){
+            //     foreach($taxes as $key => $value){
+            //         $total_tax = $total_tax + ($value->percent / 100) * $data['fare'];
+            //     }
+            // }
+            // $data['tax'] = number_format((float)$total_tax, 2, '.', '');
+            // $total_fare = $data['tax'] + $data['fare'];
+            // $data['total_fare'] = number_format((float)$total_fare, 2, '.', '');
+
+
+            // $data['tax'] = number_format((float)$total_tax, 2, '.', '');
+            // $total_fare = $data['tax'] + $data['fare'];
+            $data['total_fare'] = number_format((float)$fare, 2, '.', '');
         }
 
         if($promo == 0){
             $data['discount'] = 0.00;
         }else{
             $data['discount'] = 0.00;
-            $promo = DB::table('promo_codes')->where('id',$promo)->first();
+            $id_promo = PromoCode::where('promo_code', $promo)
+                ->value('id');
+            // if (is_null($id_promo)) {
+            //     $id_promo = 0;
+            // }
+            $promo = DB::table('promo_codes')->where('id',$id_promo)->first();
             if($promo->promo_type == 5){
                 $total_fare = $data['total_fare'] - $promo->discount;
                 if($total_fare > 0){
@@ -962,8 +973,9 @@ class BookingController extends Controller
         }
         $id = $input['customer_id'];
         $trip_request = TripRequest::select('status')->where('customer_id',$id)->get()->last();
-        $status = $trip_request->status;
-        if (is_null($status)) {
+        // $status = $trip_request->status;
+
+        if (is_null($trip_request)) {
             return response()->json([
                 "message" => 'Not have any request trip',
                 "status" => 1
@@ -971,7 +983,7 @@ class BookingController extends Controller
         }
         // $trip_request = TripRequest::findOrFail($id);
         // $status = $trip_request->status;
-        elseif ($status == 3) {
+        elseif ($trip_request->status == 3) {
             $trip = Trip::select('trip_id', 'customer_id', 'driver_id', 'vehicle_id', 'status')->where('customer_id',$id)->get()->last();
             return response()->json([
                 "result" => $trip,
@@ -1280,8 +1292,9 @@ class BookingController extends Controller
         $data['vehicle_type'] = $trip['vehicle_type'];
         $data['vehicle_id'] = DB::table('driver_vehicles')->where('driver_id',$input['driver_id'])->value('id');
         $data['otp'] = $otp = rand(1000,9999);
+        $phone = '+'.$phone_with_code;
         $message = "Hi ".env('APP_NAME')." , Your OTP code is:  ".$data['otp'];
-            $this->sendSms($phone_with_code,$message);
+            $this->sendSms($phone,$message);
         $id = Trip::create($data)->id;
 
         if($data['promo_code']){

@@ -135,7 +135,7 @@ class CustomerController extends Controller
             // 'last_name' => 'required',
             'full_name' => 'required',
             'country_code' => 'required',
-            'phone_with_code' => 'required',
+            // 'phone_with_code' => 'required',
             'phone_number' => 'required|numeric|digits_between:9,20|unique:customers,phone_number',
             'email' => 'required|email|regex:/^[a-zA-Z]{1}/|unique:customers,email',
             'password' => 'required',
@@ -145,14 +145,6 @@ class CustomerController extends Controller
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-
-        $otp = rand(0000, 9999);
-        $message = "Hi" . env('APP_NAME') . "  , Your OTP code is:" . $otp;
-        $this->sendSms($input['phone_with_code'], $message);
-
-
-
-
         $options = [
             'cost' => 12,
         ];
@@ -170,8 +162,15 @@ class CustomerController extends Controller
         $input['currency'] = Currency::where('country_id', $input['country_id'])->value('currency');
         $input['currency_short_code'] = Currency::where('country_id', $input['country_id'])->value('currency_short_code');
         $input['profile_picture'] = "customers/avatar.jpg";
+        $input['phone_with_code'] = $input['country_code'].$input['phone_number'];
+
         $customer = Customer::create($input);
 
+        $phone = '+'.$input['phone_with_code'];
+        $otp = rand(1000, 9999);
+        $message = "Hi " . env('APP_NAME') . "  , Your OTP code is:" . $otp;
+        // $this->sendSms($input['phone_with_code'], $message);
+        $this->sendSms($phone, $message);
         //$factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
