@@ -646,12 +646,12 @@ class BookingController extends Controller
             $data['discount'] = 0.00;
         }else{
             $data['discount'] = 0.00;
-            $id_promo = PromoCode::where('promo_code', $promo)
-                ->value('id');
+            // $id_promo = PromoCode::where('promo_code', $promo)
+            // ->value('id');
             // if (is_null($id_promo)) {
             //     $id_promo = 0;
             // }
-            $promo = DB::table('promo_codes')->where('id',$id_promo)->first();
+            $promo = DB::table('promo_codes')->where('promo_code',$promo)->first();
             if($promo->promo_type == 5){
                 $total_fare = $data['total_fare'] - $promo->discount;
                 if($total_fare > 0){
@@ -984,9 +984,11 @@ class BookingController extends Controller
         // $trip_request = TripRequest::findOrFail($id);
         // $status = $trip_request->status;
         elseif ($trip_request->status == 3) {
-            $trip = Trip::select('trip_id', 'customer_id', 'driver_id', 'vehicle_id', 'status')->where('customer_id',$id)->get()->last();
+            $trip = Trip::select('trip_id', 'customer_id', 'driver_id', 'vehicle_id', 'status','pickup_address','drop_address')->where('customer_id',$id)->get()->last();
+            $driver = Driver::select('full_name','profile_picture')->where('id',$trip->driver_id)->get()->last();
             return response()->json([
                 "result" => $trip,
+                "driver" => $driver,
                 "message" => 'Success',
                 "status" => 1
             ]);

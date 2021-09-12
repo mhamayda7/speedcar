@@ -48,7 +48,7 @@ class CaptainController extends Controller
         $input['fcm_token'] = 0000;
         $input['country_id'] = 1;
         $input['country_code'] = 970;
-        $input['phone_with_code'] = $request->phone_number + 970;
+        $input['phone_with_code'] = $input['country_code'].$request->phone_number;
         $input['currency'] = 'JOD';
         $input['daily'] = 1;
         $input['rental'] = 0;
@@ -78,8 +78,8 @@ class CaptainController extends Controller
             $input['id_proof'] =($imageName);
         }
 
-         Driver::create($input);
-        dd($input);
+        Driver::create($input);
+        // dd($input);
 
 
         //$factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
