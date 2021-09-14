@@ -10,15 +10,15 @@ Route::group([
     'middleware'    => config('admin.route.middleware'),
 ], function (Router $router) {
 
-    
+
     $router->get('/', 'HomeController@index')->name('admin.home');
     $router->get('tracking', 'HomeController@tracking');
     $router->get('get-vehicle-category', 'GeneralController@GetVehicleCategory');
     $router->get('get-drivers', 'GeneralController@GetDrivers');
     $router->get('get_complaint_category', 'GeneralController@GetComplaintCategory');
     $router->get('get_complaint_sub_category', 'GeneralController@GetComplaintSubCategory');
-    $router->resource('app-settings', AppSettingController::class); 
-    $router->resource('cancellation-reasons', CancellationReasonController::class); 
+    $router->resource('app-settings', AppSettingController::class);
+    $router->resource('cancellation-reasons', CancellationReasonController::class);
     $router->resource('twillio-settings', TwillioSettingController::class);
     $router->resource('cancellation-settings', CancellationSettingController::class);
     $router->resource('trip-settings', TripSettingController::class);
@@ -26,14 +26,14 @@ Route::group([
     $router->resource('user-types', UserTypeController::class);
     $router->resource('privacy-policies', PrivacyPolicyController::class);
     $router->resource('payment-methods', PaymentMethodController::class);
-    $router->resource('promo-codes', PromoCodeController::class);
+    // $router->resource('promo-codes', PromoCodeController::class);
     $router->resource('referral-settings', ReferralSettingController::class);
     $router->resource('vehicle-categories', VehicleCategoryController::class);
-    $router->resource('complaint-categories', ComplaintCategoryController::class); 
-    $router->resource('tax-lists', TaxListController::class);    
+    $router->resource('complaint-categories', ComplaintCategoryController::class);
+    $router->resource('tax-lists', TaxListController::class);
     $router->resource('mail-contents', MailContentController::class);
     $router->resource('complaints', ComplaintController::class);
-    $router->resource('customers', CustomerController::class);    
+    $router->resource('customers', CustomerController::class);
     $router->resource('drivers', DriverController::class);
     $router->resource('driver-vehicles', DriverVehicleController::class);
     $router->resource('feature-settings', FeatureSettingController::class);
@@ -67,7 +67,7 @@ Route::group([
     $router->resource('rental-fare-managements', RentalFareManagementController::class);
     $router->resource('trip-request-statuses', TripRequestStatusController::class);
     $router->resource('driver-trip-requests', DriverTripRequestController::class);
-    $router->resource('user-promo-histories', UserPromoHistoryController::class);
+    // $router->resource('user-promo-histories', UserPromoHistoryController::class);
     $router->resource('trip-requests', TripRequestController::class);
     $router->resource('payment-histories', PaymentHistoryController::class);
     $router->resource('ratings', RatingsController::class);

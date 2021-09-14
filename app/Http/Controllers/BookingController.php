@@ -37,6 +37,7 @@ use Kreait\Firebase\Database;
 use DateTime;
 use DateTimeZone;
 use App\CustomerWalletHistory;
+use App\Models\Point;
 use App\PromoCode;
 use Encore\Admin\Show;
 
@@ -913,6 +914,7 @@ class BookingController extends Controller
             $customer->points += $distance;
             $customer->save();
             $points = Customer::where('id', $trip_customer)->value('points');
+            $this->reward_point($input['trip_id']);
         }
 
         $fcm_token = Customer::where('id', $trip->customer_id)->value('fcm_token');
@@ -937,6 +939,41 @@ class BookingController extends Controller
             "status" => 1
         ]);
     }
+    public function reward_point($trip_id) {
+
+        $trip = Trip::select('customer_id','distance')->where('id',$trip_id)->get()->last();
+
+        $point = new Point;
+        $point->customer_id = $trip->customer_id;
+        $point->trip_id = $trip_id;
+        $point->type = 1;
+        $point->point = intval($trip->distance);
+        $point->details = "قطع مسافة ".$trip->distance;
+        $point->save();
+
+        return response()->json([
+            "trip" => $point,
+            "message" => 'Success',
+            "status" => 1
+        ]);
+    }
+
+    public function get_reward(Request $request) {
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'customer_id' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors());
+        }
+        $reward = Point::where('customer_id', $input['customer_id'])->get()->all();
+        return response()->json([
+            "result" => $reward,
+            "message" => 'Success',
+            "status" => 1
+        ]);
+    }
+
 
     public function get_statuses(Request $request)
     {

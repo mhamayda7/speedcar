@@ -16,7 +16,7 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::get('promo', 'PromoCodeController@promo');
+// Route::get('promo', 'PromoCodeController@promo');
 
 //Customer
 Route::post('customer/check_phone', 'App\Http\Controllers\CustomerController@check_phone');
@@ -52,6 +52,8 @@ Route::post('customer/wallet_payment_methods', 'App\Http\Controllers\CustomerCon
 Route::post('customer/trip_cancel', 'App\Http\Controllers\BookingController@trip_cancel_by_customer');
 Route::post('customer/get_status', 'App\Http\Controllers\BookingController@get_statuses');
 Route::post('customer/distance', 'App\Http\Controllers\BookingController@customer_distance');
+// Route::post('customer/reward_point', 'App\Http\Controllers\BookingController@reward_point');
+Route::post('customer/get_reward', 'App\Http\Controllers\BookingController@get_reward');
 
 //driver
 Route::post('driver/login', 'App\Http\Controllers\DriverController@login');
