@@ -28,6 +28,7 @@ Route::post('customer/profile_update', 'App\Http\Controllers\CustomerController@
 Route::post('customer/faq', 'App\Http\Controllers\FaqController@customer_faq');
 Route::post('customer/policy', 'App\Http\Controllers\PrivacyPolicyController@customer_policy');
 Route::get('app_setting', 'App\Http\Controllers\AppSettingController@index');
+Route::get('whatsapp', 'App\Http\Controllers\AppSettingController@whatsapp');
 Route::post('customer/add_wallet', 'App\Http\Controllers\CustomerController@add_wallet');
 Route::post('customer/get_wallet', 'App\Http\Controllers\CustomerController@get_wallet');
 Route::post('customer/get_complaint_sub_category', 'App\Http\Controllers\ComplaintController@get_complaint_sub_categories');
