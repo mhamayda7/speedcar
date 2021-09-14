@@ -85,16 +85,16 @@ class Controller extends BaseController
         });
     }
 
-    public function smsSe()
+    public function smsSe($phone, $message)
     {
         $url = "https://gatewayapi.com/rest/mtsms";
         $api_token = "yC5hi64NSEm9P1lfR2ouiEC3IqyQS2XVuvIo3xtAay0-lMGb_DrPV7QPgGz57BEx";
 
         //Set SMS recipients and content
-        $recipients = [970595509815];
+        $recipients = [$phone];
         $json = [
-            'sender' => 'Speed Car',
-            'message' => 'Hello world',
+            'sender' => 'SpeedCar',
+            'message' => $message,
             'recipients' => [],
         ];
         foreach ($recipients as $msisdn) {
