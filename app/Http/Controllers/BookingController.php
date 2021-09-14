@@ -983,7 +983,7 @@ class BookingController extends Controller
             return response()->json([
                 "result" => $trip,
                 "driver" => $driver,
-                "vehicle" => $$vehicle,
+                "vehicle" => $vehicle,
                 "message" => 'Success',
                 "status" => 1
             ]);
