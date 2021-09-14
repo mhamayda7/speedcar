@@ -111,8 +111,8 @@ class Controller extends BaseController
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $result = curl_exec($ch);
         curl_close($ch);
-        print($result);
-        $json = json_decode($result);
-        print_r($json->ids);
+        // print($result);
+        // $json = json_decode($result);
+        // print_r($json->ids);
     }
 }
