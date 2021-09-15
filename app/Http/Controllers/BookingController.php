@@ -942,13 +942,13 @@ class BookingController extends Controller
     public function reward_point($trip_id) {
 
         $trip = Trip::select('customer_id','distance')->where('id',$trip_id)->get()->last();
-
         $point = new Point;
         $point->customer_id = $trip->customer_id;
         $point->trip_id = $trip_id;
         $point->type = 1;
         $point->point = intval($trip->distance);
         $point->details = "قطع مسافة ".$trip->distance;
+        $point->icon = "rewards/taxi.png";
         $point->save();
 
         return response()->json([
@@ -966,8 +966,10 @@ class BookingController extends Controller
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
+        $total_point = Customer::where('id',$input['customer_id'])->value('points');
         $reward = Point::where('customer_id', $input['customer_id'])->get()->all();
         return response()->json([
+            "total_point" => $total_point,
             "result" => $reward,
             "message" => 'Success',
             "status" => 1
