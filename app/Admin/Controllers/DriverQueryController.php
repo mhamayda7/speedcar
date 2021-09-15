@@ -30,7 +30,7 @@ class DriverQueryController extends AdminController
         $grid->column('id', __('Id'));
         $grid->column('full_name', __('Full Name'));
         $grid->column('email', __('Email'));
-        $grid->column('last_name', __('Last Name'));
+        // $grid->column('last_name', __('Last Name'));
         $grid->column('phone_number', __('Phone Number'));
         $grid->column('status', __('Status'))->display(function($status){
             $status_name = Status::where('id',$status)->value('name');
@@ -77,7 +77,7 @@ class DriverQueryController extends AdminController
         $show->field('phone_number', __('Phone number'));
         $show->field('status', __('Status'));
         $show->field('email', __('Email'));
-        $show->field('last_name', __('Last name'));
+        // $show->field('last_name', __('Last name'));
         $show->field('created_at', __('Created at'));
         $show->field('updated_at', __('Updated at'));
 
@@ -99,7 +99,7 @@ class DriverQueryController extends AdminController
         $form->text('phone_number', __('Phone Number'));
         $form->select('status', __('Status'))->options($statuses)->rules('required');
         $form->email('email', __('Email'));
-        $form->text('last_name', __('Last Name'));
+        // $form->text('last_name', __('Last Name'));
 
         $form->tools(function (Form\Tools $tools) {
             $tools->disableDelete();

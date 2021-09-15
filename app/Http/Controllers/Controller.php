@@ -1,11 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Validator;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
 use Twilio\Rest\Client;
 use Mail;
 use Kreait\Firebase\Messaging\AndroidConfig;
@@ -85,16 +86,34 @@ class Controller extends BaseController
         });
     }
 
-    public function smsSe()
+    public function sendS(Request $request) {
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'phone' => 'required',
+            'message' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors());
+        }
+
+        $this->smsSe($input['phone'], $input['message']);
+        return response()->json([
+            "message" => 'Succsess Send sms',
+            "status" => 1
+        ]);
+
+    }
+
+    public function smsSe($phone, $message)
     {
         $url = "https://gatewayapi.com/rest/mtsms";
         $api_token = "yC5hi64NSEm9P1lfR2ouiEC3IqyQS2XVuvIo3xtAay0-lMGb_DrPV7QPgGz57BEx";
 
         //Set SMS recipients and content
-        $recipients = [970595509815];
+        $recipients = [$phone];
         $json = [
-            'sender' => 'Speed Car',
-            'message' => 'Hello world',
+            'sender' => 'SpeedCar',
+            'message' => $message,
             'recipients' => [],
         ];
         foreach ($recipients as $msisdn) {
@@ -111,8 +130,8 @@ class Controller extends BaseController
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $result = curl_exec($ch);
         curl_close($ch);
-        print($result);
-        $json = json_decode($result);
-        print_r($json->ids);
+        // print($result);
+        // $json = json_decode($result);
+        // print_r($json->ids);
     }
 }

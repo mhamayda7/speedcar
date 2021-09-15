@@ -132,7 +132,7 @@ class CustomerController extends AdminController
         $currencies = Currency::pluck('currency', 'currency');
 
         $form->text('full_name', __('Full name'))->rules('required|max:250');
-        $form->text('last_name', __('Last name'))->rules('required|max:250');
+        // $form->text('last_name', __('Last name'))->rules('required|max:250');
         $form->text('phone_number', __('Phone number'))->rules('required|max:250');
         $form->email('email', __('Email'))->rules('required|max:250');
         $form->select('gender', __('gender'))->options(['1' => 'Male', '2'=> 'Female'])->default('1')->rules('required');

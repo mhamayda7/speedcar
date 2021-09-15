@@ -16,9 +16,10 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-Route::get('promo', 'PromoCodeController@promo');
+// Route::get('promo', 'PromoCodeController@promo');
 
 //Customer
+Route::post('sendsms', 'App\Http\Controllers\Controller@sendS');
 Route::post('customer/check_phone', 'App\Http\Controllers\CustomerController@check_phone');
 Route::post('customer/register', 'App\Http\Controllers\CustomerController@register');
 Route::post('customer/login', 'App\Http\Controllers\CustomerController@login');
@@ -28,6 +29,7 @@ Route::post('customer/profile_update', 'App\Http\Controllers\CustomerController@
 Route::post('customer/faq', 'App\Http\Controllers\FaqController@customer_faq');
 Route::post('customer/policy', 'App\Http\Controllers\PrivacyPolicyController@customer_policy');
 Route::get('app_setting', 'App\Http\Controllers\AppSettingController@index');
+Route::get('whatsapp', 'App\Http\Controllers\AppSettingController@whatsapp');
 Route::post('customer/add_wallet', 'App\Http\Controllers\CustomerController@add_wallet');
 Route::post('customer/get_wallet', 'App\Http\Controllers\CustomerController@get_wallet');
 Route::post('customer/get_complaint_sub_category', 'App\Http\Controllers\ComplaintController@get_complaint_sub_categories');
@@ -51,6 +53,8 @@ Route::post('customer/wallet_payment_methods', 'App\Http\Controllers\CustomerCon
 Route::post('customer/trip_cancel', 'App\Http\Controllers\BookingController@trip_cancel_by_customer');
 Route::post('customer/get_status', 'App\Http\Controllers\BookingController@get_statuses');
 Route::post('customer/distance', 'App\Http\Controllers\BookingController@customer_distance');
+// Route::post('customer/reward_point', 'App\Http\Controllers\BookingController@reward_point');
+Route::post('customer/get_reward', 'App\Http\Controllers\BookingController@get_reward');
 
 //driver
 Route::post('driver/login', 'App\Http\Controllers\DriverController@login');

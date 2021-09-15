@@ -24,6 +24,18 @@ class AppSettingController extends Controller
         ]);
     }
 
+    public function whatsapp()
+    {
+        $data = AppSetting::first();
+        $phone = $data->whatsapp;
+        return response()->json([
+            "result" => $phone,
+            "message" => 'Success',
+            "status" => 1
+        ]);
+    }
+
+
     /**
      * Show the form for creating a new resource.
      *

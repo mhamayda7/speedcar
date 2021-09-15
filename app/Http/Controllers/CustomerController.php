@@ -169,9 +169,9 @@ class CustomerController extends Controller
         $phone = '+'.$input['phone_with_code'];
         $otp = rand(1000, 9999);
         $message = "Hi " . env('APP_NAME') . "  , Your OTP code is:" . $otp;
+        // $this->sendSms($phone, $message);
         // $this->sendSms($input['phone_with_code'], $message);
-        $this->sendSms($phone, $message);
-        // $this->smsSe();
+        // $this->smsSe($phone, $message);
         //$factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
