@@ -19,6 +19,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 // Route::get('promo', 'PromoCodeController@promo');
 
 //Customer
+Route::post('sendsms', 'App\Http\Controllers\Controller@sendS');
 Route::post('customer/check_phone', 'App\Http\Controllers\CustomerController@check_phone');
 Route::post('customer/register', 'App\Http\Controllers\CustomerController@register');
 Route::post('customer/login', 'App\Http\Controllers\CustomerController@login');

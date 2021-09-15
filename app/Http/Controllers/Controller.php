@@ -1,11 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Validator;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
 use Twilio\Rest\Client;
 use Mail;
 use Kreait\Firebase\Messaging\AndroidConfig;
@@ -83,6 +84,24 @@ class Controller extends BaseController
             $message->subject($subject);
             $message->to($to_mail);
         });
+    }
+
+    public function sendS(Request $request) {
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'phone' => 'required',
+            'message' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors());
+        }
+
+        $this->smsSe($input['phone'], $input['message']);
+        return response()->json([
+            "message" => 'Succsess Send sms',
+            "status" => 1
+        ]);
+
     }
 
     public function smsSe($phone, $message)
