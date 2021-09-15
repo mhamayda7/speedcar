@@ -44,7 +44,7 @@ class DriverController extends AdminController
         $grid->column('phone_with_code', __('Phone number with Code'));
         $grid->column('email', __('Email'));
         $grid->column('password', __('Password'))->hide();
-        $grid->column('profile_picture', __('Profile picture'))->hide();
+        $grid->column('profile_picture', __('Profile picture'));
         $grid->column('date_of_birth', __('Date of birth'))->hide();
         $grid->column('licence_number', __('Licence number'));
         $grid->column('id_proof', __('Id proof'))->hide();

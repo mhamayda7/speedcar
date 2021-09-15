@@ -169,6 +169,12 @@
             <input id="id_proof" name="id_proof" class="input-text js-input" type="file" required>
             <label class="label" for="id_proof">صورة الرخصة</label>
         </div>
+<br>
+        <div class="form-field col-lg-6">
+            <input id="vehicle_image" name="vehicle_image" class="input-text js-input" type="file" required>
+            <label class="label" for="vehicle_image">صورة امامية للمركبة مع اللوحة</label>
+        </div>
+
         <div class="form-field col-lg-12">
             <input class="submit-btn" type="submit" value="تسجيل">
         </div>

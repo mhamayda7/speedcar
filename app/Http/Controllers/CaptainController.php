@@ -8,6 +8,7 @@ use App\Country;
 use App\Currency;
 use App\Driver;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Kreait\Firebase\Factory;
 
@@ -58,28 +59,27 @@ class CaptainController extends Controller
             $image = $request->file('profile_picture');
             $imageName = $image->getClientOriginalName();
             $request->profile_picture->move(public_path('/uploads/drivers'), $imageName);
-            $input['profile_picture'] =($imageName);
+            $input['profile_picture'] = 'drivers/'.$imageName;
         }
-
-//        if ($request->hasFile('profile_picture')) {
-//            $image = $request->file('profile_picture');
-//            $name = time().'.'.$image->getClientOriginalExtension();
-//            $destinationPath = public_path('/uploads/drivers');
-//            $image->move($destinationPath, $name);
-//            $input['profile_picture']='drivers/'.$name;
-//
-//        }
-
 
         if ($request->hasFile('id_proof')){
             $image = $request->file('id_proof');
-            $imageName = $image->getClientOriginalName();
-            $request->id_proof->move(public_path('/uploads/image'), $imageName);
-            $input['id_proof'] =($imageName);
+            $proofImage = $image->getClientOriginalName();
+            $request->id_proof->move(public_path('/uploads/image'), $proofImage);
+            $input['id_proof'] =$proofImage;
         }
 
+        if ($request->hasFile('vehicle_image')){
+            $image = $request->file('vehicle_image');
+            $vehicle_image = $image->getClientOriginalName();
+            $request->vehicle_image->move(public_path('/uploads/captain_vehicle_image'), $vehicle_image);
+            $input['vehicle_image'] =$vehicle_image;
+        }
         Driver::create($input);
-        // dd($input);
+        Driver::latest()->first()->update([ 'profile_picture' => 'drivers/'.$imageName ]);
+        Driver::latest()->first()->update([ 'id_proof' => 'image/'.$proofImage ]);
+        Driver::latest()->first()->update([ 'vehicle_image' => 'captain_vehicle_image/'.$vehicle_image ]);
+
 
 
         //$factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
