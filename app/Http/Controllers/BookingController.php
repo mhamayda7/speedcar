@@ -22,6 +22,7 @@ use App\TripCancellation;
 use App\DriverVehicle;
 use App\TripSetting;
 use App\TripRequest;
+use App\Transaction;
 use App\UserType;
 use App\Models\ScratchCardSetting;
 use App\Models\CustomerOffer;
@@ -854,7 +855,6 @@ class BookingController extends Controller
         }
         Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
 
-
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
 
@@ -905,7 +905,7 @@ class BookingController extends Controller
             $new_status = BookingStatus::where('id', $input['status'])->first();
 
             $this->calculate_earnings($input['trip_id']);
-            //             $this->create_reward($input['trip_id']);
+            //$this->create_reward($input['trip_id']);
 
             $distance = Trip::where('id', $input['trip_id'])->sum('distance');
             $trip_customer = Trip::where('id', $input['trip_id'])->value('customer_id');
@@ -913,8 +913,32 @@ class BookingController extends Controller
             //            dd($distance);/
             $customer->points += $distance;
             $customer->save();
-            $points = Customer::where('id', $trip_customer)->value('points');
+            // $points = Customer::where('id', $trip_customer)->value('points');
             $this->reward_point($input['trip_id']);
+
+            //invoice
+            $payment_method = Trip::where('trip_id', $input['trip_id'])->value('payment_method');
+            if ($payment_method == 1)
+            {
+                $data= [];
+                $data['customer_id'] = $trip_customer;
+                $data['amount'] = $this->calculate_fare($input['trip_id']);
+                $data['payment_method'] = $payment_method;
+                $data['type'] = 1;
+                Transaction::create($data);
+            } elseif ($payment_method == 2) {
+
+                $data= [];
+                $data['customer_id'] = $trip_customer;
+                $data['amount'] = $this->calculate_fare($input['trip_id']);
+                $amount = Customer::where('id', $trip_customer)->value('wallet');
+                $new_amount = $amount - $data['amount'];
+                Customer::where('id', $customer->id)->update(['wallet' => $new_amount]);
+                $data['payment_method'] = $payment_method;
+                $data['type'] = 1;
+                Transaction::create($data);
+            }
+
         }
 
         $fcm_token = Customer::where('id', $trip->customer_id)->value('fcm_token');
