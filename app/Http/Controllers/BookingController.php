@@ -940,6 +940,7 @@ class BookingController extends Controller
                 $trans->payment_method = $payment_method;
                 $trans->type = 1;
                 $trans->save();
+                return $trans;
             }
 
         }
