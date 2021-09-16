@@ -918,13 +918,15 @@ class BookingController extends Controller
             $trans = [];
             //invoice
             $payment_method = Trip::where('trip_id', $input['trip_id'])->value('payment_method');
+            $trip = Trip::where('id', $trip_id)->first();
+            $fare = $this->calculate_daily_fare($trip->vehicle_type, $distance, $trip->promo_code, $trip->country_id);
             if ($payment_method == 1)
             {
                 $amonut_trip = $this->calculate_fare($input['trip_id']);
                 dd($amonut_trip);
                 $trans = new Transaction();
                 $trans->customer_id = $trip_customer;
-                $trans->amount = $amonut_trip;
+                $trans->amount = $fare;
                 $trans->payment_method = $payment_method;
                 $trans->type = 1;
                 $trans->save();
