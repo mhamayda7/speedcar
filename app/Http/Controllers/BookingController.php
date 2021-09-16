@@ -921,7 +921,8 @@ class BookingController extends Controller
             if ($payment_method == 1)
             {
                 $amonut_trip = $this->calculate_fare($input['trip_id']);
-                $trans = new Transaction();
+                $data = [];
+                $trans = new Transaction($data);
                 $trans->customer_id = $trip_customer;
                 $trans->amount = $amonut_trip;
                 $trans->payment_method = $payment_method;
