@@ -920,18 +920,20 @@ class BookingController extends Controller
             $payment_method = Trip::where('trip_id', $input['trip_id'])->value('payment_method');
             if ($payment_method == 1)
             {
+                $amonut_trip = $this->calculate_fare($input['trip_id']);
                 $trans = new Transaction();
                 $trans->customer_id = $trip_customer;
-                $trans->amount = $this->calculate_fare($input['trip_id']);
+                $trans->amount = $amonut_trip;
                 $trans->payment_method = $payment_method;
                 $trans->type = 1;
                 $trans->save();
                 // Transaction::create($data);
             } elseif ($payment_method == 2)
             {
-                $trans = new Transaction();;
+                $amonut_trip = $this->calculate_fare($input['trip_id']);
+                $trans = new Transaction();
                 $trans->customer_id = $trip_customer;
-                $trans->amount = $this->calculate_fare($input['trip_id']);
+                $trans->amount = $amonut_trip;
                 $amount = Customer::where('id', $trip_customer)->value('wallet');
                 $new_amount = $amount - $trans->amount;
                 Customer::where('id', $customer->id)->update(['wallet' => $new_amount]);
@@ -960,6 +962,7 @@ class BookingController extends Controller
             ]);
 
         return response()->json([
+            "transction" => $trans,
             "message" => 'Success',
             "status" => 1
         ]);
