@@ -642,11 +642,6 @@ class BookingController extends Controller
             $data['discount'] = 0.00;
         } else {
             $data['discount'] = 0.00;
-            // $id_promo = PromoCode::where('promo_code', $promo)
-            // ->value('id');
-            // if (is_null($id_promo)) {
-            //     $id_promo = 0;
-            // }
             $promo = DB::table('promo_codes')->where('promo_code', $promo)->first();
             if ($promo->promo_type == 5) {
                 $total_fare = $data['total_fare'] - $promo->discount;
@@ -664,8 +659,66 @@ class BookingController extends Controller
                 $data['total_fare'] = number_format((float)$total_fare, 2, '.', '');
             }
         }
-
         return $data;
+
+        // $data = [];
+        // $vehicle = DB::table('daily_fare_management')->where('id', $vehicle_type)->first();
+
+        // if (is_object($vehicle)) {
+        //     $data['base_fare'] = number_format((float)$vehicle->base_fare, 2, '.', '');
+        //     $data['km'] = $km;
+        //     $data['price_per_km'] = number_format((float)$vehicle->price_per_km, 2, '.', '');
+        //     $additional_fare = number_format($data['km']) * $data['price_per_km'];
+        //     $data['additional_fare'] = number_format((float)$additional_fare, 2, '.', '');
+        //     $fare =  $data['base_fare'] + $data['additional_fare'];
+        //     $data['fare'] = number_format((float)$fare, 2, '.', '');
+
+        //     //Tax
+        //     // $taxes = DB::table('tax_lists')->where('id',$country_id)->get();
+        //     // $total_tax = 0.00;
+        //     // if(count($taxes)){
+        //     //     foreach($taxes as $key => $value){
+        //     //         $total_tax = $total_tax + ($value->percent / 100) * $data['fare'];
+        //     //     }
+        //     // }
+        //     // $data['tax'] = number_format((float)$total_tax, 2, '.', '');
+        //     // $total_fare = $data['tax'] + $data['fare'];
+        //     // $data['total_fare'] = number_format((float)$total_fare, 2, '.', '');
+
+
+        //     // $data['tax'] = number_format((float)$total_tax, 2, '.', '');
+        //     // $total_fare = $data['tax'] + $data['fare'];
+        //     $data['total_fare'] = number_format((float)$fare, 2, '.', '');
+        // }
+
+        // if ($promo == 0) {
+        //     $data['discount'] = 0.00;
+        // } else {
+        //     $data['discount'] = 0.00;
+        //     // $id_promo = PromoCode::where('promo_code', $promo)
+        //     // ->value('id');
+        //     // if (is_null($id_promo)) {
+        //     //     $id_promo = 0;
+        //     // }
+        //     $promo = DB::table('promo_codes')->where('promo_code', $promo)->first();
+        //     if ($promo->promo_type == 5) {
+        //         $total_fare = $data['total_fare'] - $promo->discount;
+        //         if ($total_fare > 0) {
+        //             $data['discount'] = number_format((float)$promo->discount, 2, '.', '');
+        //             $data['total_fare'] = number_format((float)$total_fare, 2, '.', '');
+        //         } else {
+        //             $data['discount'] = number_format((float)$data['total_fare'], 2, '.', '');
+        //             $data['total_fare'] = 0.00;
+        //         }
+        //     } else {
+        //         $discount = ($promo->discount / 100) * $data['total_fare'];
+        //         $total_fare = $data['total_fare'] - $discount;
+        //         $data['discount'] = number_format((float)$discount, 2, '.', '');
+        //         $data['total_fare'] = number_format((float)$total_fare, 2, '.', '');
+        //     }
+        // }
+
+        // return $data;
     }
 
     public function calculate_rental_fare($vehicle_type, $package_id, $promo, $country_id, $extra_km, $extra_hour)
@@ -843,6 +896,137 @@ class BookingController extends Controller
         ]);
     }
 
+    // public function change_statuses(Request $request)
+    // {
+    //     $input = $request->all();
+    //     $validator = Validator::make($input, [
+    //         'trip_id' => 'required',
+    //         'status' => 'required'
+    //     ]);
+    //     if ($validator->fails()) {
+    //         return $this->sendError($validator->errors());
+    //     }
+    //     Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
+
+    //     $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+    //     $database = $factory->createDatabase();
+
+    //     Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
+
+    //     if ($input['status'] == 3) {
+    //         Trip::where('id', $input['trip_id'])->update(['start_time' => date('Y-m-d H:i:s'), 'actual_pickup_address' => $input['address'], 'actual_pickup_lat' => $input['lat'], 'actual_pickup_lng' => $input['lng']]);
+    //     }
+
+    //     $trip = Trip::where('id', $input['trip_id'])->first();
+
+    //     if ($input['status'] == 4) {
+    //         Trip::where('id', $input['trip_id'])->update(['end_time' => date('Y-m-d H:i:s'), 'actual_drop_address' => $input['address'], 'actual_drop_lat' => $input['lat'], 'actual_drop_lng' => $input['lng']]);
+
+    //         $this->calculate_fare($input['trip_id']);
+
+    //         $newPost = $database
+    //             ->getReference('customers/' . $trip->customer_id)
+    //             ->update([
+    //                 'booking_id' => 0,
+    //                 'booking_status' => 0
+    //             ]);
+
+    //         $newPost = $database
+    //             ->getReference('drivers/' . $trip->driver_id)
+    //             ->update([
+    //                 'booking_status' => 0
+    //             ]);
+    //         $vehicle_type = DriverVehicle::where('id', $trip->vehicle_id)->value('vehicle_type');
+
+    //         $newPost = $database
+    //             ->getReference('vehicles/' . $vehicle_type . '/' . $trip->driver_id)
+    //             ->update([
+    //                 'booking_id' => 0,
+    //                 'booking_status' => 0,
+    //                 'pickup_address' => "",
+    //                 'customer_name' => "",
+    //                 'drop_address' => "",
+    //                 'total' => ""
+    //             ]);
+    //     }
+
+    //     if ($input['status'] != 5) {
+    //         $current_status = BookingStatus::where('id', $input['status'])->first();
+    //         $new_status = BookingStatus::where('id', $input['status'])->first();
+    //     } else {
+    //         $current_status = BookingStatus::where('id', $input['status'])->first();
+    //         $new_status = BookingStatus::where('id', $input['status'])->first();
+
+    //         $this->calculate_earnings($input['trip_id']);
+    //         //$this->create_reward($input['trip_id']);
+
+    //         $distance = Trip::where('id', $input['trip_id'])->sum('distance');
+    //         $trip_customer = Trip::where('id', $input['trip_id'])->value('customer_id');
+    //         $customer = Customer::find($trip_customer);
+    //         //            dd($distance);/
+    //         $customer->points += $distance;
+    //         $customer->save();
+    //         // $points = Customer::where('id', $trip_customer)->value('points');
+    //         $this->reward_point($input['trip_id']);
+    //         $trans = [];
+    //         //invoice
+
+    //         $payment_method = Trip::where('trip_id', $input['trip_id'])->value('payment_method');
+    //         // $trip = Trip::where('id', $input['trip_id'])->first();
+    //         $distance = $this->get_distance($input['trip_id']);
+    //         dd($trip);
+    //         $fare = $this->calculate_daily_fare($trip->vehicle_type, $distance, $trip->promo_code, $trip->country_id);
+    //         if ($payment_method == 1)
+    //         {
+    //             $amonut_trip = $this->calculate_fare($input['trip_id']);
+    //             // dd($amonut_trip);
+    //             $trans = new Transaction();
+    //             $trans->customer_id = $trip_customer;
+    //             $trans->amount = $fare;
+    //             $trans->payment_method = $payment_method;
+    //             $trans->type = 1;
+    //             $trans->save();
+    //             // Transaction::create($data);
+    //         } elseif ($payment_method == 2)
+    //         {
+    //             $amonut_trip = $this->calculate_fare($input['trip_id']);
+    //             // dd($amonut_trip);
+    //             $trans = new Transaction();
+    //             $trans->customer_id = $trip_customer;
+    //             $trans->amount = $amonut_trip;
+    //             $amount = Customer::where('id', $trip_customer)->value('wallet');
+    //             $new_amount = $amount - $trans->amount;
+    //             Customer::where('id', $customer->id)->update(['wallet' => $new_amount]);
+    //             $trans->payment_method = $payment_method;
+    //             $trans->type = 1;
+    //             $trans->save();
+    //         }
+
+    //     }
+
+    //     $fcm_token = Customer::where('id', $trip->customer_id)->value('fcm_token');
+
+    //     if ($fcm_token) {
+    //         $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $fcm_token);
+    //     }
+
+
+    //     $newPost = $database
+    //         ->getReference('trips/' . $input['trip_id'])
+    //         ->update([
+    //             'customer_status_name' => $current_status->customer_status_name,
+    //             'status' => $current_status->id,
+    //             'driver_status_name' => $current_status->status_name,
+    //             'new_status' => $new_status->id,
+    //             'new_driver_status_name' => $new_status->status_name
+    //         ]);
+    //     $test = $trans ;
+    //     return response()->json([
+    //         "transction" => $test,
+    //         "message" => 'Success',
+    //         "status" => 1
+    //     ]);
+    // }
     public function change_statuses(Request $request)
     {
         $input = $request->all();
@@ -853,6 +1037,7 @@ class BookingController extends Controller
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
+
         Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
 
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
