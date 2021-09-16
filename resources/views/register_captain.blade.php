@@ -93,8 +93,8 @@
         background-image: linear-gradient(125deg, #000000, #151512);
         color: #e4ff00;
         text-transform: uppercase;
-        letter-spacing: 2px;
-        font-size: 16px;
+        letter-spacing: 1px;
+        font-size: 18px;
         padding: 8px 16px;
         border-bottom: 15px;
         border-color: #e4ff00;
