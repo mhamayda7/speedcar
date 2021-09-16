@@ -940,7 +940,6 @@ class BookingController extends Controller
                 $trans->payment_method = $payment_method;
                 $trans->type = 1;
                 $trans->save();
-                return $trans;
             }
 
         }
@@ -961,9 +960,9 @@ class BookingController extends Controller
                 'new_status' => $new_status->id,
                 'new_driver_status_name' => $new_status->status_name
             ]);
-
+        $test = $trans ;
         return response()->json([
-            "transction" => $trans,
+            "transction" => $test,
             "message" => 'Success',
             "status" => 1
         ]);
