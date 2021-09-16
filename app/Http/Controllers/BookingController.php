@@ -924,10 +924,14 @@ class BookingController extends Controller
                 case '1':
                     $amonut_trip = $this->calculate_fare($input['trip_id']);
                     $trans = new Transaction();
-                    $trans->customer_id = $trip_customer;
-                    $trans->amount = $amonut_trip;
-                    $trans->payment_method = $payment_method;
+                    $trans->customer_id = 1;
+                    $trans->amount = 1;
+                    $trans->payment_method = 1;
                     $trans->type = 1;
+                    // $trans->customer_id = $trip_customer;
+                    // $trans->amount = $amonut_trip;
+                    // $trans->payment_method = $payment_method;
+                    // $trans->type = 1;
                     $trans->save();
                     break;
                 // Transaction::create($data);
