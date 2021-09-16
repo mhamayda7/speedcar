@@ -962,7 +962,7 @@ class BookingController extends Controller
             ]);
 
         return response()->json([
-            "transction" => $trans,
+            "transction" => $this->trans,
             "message" => 'Success',
             "status" => 1
         ]);
