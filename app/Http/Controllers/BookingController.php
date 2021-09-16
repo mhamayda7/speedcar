@@ -915,7 +915,7 @@ class BookingController extends Controller
             $customer->save();
             // $points = Customer::where('id', $trip_customer)->value('points');
             $this->reward_point($input['trip_id']);
-
+            $trans = [];
             //invoice
             $payment_method = Trip::where('trip_id', $input['trip_id'])->value('payment_method');
             if ($payment_method == 1)
