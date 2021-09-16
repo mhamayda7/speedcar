@@ -920,23 +920,24 @@ class BookingController extends Controller
             $payment_method = Trip::where('trip_id', $input['trip_id'])->value('payment_method');
             if ($payment_method == 1)
             {
-                $data= [];
-                $data['customer_id'] = $trip_customer;
-                $data['amount'] = $this->calculate_fare($input['trip_id']);
-                $data['payment_method'] = $payment_method;
-                $data['type'] = 1;
-                Transaction::create($data);
-            } elseif ($payment_method == 2) {
-
-                $data= [];
-                $data['customer_id'] = $trip_customer;
-                $data['amount'] = $this->calculate_fare($input['trip_id']);
+                $trans = new Transaction();
+                $trans->customer_id = $trip_customer;
+                $trans->amount = $this->calculate_fare($input['trip_id']);
+                $trans->payment_method = $payment_method;
+                $trans->type = 1;
+                $trans->save();
+                // Transaction::create($data);
+            } elseif ($payment_method == 2)
+            {
+                $trans = new Transaction();;
+                $trans->customer_id = $trip_customer;
+                $trans->amount = $this->calculate_fare($input['trip_id']);
                 $amount = Customer::where('id', $trip_customer)->value('wallet');
-                $new_amount = $amount - $data['amount'];
+                $new_amount = $amount - $trans->amount;
                 Customer::where('id', $customer->id)->update(['wallet' => $new_amount]);
-                $data['payment_method'] = $payment_method;
-                $data['type'] = 1;
-                Transaction::create($data);
+                $trans->payment_method = $payment_method;
+                $trans->type = 1;
+                $trans->save();
             }
 
         }
