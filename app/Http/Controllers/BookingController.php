@@ -917,7 +917,7 @@ class BookingController extends Controller
             $this->reward_point($input['trip_id']);
             $trans = [];
             //invoice
-            $payment_method = Trip::where('trip_id', $input['trip_id'])->value('payment_method');
+            $payment_method = Trip::where('trip_id', $input['trip_id'])->get(['payment_method']);
             dd($payment_method);
             switch ($payment_method)
             {
