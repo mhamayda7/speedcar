@@ -918,29 +918,34 @@ class BookingController extends Controller
             $trans = [];
             //invoice
             $payment_method = Trip::where('trip_id', $input['trip_id'])->value('payment_method');
-            if ($payment_method == 1)
+            switch ($payment_method)
             {
-                $amonut_trip = $this->calculate_fare($input['trip_id']);
-                $data = [];
-                $trans = new Transaction($data);
-                $trans->customer_id = $trip_customer;
-                $trans->amount = $amonut_trip;
-                $trans->payment_method = $payment_method;
-                $trans->type = 1;
-                $trans->save();
+
+                case '1':
+                    $amonut_trip = $this->calculate_fare($input['trip_id']);
+                    $data = [];
+                    $trans = new Transaction($data);
+                    $trans->customer_id = $trip_customer;
+                    $trans->amount = $amonut_trip;
+                    $trans->payment_method = $payment_method;
+                    $trans->type = 1;
+                    $trans->save();
+                    break;
                 // Transaction::create($data);
-            } elseif ($payment_method == 2)
-            {
-                $amonut_trip = $this->calculate_fare($input['trip_id']);
-                $trans = new Transaction();
-                $trans->customer_id = $trip_customer;
-                $trans->amount = $amonut_trip;
-                $amount = Customer::where('id', $trip_customer)->value('wallet');
-                $new_amount = $amount - $trans->amount;
-                Customer::where('id', $customer->id)->update(['wallet' => $new_amount]);
-                $trans->payment_method = $payment_method;
-                $trans->type = 1;
-                $trans->save();
+                case '2' :
+                    $amonut_trip = $this->calculate_fare($input['trip_id']);
+                    $trans = new Transaction();
+                    $trans->customer_id = $trip_customer;
+                    $trans->amount = $amonut_trip;
+                    $amount = Customer::where('id', $trip_customer)->value('wallet');
+                    $new_amount = $amount - $trans->amount;
+                    Customer::where('id', $customer->id)->update(['wallet' => $new_amount]);
+                    $trans->payment_method = $payment_method;
+                    $trans->type = 1;
+                    $trans->save();
+                    break;
+                default :
+                    break;
             }
 
         }
