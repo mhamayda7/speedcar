@@ -918,7 +918,7 @@ class BookingController extends Controller
             $trans = [];
             //invoice
             $payment_method = Trip::where('trip_id', $input['trip_id'])->get(['payment_method']);
-            dd($input['trip_id']);
+            dd($payment_method);
             switch ($payment_method)
             {
 
