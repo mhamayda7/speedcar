@@ -917,8 +917,10 @@ class BookingController extends Controller
             $this->reward_point($input['trip_id']);
             $trans = [];
             //invoice
+
             $payment_method = Trip::where('trip_id', $input['trip_id'])->value('payment_method');
-            $trip = Trip::where('id', $input['trip_id'])->first();
+            // $trip = Trip::where('id', $input['trip_id'])->first();
+            $distance = $this->get_distance($input['trip_id']);
             $fare = $this->calculate_daily_fare($trip->vehicle_type, $distance, $trip->promo_code, $trip->country_id);
             if ($payment_method == 1)
             {
