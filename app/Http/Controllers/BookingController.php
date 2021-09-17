@@ -997,13 +997,23 @@ class BookingController extends Controller
             Trip::where('id', $input['trip_id'])->update(['start_time' => date('Y-m-d H:i:s'), 'actual_pickup_address' => $input['address'], 'actual_pickup_lat' => $input['lat'], 'actual_pickup_lng' => $input['lng']]);
         }
 
-        $trip = Trip::where('id', $input['trip_id'])->first();
+
 
         if ($input['status'] == 4) {
             Trip::where('id', $input['trip_id'])->update(['end_time' => date('Y-m-d H:i:s'), 'actual_drop_address' => $input['address'], 'actual_drop_lat' => $input['lat'], 'actual_drop_lng' => $input['lng']]);
+            $trip = Trip::where('id', $input['trip_id'])->first();
 
-            $this->calculate_fare($input['trip_id']);
-            dd($this->calculate_fare($input['trip_id']));
+            $vehicle = DB::table('daily_fare_management')->where('id',1)->first();
+            $base_far = number_format((float)$vehicle->base_fare, 2, '.', '');
+            $distance = $this->get_distance($trip->trip_id);
+            $price_per_km = number_format((float)$vehicle->price_per_km, 2, '.', '');
+            $price_time = number_format((float)$vehicle->price_time, 2, '.', '');
+            $interval = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
+            $fare = $base_far + ($price_per_km * $distance) + ($price_time * $interval);
+
+            dd($fare);
+
+
             $newPost = $database
                 ->getReference('customers/' . $trip->customer_id)
                 ->update([
