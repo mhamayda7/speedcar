@@ -34,6 +34,7 @@ class DailyFareManagementController extends AdminController
         });
         $grid->column('base_fare', __('Base Fare'));
         $grid->column('price_per_km', __('Price Per Km'));
+        $grid->column('price_time', __('Price Time'));
         $grid->column('status', __('Status'))->display(function($status){
             $status_name = Status::where('id',$status)->value('name');
             if ($status == 1) {
@@ -44,7 +45,7 @@ class DailyFareManagementController extends AdminController
         $grid->column('created_at', __('Created at'))->hide();
         $grid->column('updated_at', __('Updated at'))->hide();
         });
-        
+
         $grid->disableExport();
         //$grid->disableCreateButton();
         $grid->actions(function ($actions) {
@@ -52,14 +53,14 @@ class DailyFareManagementController extends AdminController
             $actions->disableDelete();
         });
          $grid->filter(function ($filter) {
-        
+
             $statuses = Status::where('type','general')->pluck('name','id');
             $vehiclecategories = VehicleCategory::pluck('vehicle_type', 'id');
-         
-            
+
+
             $filter->equal('vehicle_type', 'Vehicle Type')->select($vehiclecategories);
             $filter->equal('status', 'Status')->select($statuses);
-        
+
         });
         return $grid;
     }
@@ -78,6 +79,7 @@ class DailyFareManagementController extends AdminController
         $show->field('vehicle_type', __('Vehicle type'));
         $show->field('base_fare', __('Base fare'));
         $show->field('price_per_km', __('Price per km'));
+        $show->field('price_time', __('Price Time'));
         $show->field('status', __('Status'));
         $show->field('created_at', __('Created at'));
         $show->field('updated_at', __('Updated at'));
@@ -93,16 +95,17 @@ class DailyFareManagementController extends AdminController
     protected function form()
     {
         $form = new Form(new DailyFareManagement());
-        
+
         $statuses = Status::where('type','general')->pluck('name','id');
         $vehiclecategories = VehicleCategory::pluck('vehicle_type', 'id');
-         
+
         $form->select('vehicle_type', __('Vehicle type'))->options($vehiclecategories)->rules('required');
         $form->decimal('base_fare', __('Base Fare'))->rules('required');
         $form->decimal('price_per_km', __('Price Per Km'))->rules('required');
+        $form->decimal('price_time', __('Price Time'))->rules('required');
         $form->select('status', __('Status'))->options($statuses)->rules('required');
         $form->tools(function (Form\Tools $tools) {
-            $tools->disableDelete(); 
+            $tools->disableDelete();
             $tools->disableView();
         });
         $form->footer(function ($footer) {
