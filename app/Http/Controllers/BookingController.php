@@ -589,17 +589,42 @@ class BookingController extends Controller
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-        if ($input['trip_type'] == 1) {
-            $fares = $this->calculate_daily_fare($input['vehicle_type'], $input['km'], $input['promo'], $input['country_id']);
-        } else if ($input['trip_type'] == 2) {
-            $fares = $this->calculate_rental_fare($input['vehicle_type'], $input['package_id'], $input['promo'], $input['country_id'], 0, 0);
-        } else if ($input['trip_type'] == 3) {
-            $fares = $this->calculate_outstation_fare($input['vehicle_type'], $input['km'], $input['promo'], $input['country_id'], $input['days']);
+        $data = [];
+        $vehicle = DB::table('daily_fare_management')->where('id', 1)->first();
+
+        if (is_object($vehicle)) {
+            $data['base_fare'] = number_format((float)$vehicle->base_fare, 2, '.', '');
+            $data['km'] = $input['km'];
+            $data['price_per_km'] = number_format((float)$vehicle->price_per_km, 2, '.', '');
+            $additional_fare = number_format($data['km']) * $data['price_per_km'];
+            $data['additional_fare'] = number_format((float)$additional_fare, 2, '.', '');
+            $fare =  $data['base_fare'] + $data['additional_fare'];
+            $data['fare'] = number_format((float)$fare, 2, '.', '');
+            $data['total_fare'] = number_format((float)$fare, 2, '.', '');
         }
-
-
+        if ($input['promo'] == 0) {
+            $data['discount'] = 0.00;
+        } else {
+            $data['discount'] = 0.00;
+            $promo = DB::table('promo_codes')->where('promo_code', $input['promo'])->first();
+            if ($promo->promo_type == 5) {
+                $total_fare = $data['total_fare'] - $promo->discount;
+                if ($total_fare > 0) {
+                    $data['discount'] = number_format((float)$promo->discount, 2, '.', '');
+                    $data['total_fare'] = number_format((float)$total_fare, 2, '.', '');
+                } else {
+                    $data['discount'] = number_format((float)$data['total_fare'], 2, '.', '');
+                    $data['total_fare'] = 0.00;
+                }
+            } else {
+                $discount = ($promo->discount / 100) * $data['total_fare'];
+                $total_fare = $data['total_fare'] - $discount;
+                $data['discount'] = number_format((float)$discount, 2, '.', '');
+                $data['total_fare'] = number_format((float)$total_fare, 2, '.', '');
+            }
+        }
         return response()->json([
-            "result" => $fares,
+            "result" => $data,
             "message" => 'Success',
             "status" => 1
         ]);
@@ -607,7 +632,6 @@ class BookingController extends Controller
 
     public function calculate_daily_fare($vehicle_type, $km, $promo, $country_id)
     {
-
         $data = [];
         $vehicle = DB::table('daily_fare_management')->where('id', $vehicle_type)->first();
 
@@ -619,22 +643,6 @@ class BookingController extends Controller
             $data['additional_fare'] = number_format((float)$additional_fare, 2, '.', '');
             $fare =  $data['base_fare'] + $data['additional_fare'];
             $data['fare'] = number_format((float)$fare, 2, '.', '');
-
-            //Tax
-            // $taxes = DB::table('tax_lists')->where('id',$country_id)->get();
-            // $total_tax = 0.00;
-            // if(count($taxes)){
-            //     foreach($taxes as $key => $value){
-            //         $total_tax = $total_tax + ($value->percent / 100) * $data['fare'];
-            //     }
-            // }
-            // $data['tax'] = number_format((float)$total_tax, 2, '.', '');
-            // $total_fare = $data['tax'] + $data['fare'];
-            // $data['total_fare'] = number_format((float)$total_fare, 2, '.', '');
-
-
-            // $data['tax'] = number_format((float)$total_tax, 2, '.', '');
-            // $total_fare = $data['tax'] + $data['fare'];
             $data['total_fare'] = number_format((float)$fare, 2, '.', '');
         }
 
@@ -660,70 +668,10 @@ class BookingController extends Controller
             }
         }
         return $data;
-
-        // $data = [];
-        // $vehicle = DB::table('daily_fare_management')->where('id', $vehicle_type)->first();
-
-        // if (is_object($vehicle)) {
-        //     $data['base_fare'] = number_format((float)$vehicle->base_fare, 2, '.', '');
-        //     $data['km'] = $km;
-        //     $data['price_per_km'] = number_format((float)$vehicle->price_per_km, 2, '.', '');
-        //     $additional_fare = number_format($data['km']) * $data['price_per_km'];
-        //     $data['additional_fare'] = number_format((float)$additional_fare, 2, '.', '');
-        //     $fare =  $data['base_fare'] + $data['additional_fare'];
-        //     $data['fare'] = number_format((float)$fare, 2, '.', '');
-
-        //     //Tax
-        //     // $taxes = DB::table('tax_lists')->where('id',$country_id)->get();
-        //     // $total_tax = 0.00;
-        //     // if(count($taxes)){
-        //     //     foreach($taxes as $key => $value){
-        //     //         $total_tax = $total_tax + ($value->percent / 100) * $data['fare'];
-        //     //     }
-        //     // }
-        //     // $data['tax'] = number_format((float)$total_tax, 2, '.', '');
-        //     // $total_fare = $data['tax'] + $data['fare'];
-        //     // $data['total_fare'] = number_format((float)$total_fare, 2, '.', '');
-
-
-        //     // $data['tax'] = number_format((float)$total_tax, 2, '.', '');
-        //     // $total_fare = $data['tax'] + $data['fare'];
-        //     $data['total_fare'] = number_format((float)$fare, 2, '.', '');
-        // }
-
-        // if ($promo == 0) {
-        //     $data['discount'] = 0.00;
-        // } else {
-        //     $data['discount'] = 0.00;
-        //     // $id_promo = PromoCode::where('promo_code', $promo)
-        //     // ->value('id');
-        //     // if (is_null($id_promo)) {
-        //     //     $id_promo = 0;
-        //     // }
-        //     $promo = DB::table('promo_codes')->where('promo_code', $promo)->first();
-        //     if ($promo->promo_type == 5) {
-        //         $total_fare = $data['total_fare'] - $promo->discount;
-        //         if ($total_fare > 0) {
-        //             $data['discount'] = number_format((float)$promo->discount, 2, '.', '');
-        //             $data['total_fare'] = number_format((float)$total_fare, 2, '.', '');
-        //         } else {
-        //             $data['discount'] = number_format((float)$data['total_fare'], 2, '.', '');
-        //             $data['total_fare'] = 0.00;
-        //         }
-        //     } else {
-        //         $discount = ($promo->discount / 100) * $data['total_fare'];
-        //         $total_fare = $data['total_fare'] - $discount;
-        //         $data['discount'] = number_format((float)$discount, 2, '.', '');
-        //         $data['total_fare'] = number_format((float)$total_fare, 2, '.', '');
-        //     }
-        // }
-
-        // return $data;
     }
 
     public function calculate_rental_fare($vehicle_type, $package_id, $promo, $country_id, $extra_km, $extra_hour)
     {
-
         $data = [];
         $package_price = DB::table('rental_fare_management')->where('package_id', $package_id)->first();
 
@@ -1055,7 +1003,7 @@ class BookingController extends Controller
             Trip::where('id', $input['trip_id'])->update(['end_time' => date('Y-m-d H:i:s'), 'actual_drop_address' => $input['address'], 'actual_drop_lat' => $input['lat'], 'actual_drop_lng' => $input['lng']]);
 
             $this->calculate_fare($input['trip_id']);
-
+            dd($this->calculate_fare($input['trip_id']));
             $newPost = $database
                 ->getReference('customers/' . $trip->customer_id)
                 ->update([
@@ -1106,34 +1054,7 @@ class BookingController extends Controller
             $payment_method = Trip::where('trip_id', $input['trip_id'])->value('payment_method');
             // $trip = Trip::where('id', $input['trip_id'])->first();
             $distance = $this->get_distance($input['trip_id']);
-            dd($trip);
-            $fare = $this->calculate_daily_fare($trip->vehicle_type, $distance, $trip->promo_code, $trip->country_id);
-            if ($payment_method == 1)
-            {
-                $amonut_trip = $this->calculate_fare($input['trip_id']);
-                // dd($amonut_trip);
-                $trans = new Transaction();
-                $trans->customer_id = $trip_customer;
-                $trans->amount = $fare;
-                $trans->payment_method = $payment_method;
-                $trans->type = 1;
-                $trans->save();
-                // Transaction::create($data);
-            } elseif ($payment_method == 2)
-            {
-                $amonut_trip = $this->calculate_fare($input['trip_id']);
-                // dd($amonut_trip);
-                $trans = new Transaction();
-                $trans->customer_id = $trip_customer;
-                $trans->amount = $amonut_trip;
-                $amount = Customer::where('id', $trip_customer)->value('wallet');
-                $new_amount = $amount - $trans->amount;
-                Customer::where('id', $customer->id)->update(['wallet' => $new_amount]);
-                $trans->payment_method = $payment_method;
-                $trans->type = 1;
-                $trans->save();
-            }
-
+            // dd($trip);
         }
 
         $fcm_token = Customer::where('id', $trip->customer_id)->value('fcm_token');
@@ -1266,46 +1187,7 @@ class BookingController extends Controller
         $trip = Trip::where('id', $trip_id)->first();
         $distance = $this->get_distance($trip_id);
         if ($distance != 0 && is_object($trip)) {
-            if ($trip->trip_type == 1) {
-                $fare = $this->calculate_daily_fare($trip->vehicle_type, $distance, $trip->promo_code, $trip->country_id);
-            } else if ($trip->trip_type == 2) {
-                $input['start_date'] = date("Y-m-d H:i:s", strtotime($trip->start_date));
-                $input['end_date'] = date("Y-m-d H:i:s", strtotime($trip->end_date));
-                $interval_time = $this->date_difference($input['start_date'], $input['end_date']);
-
-                $hours = ceil($interval_time / 60);
-
-                $fare = $this->calculate_rental_fare($trip->vehicle_type, $trip->package_id, $trip->promo_code, $trip->country_id, $distance, $hours);
-            } else if ($trip->trip_type == 3) {
-                $input['start_date'] = date("Y-m-d H:i:s", strtotime($trip->start_date));
-                $input['end_date'] = date("Y-m-d H:i:s", strtotime($trip->end_date));
-                $interval_time = $this->date_difference($input['start_date'], $input['end_date']);
-
-                $days = ceil($interval_time / 1440);
-
-                $fare = $this->calculate_outstation_fare($trip->vehicle_type, $distance, $trip->promo_code, $trip->country_id, $days);
-            }
-
-
-            if ($fare['total_fare'] > $trip->total) {
-                $collection_amount = $this->update_payment_mode($trip->id, $trip, $fare['total_fare']);
-                Trip::where('id', $trip_id)->update(['total' => $fare['total_fare'], 'sub_total' => $fare['fare'], 'tax' => $fare['tax'], 'discount' => $fare['discount'], 'distance' => $distance]);
-                $data['total'] = $fare['total_fare'];
-                $data['actual_pickup_address'] = $trip->actual_pickup_address;
-                $data['actual_drop_address'] = $trip->actual_drop_address;
-                $data['collection_amount'] = $collection_amount;
-                $newPost = $database
-                    ->getReference('trips/' . $trip_id)
-                    ->update($data);
-            } else {
-                $collection_amount = $this->update_payment_mode($trip->id, $trip, $trip->total);
-                $data['actual_pickup_address'] = $trip->actual_pickup_address;
-                $data['actual_drop_address'] = $trip->actual_drop_address;
-                $data['collection_amount'] = $collection_amount;
-                $newPost = $database
-                    ->getReference('trips/' . $trip_id)
-                    ->update($data);
-            }
+            $this->calculate_daily_fare($trip->vehicle_type, $distance, $trip->promo_code, $trip->country_id);
         }
     }
 
