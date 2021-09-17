@@ -1003,14 +1003,32 @@ class BookingController extends Controller
             Trip::where('id', $input['trip_id'])->update(['end_time' => date('Y-m-d H:i:s'), 'actual_drop_address' => $input['address'], 'actual_drop_lat' => $input['lat'], 'actual_drop_lng' => $input['lng']]);
             $trip = Trip::where('id', $input['trip_id'])->first();
 
-            $vehicle = DB::table('daily_fare_management')->where('id',1)->first();
+            $vehicle = DB::table('daily_fare_management')->where('id', 1)->first();
             $base_far = number_format((float)$vehicle->base_fare, 2, '.', '');
             $distance = $this->get_distance($trip->trip_id);
             $price_per_km = number_format((float)$vehicle->price_per_km, 2, '.', '');
             $price_time = number_format((float)$vehicle->price_time, 2, '.', '');
             $interval = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
-            $fare = $base_far + ($price_per_km * $distance) + ($price_time * $interval);
+            $fare = number_format((float)$base_far + ($price_per_km * $distance) + ($price_time * $interval));
             Trip::where('id', $input['trip_id'])->update(['total' => $fare]);
+
+            if ($trip->promo_code == 0) {
+                Trip::where('id', $input['trip_id'])->update(['sub_total' => $fare]);
+            } else {
+                $promo = DB::table('promo_codes')->where('promo_code', $trip->promo_code)->first();
+                if ($promo->promo_type == 5) {
+                    $total_fare = $fare - $promo->discount;
+                    $promo->discount = number_format((float)$promo->discount, 2, '.', '');
+                    $total_fare = number_format((float)$total_fare, 2, '.', '');
+                    Trip::where('id', $input['trip_id'])->update(['sub_total' => $total_fare]);
+                } else {
+                    $discount = ($promo->discount / 100) * $fare;
+                    $total_fare = $fare - $discount;
+                    $discount = number_format((float)$discount, 2, '.', '');
+                    $total_fare = number_format((float)$total_fare, 2, '.', '');
+                    Trip::where('id', $input['trip_id'])->update(['sub_total' => $total_fare]);
+                }
+            }
 
 
             $newPost = $database
@@ -1082,22 +1100,23 @@ class BookingController extends Controller
                 'new_status' => $new_status->id,
                 'new_driver_status_name' => $new_status->status_name
             ]);
-        $test = $trans ;
+        $test = $trans;
         return response()->json([
             "transction" => $test,
             "message" => 'Success',
             "status" => 1
         ]);
     }
-    public function reward_point($trip_id) {
+    public function reward_point($trip_id)
+    {
 
-        $trip = Trip::select('customer_id','distance')->where('id',$trip_id)->get()->last();
+        $trip = Trip::select('customer_id', 'distance')->where('id', $trip_id)->get()->last();
         $point = new Point;
         $point->customer_id = $trip->customer_id;
         $point->trip_id = $trip_id;
         $point->type = 1;
         $point->point = intval($trip->distance);
-        $point->details = "قطع مسافة ".$trip->distance;
+        $point->details = "قطع مسافة " . $trip->distance;
         $point->icon = "rewards/taxi.png";
         $point->save();
 
@@ -1108,7 +1127,8 @@ class BookingController extends Controller
         ]);
     }
 
-    public function get_reward(Request $request) {
+    public function get_reward(Request $request)
+    {
         $input = $request->all();
         $validator = Validator::make($input, [
             'customer_id' => 'required',
@@ -1116,7 +1136,7 @@ class BookingController extends Controller
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-        $total_point = Customer::where('id',$input['customer_id'])->value('points');
+        $total_point = Customer::where('id', $input['customer_id'])->value('points');
         $reward = Point::where('customer_id', $input['customer_id'])->get()->all();
         return response()->json([
             "total_point" => $total_point,
@@ -1167,7 +1187,7 @@ class BookingController extends Controller
         // $status = $trip_request->status;
         elseif ($trip_request->status == 3) {
             $trip = Trip::select('trip_id', 'customer_id', 'driver_id', 'vehicle_id', 'status', 'pickup_address', 'drop_address', 'payment_method')->where('customer_id', $id)->get()->last();
-            $driver = Driver::select('full_name', 'profile_picture','overall_ratings','phone_with_code')->where('id', $trip->driver_id)->get()->last();
+            $driver = Driver::select('full_name', 'profile_picture', 'overall_ratings', 'phone_with_code')->where('id', $trip->driver_id)->get()->last();
             $vehicle = DriverVehicle::where('driver_id', $trip->driver_id)->get(['vehicle_image', 'brand', 'vehicle_name', 'vehicle_number'])->last();
             return response()->json([
                 "result" => $trip,
