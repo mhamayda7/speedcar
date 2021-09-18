@@ -1147,7 +1147,7 @@ class BookingController extends Controller
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-        $invoice = Point::where('customer_id', $input['customer_id'])->get()->all();
+        $invoice = CustomerWalletHistory::where('customer_id', $input['customer_id'])->get()->all();
         $wallet = Customer::where('id', $input['customer_id'])->value('wallet');
         return response()->json([
             "wallet" => $wallet,
