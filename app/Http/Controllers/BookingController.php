@@ -1138,6 +1138,24 @@ class BookingController extends Controller
             "status" => 1
         ]);
     }
+    public function get_invoice(Request $request)
+    {
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'customer_id' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors());
+        }
+        $invoice = Point::where('customer_id', $input['customer_id'])->get()->all();
+        $wallet = Customer::where('id', $input['customer_id'])->value('wallet');
+        return response()->json([
+            "wallet" => $wallet,
+            "result" => $invoice,
+            "message" => 'Success',
+            "status" => 1
+        ]);
+    }
 
 
     public function get_statuses(Request $request)
