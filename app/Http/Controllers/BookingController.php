@@ -1081,8 +1081,8 @@ class BookingController extends Controller
             // $distance = $this->get_distance($input['trip_id']);
             // dd($trip);
         }
-
-        $fcm_token = Customer::where('id', $trip->customer_id)->value('fcm_token');
+        $customer_id = Trip::where('id', $input['trip_id'])->value('customer_id');
+        $fcm_token = Customer::where('id', $customer_id)->value('fcm_token');
         if ($fcm_token) {
             $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $fcm_token);
         }
