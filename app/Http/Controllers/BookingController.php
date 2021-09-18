@@ -1010,23 +1010,23 @@ class BookingController extends Controller
             $price_time = number_format((float)$vehicle->price_time, 2, '.', '');
             $interval = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
             $fare = number_format((float)$base_far + ($price_per_km * $distance) + ($price_time * $interval));
-            Trip::where('id', $input['trip_id'])->update(['total' => $fare]);
+            Trip::where('id', $input['trip_id'])->update(['sub_total' => $fare]);
 
             if ($trip->promo_code == 0) {
-                Trip::where('id', $input['trip_id'])->update(['sub_total' => $fare]);
+                Trip::where('id', $input['trip_id'])->update(['total' => $fare]);
             } else {
                 $promo = DB::table('promo_codes')->where('id', $trip->promo_code)->first();
                 if ($promo->promo_type == 5) {
                     $total_fare = $fare - $promo->discount;
                     $promo->discount = number_format((float)$promo->discount, 2, '.', '');
                     $total_fare = number_format((float)$total_fare, 2, '.', '');
-                    Trip::where('id', $input['trip_id'])->update(['sub_total' => $total_fare]);
+                    Trip::where('id', $input['trip_id'])->update(['total' => $total_fare]);
                 } else {
                     $discount = ($promo->discount / 100) * $fare;
                     $total_fare = $fare - $discount;
                     $discount = number_format((float)$discount, 2, '.', '');
                     $total_fare = number_format((float)$total_fare, 2, '.', '');
-                    Trip::where('id', $input['trip_id'])->update(['sub_total' => $total_fare]);
+                    Trip::where('id', $input['trip_id'])->update(['total' => $total_fare]);
                 }
             }
 
@@ -1075,22 +1075,17 @@ class BookingController extends Controller
             $customer->save();
             // $points = Customer::where('id', $trip_customer)->value('points');
             $this->reward_point($input['trip_id']);
-            $trans = [];
             //invoice
-
-            $payment_method = Trip::where('trip_id', $input['trip_id'])->value('payment_method');
+            // $payment_method = Trip::where('trip_id', $input['trip_id'])->value('payment_method');
             // $trip = Trip::where('id', $input['trip_id'])->first();
-            $distance = $this->get_distance($input['trip_id']);
+            // $distance = $this->get_distance($input['trip_id']);
             // dd($trip);
         }
 
         $fcm_token = Customer::where('id', $trip->customer_id)->value('fcm_token');
-
         if ($fcm_token) {
             $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $fcm_token);
         }
-
-
         $newPost = $database
             ->getReference('trips/' . $input['trip_id'])
             ->update([
@@ -1100,9 +1095,7 @@ class BookingController extends Controller
                 'new_status' => $new_status->id,
                 'new_driver_status_name' => $new_status->status_name
             ]);
-        $test = $trans;
         return response()->json([
-            "transction" => $test,
             "message" => 'Success',
             "status" => 1
         ]);
@@ -1290,31 +1283,37 @@ class BookingController extends Controller
         $total = number_format((float)$total, 2, '.', '');
         $admin_commission = ($admin_commission_percent / 100) * $total;
         $admin_commission = number_format((float)$admin_commission, 2, '.', '');
-        $vendor_commission = $total - $admin_commission;
-        $vendor_commission = number_format((float)$vendor_commission, 2, '.', '');
 
-        DriverEarning::create(['trip_id' => $trip_id, 'driver_id' => $trip->driver_id, 'amount' => $vendor_commission]);
+        $driver_earning = $total - $admin_commission;
+        $driver_earning = number_format((float)$driver_earning, 2, '.', '');
+
+
+        DriverEarning::create(['trip_id' => $trip_id, 'driver_id' => $trip->driver_id, 'amount' => $driver_earning]);
         $old_wallet = Driver::where('id', $trip->driver_id)->value('wallet');
+        $new_wallet = $old_wallet - $admin_commission;
+        Driver::where('id', $trip->driver_id)->update(['wallet'=>$new_wallet]);
 
         if ($payment_method->payment_type == 2) {
-            DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 1, 'message' => 'credited to your account for the order ' . $trip->trip_id, 'amount' => $vendor_commission]);
-            $new_wallet = $old_wallet + $vendor_commission;
+            $old_wallet_customer = Customer::where('id', $trip->customer_id)->value('wallet');
+            $new_wallet_customer = $old_wallet_customer - $total;
+            Customer::where('id', $trip->customer_id)->update(['wallet'=>$new_wallet_customer]);
+            CustomerWalletHistory::create(['contry_id'=>$trip->country_id,'customer_id'=>$trip->customer_id, 'type'=>$payment_method->payment_type, 'message'=> 'طلب سيارة وخصم الرصيد من المحفظة', 'amount'=> $total, 'transaction_type'=> $payment_method->payment_type]);
+            $new_wallet = $old_wallet + $total;
+            Driver::where('id', $trip->driver_id)->update(['wallet'=>$new_wallet]);
+            DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 1, 'message' => 'تم إضافة رصيد لمحفظتك لرحلة رقم' . $trip->trip_id, 'amount' => $driver_earning]);
         } else if ($payment_method->payment_type == 1) {
-            DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 2, 'message' => 'debited from your account for the order ' . $trip->trip_id, 'amount' => $admin_commission]);
-            $new_wallet = $old_wallet - $admin_commission;
-        } else if ($payment_method->payment_type == 3) {
-            $wallet_payment = PaymentHistory::where('trip_id', $trip->id)->where('mode', 'Wallet')->value('amount');
-
-            DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 1, 'message' => 'credited to your account for the order ' . $trip->trip_id, 'amount' => $wallet_payment]);
-            $secondry_wallet = $old_wallet + $wallet_payment;
-            $secondry_wallet = number_format((float)$secondry_wallet, 2, '.', '');
-            Driver::where('id', $trip->driver_id)->update(['wallet' => $secondry_wallet]);
-
-            DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 2, 'message' => 'debited from your account for the order ' . $trip->trip_id, 'amount' => $admin_commission]);
-            $new_wallet = $secondry_wallet - $admin_commission;
+            CustomerWalletHistory::create(['contry_id'=>$trip->country_id,'customer_id'=>$trip->customer_id, 'type'=>$payment_method->payment_type, 'message'=> 'طلب سيارة والدفع كاش ', 'amount'=> $total, 'transaction_type'=> $payment_method->payment_type]);
+            DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 2, 'message' => 'تم خصم رصيد من محفظتك لرحلة '. $trip->trip_id, 'amount' => $admin_commission]);
         }
-        $new_wallet = number_format((float)$new_wallet, 2, '.', '');
-        Driver::where('id', $trip->driver_id)->update(['wallet' => $new_wallet]);
+            // } else if ($payment_method->payment_type == 3) {
+        //     $wallet_payment = PaymentHistory::where('trip_id', $trip->id)->where('mode', 'Wallet')->value('amount');
+        //     DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 1, 'message' => 'credited to your account for the order ' . $trip->trip_id, 'amount' => $wallet_payment]);
+        //     $secondry_wallet = $old_wallet + $wallet_payment;
+        //     $secondry_wallet = number_format((float)$secondry_wallet, 2, '.', '');
+        //     Driver::where('id', $trip->driver_id)->update(['wallet' => $secondry_wallet]);
+        //     DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 2, 'message' => 'debited from your account for the order ' . $trip->trip_id, 'amount' => $admin_commission]);
+        // }
+
     }
 
     public function direct_booking(Request $request)
