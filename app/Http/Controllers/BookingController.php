@@ -589,17 +589,42 @@ class BookingController extends Controller
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-        if ($input['trip_type'] == 1) {
-            $fares = $this->calculate_daily_fare($input['vehicle_type'], $input['km'], $input['promo'], $input['country_id']);
-        } else if ($input['trip_type'] == 2) {
-            $fares = $this->calculate_rental_fare($input['vehicle_type'], $input['package_id'], $input['promo'], $input['country_id'], 0, 0);
-        } else if ($input['trip_type'] == 3) {
-            $fares = $this->calculate_outstation_fare($input['vehicle_type'], $input['km'], $input['promo'], $input['country_id'], $input['days']);
+        $data = [];
+        $vehicle = DB::table('daily_fare_management')->where('id', 1)->first();
+
+        if (is_object($vehicle)) {
+            $data['base_fare'] = number_format((float)$vehicle->base_fare, 2, '.', '');
+            $data['km'] = $input['km'];
+            $data['price_per_km'] = number_format((float)$vehicle->price_per_km, 2, '.', '');
+            $additional_fare = number_format($data['km']) * $data['price_per_km'];
+            $data['additional_fare'] = number_format((float)$additional_fare, 2, '.', '');
+            $fare =  $data['base_fare'] + $data['additional_fare'];
+            $data['fare'] = number_format((float)$fare, 2, '.', '');
+            $data['total_fare'] = number_format((float)$fare, 2, '.', '');
         }
-
-
+        if ($input['promo'] == 0) {
+            $data['discount'] = 0.00;
+        } else {
+            $data['discount'] = 0.00;
+            $promo = DB::table('promo_codes')->where('promo_code', $input['promo'])->first();
+            if ($promo->promo_type == 5) {
+                $total_fare = $data['total_fare'] - $promo->discount;
+                if ($total_fare > 0) {
+                    $data['discount'] = number_format((float)$promo->discount, 2, '.', '');
+                    $data['total_fare'] = number_format((float)$total_fare, 2, '.', '');
+                } else {
+                    $data['discount'] = number_format((float)$data['total_fare'], 2, '.', '');
+                    $data['total_fare'] = 0.00;
+                }
+            } else {
+                $discount = ($promo->discount / 100) * $data['total_fare'];
+                $total_fare = $data['total_fare'] - $discount;
+                $data['discount'] = number_format((float)$discount, 2, '.', '');
+                $data['total_fare'] = number_format((float)$total_fare, 2, '.', '');
+            }
+        }
         return response()->json([
-            "result" => $fares,
+            "result" => $data,
             "message" => 'Success',
             "status" => 1
         ]);
@@ -607,7 +632,6 @@ class BookingController extends Controller
 
     public function calculate_daily_fare($vehicle_type, $km, $promo, $country_id)
     {
-
         $data = [];
         $vehicle = DB::table('daily_fare_management')->where('id', $vehicle_type)->first();
 
@@ -619,22 +643,6 @@ class BookingController extends Controller
             $data['additional_fare'] = number_format((float)$additional_fare, 2, '.', '');
             $fare =  $data['base_fare'] + $data['additional_fare'];
             $data['fare'] = number_format((float)$fare, 2, '.', '');
-
-            //Tax
-            // $taxes = DB::table('tax_lists')->where('id',$country_id)->get();
-            // $total_tax = 0.00;
-            // if(count($taxes)){
-            //     foreach($taxes as $key => $value){
-            //         $total_tax = $total_tax + ($value->percent / 100) * $data['fare'];
-            //     }
-            // }
-            // $data['tax'] = number_format((float)$total_tax, 2, '.', '');
-            // $total_fare = $data['tax'] + $data['fare'];
-            // $data['total_fare'] = number_format((float)$total_fare, 2, '.', '');
-
-
-            // $data['tax'] = number_format((float)$total_tax, 2, '.', '');
-            // $total_fare = $data['tax'] + $data['fare'];
             $data['total_fare'] = number_format((float)$fare, 2, '.', '');
         }
 
@@ -642,11 +650,6 @@ class BookingController extends Controller
             $data['discount'] = 0.00;
         } else {
             $data['discount'] = 0.00;
-            // $id_promo = PromoCode::where('promo_code', $promo)
-            // ->value('id');
-            // if (is_null($id_promo)) {
-            //     $id_promo = 0;
-            // }
             $promo = DB::table('promo_codes')->where('promo_code', $promo)->first();
             if ($promo->promo_type == 5) {
                 $total_fare = $data['total_fare'] - $promo->discount;
@@ -664,13 +667,11 @@ class BookingController extends Controller
                 $data['total_fare'] = number_format((float)$total_fare, 2, '.', '');
             }
         }
-
         return $data;
     }
 
     public function calculate_rental_fare($vehicle_type, $package_id, $promo, $country_id, $extra_km, $extra_hour)
     {
-
         $data = [];
         $package_price = DB::table('rental_fare_management')->where('package_id', $package_id)->first();
 
@@ -843,6 +844,137 @@ class BookingController extends Controller
         ]);
     }
 
+    // public function change_statuses(Request $request)
+    // {
+    //     $input = $request->all();
+    //     $validator = Validator::make($input, [
+    //         'trip_id' => 'required',
+    //         'status' => 'required'
+    //     ]);
+    //     if ($validator->fails()) {
+    //         return $this->sendError($validator->errors());
+    //     }
+    //     Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
+
+    //     $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+    //     $database = $factory->createDatabase();
+
+    //     Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
+
+    //     if ($input['status'] == 3) {
+    //         Trip::where('id', $input['trip_id'])->update(['start_time' => date('Y-m-d H:i:s'), 'actual_pickup_address' => $input['address'], 'actual_pickup_lat' => $input['lat'], 'actual_pickup_lng' => $input['lng']]);
+    //     }
+
+    //     $trip = Trip::where('id', $input['trip_id'])->first();
+
+    //     if ($input['status'] == 4) {
+    //         Trip::where('id', $input['trip_id'])->update(['end_time' => date('Y-m-d H:i:s'), 'actual_drop_address' => $input['address'], 'actual_drop_lat' => $input['lat'], 'actual_drop_lng' => $input['lng']]);
+
+    //         $this->calculate_fare($input['trip_id']);
+
+    //         $newPost = $database
+    //             ->getReference('customers/' . $trip->customer_id)
+    //             ->update([
+    //                 'booking_id' => 0,
+    //                 'booking_status' => 0
+    //             ]);
+
+    //         $newPost = $database
+    //             ->getReference('drivers/' . $trip->driver_id)
+    //             ->update([
+    //                 'booking_status' => 0
+    //             ]);
+    //         $vehicle_type = DriverVehicle::where('id', $trip->vehicle_id)->value('vehicle_type');
+
+    //         $newPost = $database
+    //             ->getReference('vehicles/' . $vehicle_type . '/' . $trip->driver_id)
+    //             ->update([
+    //                 'booking_id' => 0,
+    //                 'booking_status' => 0,
+    //                 'pickup_address' => "",
+    //                 'customer_name' => "",
+    //                 'drop_address' => "",
+    //                 'total' => ""
+    //             ]);
+    //     }
+
+    //     if ($input['status'] != 5) {
+    //         $current_status = BookingStatus::where('id', $input['status'])->first();
+    //         $new_status = BookingStatus::where('id', $input['status'])->first();
+    //     } else {
+    //         $current_status = BookingStatus::where('id', $input['status'])->first();
+    //         $new_status = BookingStatus::where('id', $input['status'])->first();
+
+    //         $this->calculate_earnings($input['trip_id']);
+    //         //$this->create_reward($input['trip_id']);
+
+    //         $distance = Trip::where('id', $input['trip_id'])->sum('distance');
+    //         $trip_customer = Trip::where('id', $input['trip_id'])->value('customer_id');
+    //         $customer = Customer::find($trip_customer);
+    //         //            dd($distance);/
+    //         $customer->points += $distance;
+    //         $customer->save();
+    //         // $points = Customer::where('id', $trip_customer)->value('points');
+    //         $this->reward_point($input['trip_id']);
+    //         $trans = [];
+    //         //invoice
+
+    //         $payment_method = Trip::where('trip_id', $input['trip_id'])->value('payment_method');
+    //         // $trip = Trip::where('id', $input['trip_id'])->first();
+    //         $distance = $this->get_distance($input['trip_id']);
+    //         dd($trip);
+    //         $fare = $this->calculate_daily_fare($trip->vehicle_type, $distance, $trip->promo_code, $trip->country_id);
+    //         if ($payment_method == 1)
+    //         {
+    //             $amonut_trip = $this->calculate_fare($input['trip_id']);
+    //             // dd($amonut_trip);
+    //             $trans = new Transaction();
+    //             $trans->customer_id = $trip_customer;
+    //             $trans->amount = $fare;
+    //             $trans->payment_method = $payment_method;
+    //             $trans->type = 1;
+    //             $trans->save();
+    //             // Transaction::create($data);
+    //         } elseif ($payment_method == 2)
+    //         {
+    //             $amonut_trip = $this->calculate_fare($input['trip_id']);
+    //             // dd($amonut_trip);
+    //             $trans = new Transaction();
+    //             $trans->customer_id = $trip_customer;
+    //             $trans->amount = $amonut_trip;
+    //             $amount = Customer::where('id', $trip_customer)->value('wallet');
+    //             $new_amount = $amount - $trans->amount;
+    //             Customer::where('id', $customer->id)->update(['wallet' => $new_amount]);
+    //             $trans->payment_method = $payment_method;
+    //             $trans->type = 1;
+    //             $trans->save();
+    //         }
+
+    //     }
+
+    //     $fcm_token = Customer::where('id', $trip->customer_id)->value('fcm_token');
+
+    //     if ($fcm_token) {
+    //         $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $fcm_token);
+    //     }
+
+
+    //     $newPost = $database
+    //         ->getReference('trips/' . $input['trip_id'])
+    //         ->update([
+    //             'customer_status_name' => $current_status->customer_status_name,
+    //             'status' => $current_status->id,
+    //             'driver_status_name' => $current_status->status_name,
+    //             'new_status' => $new_status->id,
+    //             'new_driver_status_name' => $new_status->status_name
+    //         ]);
+    //     $test = $trans ;
+    //     return response()->json([
+    //         "transction" => $test,
+    //         "message" => 'Success',
+    //         "status" => 1
+    //     ]);
+    // }
     public function change_statuses(Request $request)
     {
         $input = $request->all();
@@ -853,6 +985,7 @@ class BookingController extends Controller
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
+
         Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
 
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
@@ -864,12 +997,39 @@ class BookingController extends Controller
             Trip::where('id', $input['trip_id'])->update(['start_time' => date('Y-m-d H:i:s'), 'actual_pickup_address' => $input['address'], 'actual_pickup_lat' => $input['lat'], 'actual_pickup_lng' => $input['lng']]);
         }
 
-        $trip = Trip::where('id', $input['trip_id'])->first();
+
 
         if ($input['status'] == 4) {
             Trip::where('id', $input['trip_id'])->update(['end_time' => date('Y-m-d H:i:s'), 'actual_drop_address' => $input['address'], 'actual_drop_lat' => $input['lat'], 'actual_drop_lng' => $input['lng']]);
+            $trip = Trip::where('id', $input['trip_id'])->first();
 
-            $this->calculate_fare($input['trip_id']);
+            $vehicle = DB::table('daily_fare_management')->where('id', 1)->first();
+            $base_far = number_format((float)$vehicle->base_fare, 2, '.', '');
+            $distance = $this->get_distance($trip->trip_id);
+            $price_per_km = number_format((float)$vehicle->price_per_km, 2, '.', '');
+            $price_time = number_format((float)$vehicle->price_time, 2, '.', '');
+            $interval = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
+            $fare = number_format((float)$base_far + ($price_per_km * $distance) + ($price_time * $interval));
+            Trip::where('id', $input['trip_id'])->update(['sub_total' => $fare]);
+
+            if ($trip->promo_code == 0) {
+                Trip::where('id', $input['trip_id'])->update(['total' => $fare]);
+            } else {
+                $promo = DB::table('promo_codes')->where('id', $trip->promo_code)->first();
+                if ($promo->promo_type == 5) {
+                    $total_fare = $fare - $promo->discount;
+                    $promo->discount = number_format((float)$promo->discount, 2, '.', '');
+                    $total_fare = number_format((float)$total_fare, 2, '.', '');
+                    Trip::where('id', $input['trip_id'])->update(['total' => $total_fare]);
+                } else {
+                    $discount = ($promo->discount / 100) * $fare;
+                    $total_fare = $fare - $discount;
+                    $discount = number_format((float)$discount, 2, '.', '');
+                    $total_fare = number_format((float)$total_fare, 2, '.', '');
+                    Trip::where('id', $input['trip_id'])->update(['total' => $total_fare]);
+                }
+            }
+
 
             $newPost = $database
                 ->getReference('customers/' . $trip->customer_id)
@@ -915,40 +1075,17 @@ class BookingController extends Controller
             $customer->save();
             // $points = Customer::where('id', $trip_customer)->value('points');
             $this->reward_point($input['trip_id']);
-
             //invoice
-            $payment_method = Trip::where('trip_id', $input['trip_id'])->value('payment_method');
-            if ($payment_method == 1)
-            {
-                $trans = new Transaction();
-                $trans->customer_id = $trip_customer;
-                $trans->amount = $this->calculate_fare($input['trip_id']);
-                $trans->payment_method = $payment_method;
-                $trans->type = 1;
-                $trans->save();
-                // Transaction::create($data);
-            } elseif ($payment_method == 2)
-            {
-                $trans = new Transaction();;
-                $trans->customer_id = $trip_customer;
-                $trans->amount = $this->calculate_fare($input['trip_id']);
-                $amount = Customer::where('id', $trip_customer)->value('wallet');
-                $new_amount = $amount - $trans->amount;
-                Customer::where('id', $customer->id)->update(['wallet' => $new_amount]);
-                $trans->payment_method = $payment_method;
-                $trans->type = 1;
-                $trans->save();
-            }
-
+            // $payment_method = Trip::where('trip_id', $input['trip_id'])->value('payment_method');
+            // $trip = Trip::where('id', $input['trip_id'])->first();
+            // $distance = $this->get_distance($input['trip_id']);
+            // dd($trip);
         }
-
-        $fcm_token = Customer::where('id', $trip->customer_id)->value('fcm_token');
-
+        $customer_id = Trip::where('id', $input['trip_id'])->value('customer_id');
+        $fcm_token = Customer::where('id', $customer_id)->value('fcm_token');
         if ($fcm_token) {
             $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $fcm_token);
         }
-
-
         $newPost = $database
             ->getReference('trips/' . $input['trip_id'])
             ->update([
@@ -958,21 +1095,21 @@ class BookingController extends Controller
                 'new_status' => $new_status->id,
                 'new_driver_status_name' => $new_status->status_name
             ]);
-
         return response()->json([
             "message" => 'Success',
             "status" => 1
         ]);
     }
-    public function reward_point($trip_id) {
+    public function reward_point($trip_id)
+    {
 
-        $trip = Trip::select('customer_id','distance')->where('id',$trip_id)->get()->last();
+        $trip = Trip::select('customer_id', 'distance')->where('id', $trip_id)->get()->last();
         $point = new Point;
         $point->customer_id = $trip->customer_id;
         $point->trip_id = $trip_id;
         $point->type = 1;
         $point->point = intval($trip->distance);
-        $point->details = "قطع مسافة ".$trip->distance;
+        $point->details = "قطع مسافة " . $trip->distance;
         $point->icon = "rewards/taxi.png";
         $point->save();
 
@@ -983,7 +1120,8 @@ class BookingController extends Controller
         ]);
     }
 
-    public function get_reward(Request $request) {
+    public function get_reward(Request $request)
+    {
         $input = $request->all();
         $validator = Validator::make($input, [
             'customer_id' => 'required',
@@ -991,11 +1129,29 @@ class BookingController extends Controller
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-        $total_point = Customer::where('id',$input['customer_id'])->value('points');
+        $total_point = Customer::where('id', $input['customer_id'])->value('points');
         $reward = Point::where('customer_id', $input['customer_id'])->get()->all();
         return response()->json([
             "total_point" => $total_point,
             "result" => $reward,
+            "message" => 'Success',
+            "status" => 1
+        ]);
+    }
+    public function get_invoice(Request $request)
+    {
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'customer_id' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors());
+        }
+        $invoice = CustomerWalletHistory::where('customer_id', $input['customer_id'])->get()->all();
+        $wallet = Customer::where('id', $input['customer_id'])->value('wallet');
+        return response()->json([
+            "wallet" => $wallet,
+            "result" => $invoice,
             "message" => 'Success',
             "status" => 1
         ]);
@@ -1042,7 +1198,7 @@ class BookingController extends Controller
         // $status = $trip_request->status;
         elseif ($trip_request->status == 3) {
             $trip = Trip::select('trip_id', 'customer_id', 'driver_id', 'vehicle_id', 'status', 'pickup_address', 'drop_address', 'payment_method')->where('customer_id', $id)->get()->last();
-            $driver = Driver::select('full_name', 'profile_picture','overall_ratings','phone_with_code')->where('id', $trip->driver_id)->get()->last();
+            $driver = Driver::select('full_name', 'profile_picture', 'overall_ratings', 'phone_with_code')->where('id', $trip->driver_id)->get()->last();
             $vehicle = DriverVehicle::where('driver_id', $trip->driver_id)->get(['vehicle_image', 'brand', 'vehicle_name', 'vehicle_number'])->last();
             return response()->json([
                 "result" => $trip,
@@ -1071,46 +1227,7 @@ class BookingController extends Controller
         $trip = Trip::where('id', $trip_id)->first();
         $distance = $this->get_distance($trip_id);
         if ($distance != 0 && is_object($trip)) {
-            if ($trip->trip_type == 1) {
-                $fare = $this->calculate_daily_fare($trip->vehicle_type, $distance, $trip->promo_code, $trip->country_id);
-            } else if ($trip->trip_type == 2) {
-                $input['start_date'] = date("Y-m-d H:i:s", strtotime($trip->start_date));
-                $input['end_date'] = date("Y-m-d H:i:s", strtotime($trip->end_date));
-                $interval_time = $this->date_difference($input['start_date'], $input['end_date']);
-
-                $hours = ceil($interval_time / 60);
-
-                $fare = $this->calculate_rental_fare($trip->vehicle_type, $trip->package_id, $trip->promo_code, $trip->country_id, $distance, $hours);
-            } else if ($trip->trip_type == 3) {
-                $input['start_date'] = date("Y-m-d H:i:s", strtotime($trip->start_date));
-                $input['end_date'] = date("Y-m-d H:i:s", strtotime($trip->end_date));
-                $interval_time = $this->date_difference($input['start_date'], $input['end_date']);
-
-                $days = ceil($interval_time / 1440);
-
-                $fare = $this->calculate_outstation_fare($trip->vehicle_type, $distance, $trip->promo_code, $trip->country_id, $days);
-            }
-
-
-            if ($fare['total_fare'] > $trip->total) {
-                $collection_amount = $this->update_payment_mode($trip->id, $trip, $fare['total_fare']);
-                Trip::where('id', $trip_id)->update(['total' => $fare['total_fare'], 'sub_total' => $fare['fare'], 'tax' => $fare['tax'], 'discount' => $fare['discount'], 'distance' => $distance]);
-                $data['total'] = $fare['total_fare'];
-                $data['actual_pickup_address'] = $trip->actual_pickup_address;
-                $data['actual_drop_address'] = $trip->actual_drop_address;
-                $data['collection_amount'] = $collection_amount;
-                $newPost = $database
-                    ->getReference('trips/' . $trip_id)
-                    ->update($data);
-            } else {
-                $collection_amount = $this->update_payment_mode($trip->id, $trip, $trip->total);
-                $data['actual_pickup_address'] = $trip->actual_pickup_address;
-                $data['actual_drop_address'] = $trip->actual_drop_address;
-                $data['collection_amount'] = $collection_amount;
-                $newPost = $database
-                    ->getReference('trips/' . $trip_id)
-                    ->update($data);
-            }
+            $this->calculate_daily_fare($trip->vehicle_type, $distance, $trip->promo_code, $trip->country_id);
         }
     }
 
@@ -1184,31 +1301,37 @@ class BookingController extends Controller
         $total = number_format((float)$total, 2, '.', '');
         $admin_commission = ($admin_commission_percent / 100) * $total;
         $admin_commission = number_format((float)$admin_commission, 2, '.', '');
-        $vendor_commission = $total - $admin_commission;
-        $vendor_commission = number_format((float)$vendor_commission, 2, '.', '');
 
-        DriverEarning::create(['trip_id' => $trip_id, 'driver_id' => $trip->driver_id, 'amount' => $vendor_commission]);
+        $driver_earning = $total - $admin_commission;
+        $driver_earning = number_format((float)$driver_earning, 2, '.', '');
+
+
+        DriverEarning::create(['trip_id' => $trip_id, 'driver_id' => $trip->driver_id, 'amount' => $driver_earning]);
         $old_wallet = Driver::where('id', $trip->driver_id)->value('wallet');
+        $new_wallet = $old_wallet - $admin_commission;
+        Driver::where('id', $trip->driver_id)->update(['wallet'=>$new_wallet]);
 
         if ($payment_method->payment_type == 2) {
-            DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 1, 'message' => 'credited to your account for the order ' . $trip->trip_id, 'amount' => $vendor_commission]);
-            $new_wallet = $old_wallet + $vendor_commission;
+            $old_wallet_customer = Customer::where('id', $trip->customer_id)->value('wallet');
+            $new_wallet_customer = $old_wallet_customer - $total;
+            Customer::where('id', $trip->customer_id)->update(['wallet'=>$new_wallet_customer]);
+            CustomerWalletHistory::create(['country_id'=>$trip->country_id,'customer_id'=>$trip->customer_id, 'type'=>$payment_method->payment_type, 'message'=> 'طلب سيارة وخصم الرصيد من المحفظة', 'amount'=> $total, 'transaction_type'=> $payment_method->payment_type]);
+            $new_wallet = $old_wallet + $total;
+            Driver::where('id', $trip->driver_id)->update(['wallet'=>$new_wallet]);
+            DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 1, 'message' => 'تم إضافة رصيد لمحفظتك لرحلة رقم' . $trip->trip_id, 'amount' => $driver_earning]);
         } else if ($payment_method->payment_type == 1) {
-            DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 2, 'message' => 'debited from your account for the order ' . $trip->trip_id, 'amount' => $admin_commission]);
-            $new_wallet = $old_wallet - $admin_commission;
-        } else if ($payment_method->payment_type == 3) {
-            $wallet_payment = PaymentHistory::where('trip_id', $trip->id)->where('mode', 'Wallet')->value('amount');
-
-            DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 1, 'message' => 'credited to your account for the order ' . $trip->trip_id, 'amount' => $wallet_payment]);
-            $secondry_wallet = $old_wallet + $wallet_payment;
-            $secondry_wallet = number_format((float)$secondry_wallet, 2, '.', '');
-            Driver::where('id', $trip->driver_id)->update(['wallet' => $secondry_wallet]);
-
-            DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 2, 'message' => 'debited from your account for the order ' . $trip->trip_id, 'amount' => $admin_commission]);
-            $new_wallet = $secondry_wallet - $admin_commission;
+            CustomerWalletHistory::create(['country_id'=>$trip->country_id,'customer_id'=>$trip->customer_id, 'type'=>$payment_method->payment_type, 'message'=> 'طلب سيارة والدفع كاش ', 'amount'=> $total, 'transaction_type'=> $payment_method->payment_type]);
+            DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 2, 'message' => 'تم خصم رصيد من محفظتك لرحلة '. $trip->trip_id, 'amount' => $admin_commission]);
         }
-        $new_wallet = number_format((float)$new_wallet, 2, '.', '');
-        Driver::where('id', $trip->driver_id)->update(['wallet' => $new_wallet]);
+            // } else if ($payment_method->payment_type == 3) {
+        //     $wallet_payment = PaymentHistory::where('trip_id', $trip->id)->where('mode', 'Wallet')->value('amount');
+        //     DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 1, 'message' => 'credited to your account for the order ' . $trip->trip_id, 'amount' => $wallet_payment]);
+        //     $secondry_wallet = $old_wallet + $wallet_payment;
+        //     $secondry_wallet = number_format((float)$secondry_wallet, 2, '.', '');
+        //     Driver::where('id', $trip->driver_id)->update(['wallet' => $secondry_wallet]);
+        //     DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 2, 'message' => 'debited from your account for the order ' . $trip->trip_id, 'amount' => $admin_commission]);
+        // }
+
     }
 
     public function direct_booking(Request $request)

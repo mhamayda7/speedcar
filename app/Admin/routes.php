@@ -26,7 +26,7 @@ Route::group([
     $router->resource('user-types', UserTypeController::class);
     $router->resource('privacy-policies', PrivacyPolicyController::class);
     $router->resource('payment-methods', PaymentMethodController::class);
-    // $router->resource('promo-codes', PromoCodeController::class);
+    $router->resource('promo-codes', PromoCodeController::class);
     $router->resource('referral-settings', ReferralSettingController::class);
     $router->resource('vehicle-categories', VehicleCategoryController::class);
     $router->resource('complaint-categories', ComplaintCategoryController::class);

@@ -134,9 +134,9 @@ class RideDetailsController extends Controller
         $trip[$j]['pickup_time'] = $dar->pickup_time;
         $trip[$j]['pickup_location_address'] = $dar->pickup_location_address;
         $trip[$j]['drop_location_address'] = $dar->drop_location_address;
-        $trip[$j]['vehicle_id'] = $dar->vehicle-id;
+        $trip[$j]['vehicle_id'] = $dar->vehicle_id;
         $trip[$j]['total'] = $dar->total;
-        $driver_vehicle = DriverVehicle::where('id',$dar->vehicle-id)->where('driver_id', $dar->driver-id)->first();
+        $driver_vehicle = DriverVehicle::where('id',$dar->vehicle_id)->where('driver_id', $dar->driver_id)->first();
         $trip[$j]['vehicle_brand'] = $driver_vehicle['brand'];
         $trip[$j]['vehicle_color'] = $driver_vehicle['color'];
         $trip[$j]['vehicle_name'] = $driver_vehicle['vehicle_name'];

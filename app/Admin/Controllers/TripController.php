@@ -87,10 +87,10 @@ class TripController extends AdminController
          $vehicle_number = DriverVehicle::pluck('vehicle_number', 'id');
 
             $filter->disableIdFilter();
-            $filter->equal('customer-id', 'Customer name')->select($customer);
-            $filter->equal('driver-id', 'Driver name')->select($driver);
+            $filter->equal('customer_id', 'Customer name')->select($customer);
+            $filter->equal('driver_id', 'Driver name')->select($driver);
             $filter->equal('payment_method', 'Payment Method')->select($payment_method);
-            $filter->equal('vehicle-id', 'Vehicle number')->select($vehicle_number);
+            $filter->equal('vehicle_id', 'Vehicle number')->select($vehicle_number);
             $filter->equal('status', 'Status')->select($statuses);
 
         });
@@ -110,8 +110,8 @@ class TripController extends AdminController
 
         $show->field('id', __('Id'));
         $show->field('trip_id', __('Trip id'));
-        $show->field('customer-id', __('Customer id'));
-        $show->field('driver-id', __('Driver id'));
+        $show->field('customer_id', __('Customer id'));
+        $show->field('driver_id', __('Driver id'));
         $show->field('pickup_date', __('Pickup date'));
         $show->field('pickup_time', __('Pickup time'));
         $show->field('pickup_location_address', __('Pickup location address'));
@@ -119,7 +119,7 @@ class TripController extends AdminController
         $show->field('pickup_location_lat', __('Pickup location lat'));
         $show->field('pickup_location_lng', __('Pickup location lng'));
         $show->field('status', __('Status'));
-        $show->field('vehicle-id', __('Vehicle id'));
+        $show->field('vehicle_id', __('Vehicle id'));
         $show->field('payment_method', __('Payment method'));
         $show->field('total', __('Total'));
         $show->field('sub_total', __('Sub total'));

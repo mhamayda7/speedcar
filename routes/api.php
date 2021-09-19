@@ -55,6 +55,8 @@ Route::post('customer/get_status', 'App\Http\Controllers\BookingController@get_s
 Route::post('customer/distance', 'App\Http\Controllers\BookingController@customer_distance');
 // Route::post('customer/reward_point', 'App\Http\Controllers\BookingController@reward_point');
 Route::post('customer/get_reward', 'App\Http\Controllers\BookingController@get_reward');
+Route::post('customer/get_invoice', 'App\Http\Controllers\BookingController@get_invoice');
+
 
 //driver
 Route::post('driver/login', 'App\Http\Controllers\DriverController@login');
