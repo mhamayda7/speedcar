@@ -155,9 +155,18 @@
             <input id="date_of_birth" name="date_of_birth" class="input-text js-input" type="date" required>
             <label class="label" for="date_of_birth">تاريخ الميلاد</label>
         </div>
+        <div class="form-field col-lg-6 ">
+            <input id="vehicle_type" name="vehicle_type" class="input-text js-input" type="text" required>
+            <label class="label" for="vehicle_type">نوع السيارة</label>
+        </div>
+
+        <div class="form-field col-lg-6 ">
+            <input id="vehicle_model" name="vehicle_model" class="input-text js-input" type="text" required>
+            <label class="label" for="vehicle_model">موديل السيارة</label>
+        </div>
         <div class="form-field col-lg-12 ">
             <input id="licence_number" name="licence_number" class="input-text js-input" type="number" required>
-            <label class="label" for="licence_number">رقم الهوية</label>
+            <label class="label" for="licence_number">رقم الرخصة</label>
         </div>
 
         <div class="form-field col-lg-6">

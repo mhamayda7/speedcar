@@ -44,10 +44,11 @@ class DriverController extends AdminController
         $grid->column('phone_with_code', __('Phone number with Code'));
         $grid->column('email', __('Email'));
         $grid->column('password', __('Password'))->hide();
-        $grid->column('profile_picture', __('Profile picture'));
+        $grid->column('profile_picture', __('Profile picture'))->hide();
         $grid->column('date_of_birth', __('Date of birth'))->hide();
         $grid->column('licence_number', __('Licence number'));
         $grid->column('id_proof', __('Id proof'))->hide();
+        $grid->column('vehicle_image', __('Vehicle Image'))->hide();
         $grid->column('address', __('Address'))->hide();
         $grid->column('currency', __('Currency'))->display(function($currency){
             $currency = Currency::where('currency',$currency)->value('currency');
@@ -60,14 +61,14 @@ class DriverController extends AdminController
                 return "<span class='label label-danger'>No</span>";
             }
         });
-        $grid->column('rental', __('Rental'))->display(function($status){
+        $grid->column('rental', __('Rental'))->hide(function($status){
             if ($status == 1) {
                 return "<span class='label label-info'>Yes</span>";
             } else {
                 return "<span class='label label-danger'>No</span>";
             }
         });
-        $grid->column('outstation', __('Outstation'))->display(function($status){
+        $grid->column('outstation', __('Outstation'))->hide(function($status){
             if ($status == 1) {
                 return "<span class='label label-info'>Yes</span>";
             } else {
@@ -132,6 +133,7 @@ class DriverController extends AdminController
         $show->field('date_of_birth', __('Date of birth'));
         $show->field('licence_number', __('Licence number'));
         $show->field('id_proof', __('Id proof'));
+        $show->field('vehicle_image', __('Vehicle Image'));
         $show->field('address', __('Address'));
         $show->field('status', __('Status'));
         $show->field('created_at', __('Created at'));
@@ -170,6 +172,7 @@ class DriverController extends AdminController
         $form->date('date_of_birth', __('Date of birth'))->default(date('Y-m-d'));
         $form->text('licence_number', __('Licence number'))->rules('required|max:250');
         $form->image('id_proof', __('Id proof'))->rules('max:3000');
+        $form->image('vehicle_image', __('Vehicle Image'))->rules('max:3000');
         $form->textarea('address', __('Address'))->rules('required|max:250');
         $form->select('currency','Currency')->options($currencies)->rules('required');
         $form->select('daily','Daily')->options([1 => 'Yes', 0 => 'No'])->default(1)->rules('required');
