@@ -83,7 +83,7 @@ class CaptainController extends Controller
             $request->vehicle_licence->move(public_path('/uploads/captain_vehicle_licence'), $vehicle_licence);
             $input['vehicle_licence'] =$vehicle_licence;
         }
-        Driver::create($input);
+        $driver = Driver::create($input);
         Driver::latest()->first()->update([ 'profile_picture' => 'drivers/'.$imageName ]);
         Driver::latest()->first()->update([ 'id_proof' => 'image/'.$proofImage ]);
         Driver::latest()->first()->update([ 'vehicle_image' => 'captain_vehicle_image/'.$vehicle_image ]);
@@ -94,6 +94,17 @@ class CaptainController extends Controller
         //$factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
+        if (is_object($driver)) {
+            $newPost = $database
+            ->getReference('drivers/'.$driver->id)
+            ->update([
+            'driver_name' => $input['full_name'],
+            'status' => $input['status'],
+            'lat' => 0,
+            'lng' => 0,
+            'online_status' => 0,
+            'booking_status' => 0
+        ]);
         //$database = $firebase->getDatabase();
 
         return redirect()->back()->with('captain_registered','تم إرسال البيانات بنجاح');
