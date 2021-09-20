@@ -163,12 +163,14 @@ class CustomerController extends Controller
         $input['currency_short_code'] = Currency::where('country_id', $input['country_id'])->value('currency_short_code');
         $input['profile_picture'] = "customers/avatar.jpg";
         $input['phone_with_code'] = $input['country_code'].$input['phone_number'];
-
+        $otp = rand(1000, 9999);
+        $input['message']=$otp;
         $customer = Customer::create($input);
 
         $phone = '+'.$input['phone_with_code'];
-        $otp = rand(1000, 9999);
+        
         $message = "Hi " . env('APP_NAME') . "  , Your OTP code is:" . $otp;
+        
         // $this->sendSms($phone, $message);
         // $this->sendSms($input['phone_with_code'], $message);
         // $this->smsSe($phone, $message);
