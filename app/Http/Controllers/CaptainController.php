@@ -48,9 +48,10 @@ class CaptainController extends Controller
         $input['status'] = 1;
         $input['fcm_token'] = 0000;
         $input['country_id'] = 1;
-        $input['country_code'] = 970;
+        $input['country_code'] = 962;
         $input['phone_with_code'] = $input['country_code'].$request->phone_number;
         $input['currency'] = 'JOD';
+        $input['status'] = 0;
         $input['daily'] = 1;
         $input['rental'] = 0;
         $input['outstation'] = 0;

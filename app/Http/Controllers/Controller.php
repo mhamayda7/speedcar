@@ -15,6 +15,7 @@ use Kreait\Firebase;
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\ServiceAccount;
 use Kreait\Firebase\Database;
+use Illuminate\Support\Facades\DB;
 
 class Controller extends BaseController
 {
@@ -134,4 +135,15 @@ class Controller extends BaseController
         // $json = json_decode($result);
         // print_r($json->ids);
     }
+
+    public function splash()
+    {
+        $data = DB::table('splash')->get()->first();
+        return response()->json([
+            "result" => $data,
+            "message" => 'Success',
+            "status" => 1
+        ]);
+    }
+
 }

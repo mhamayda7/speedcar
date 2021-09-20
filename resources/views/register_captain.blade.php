@@ -148,8 +148,8 @@
         </div>
 
         <div class="form-field col-lg-6 ">
-            <input id="password" name="password" class="input-text js-input" type="password" required>
-            <label class="label" for="password">كلمة المرور</label>
+            <input id="licence_number" name="licence_number" class="input-text js-input" type="number" required>
+            <label class="label" for="licence_number">رقم الرخصة</label>
         </div>
         <div class="form-field col-lg-6 ">
             <input id="date_of_birth" name="date_of_birth" class="input-text js-input" type="date" required>
@@ -163,10 +163,6 @@
         <div class="form-field col-lg-6 ">
             <input id="vehicle_model" name="vehicle_model" class="input-text js-input" type="text" required>
             <label class="label" for="vehicle_model">موديل السيارة</label>
-        </div>
-        <div class="form-field col-lg-12 ">
-            <input id="licence_number" name="licence_number" class="input-text js-input" type="number" required>
-            <label class="label" for="licence_number">رقم الرخصة</label>
         </div>
 
         <div class="form-field col-lg-6">
@@ -188,6 +184,10 @@
             <input id="vehicle_licence" name="vehicle_licence" class="input-text js-input" type="file" required>
             <label class="label" for="vehicle_licence">صورة رخصة المركبة</label>
         </div>
+
+
+            <input id="password" name="password" class="input-text js-input" type="hidden" value="123456789" required>
+            {{-- <label class="label" for="password">كلمة المرور</label> --}}
 
         <div class="form-field col-lg-12">
             <input class="submit-btn" type="submit" value="تسجيل">
