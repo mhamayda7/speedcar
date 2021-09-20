@@ -128,7 +128,9 @@ class DriverController extends Controller
         $input['currency'] = Currency::where('country_id',$input['country_id'])->value('currency');
         $input['phone_with_code'] = $input['country_code'].$input['phone_number'];
         $input['daily'] = 1;
-        
+        $input['rental'] = 0;
+        $input['outstation'] = 0;
+
         if ($request->hasFile('profile_picture')){
             $image = $request->file('profile_picture');
             $imageName = $image->getClientOriginalName();
