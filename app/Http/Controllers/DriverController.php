@@ -127,6 +127,7 @@ class DriverController extends Controller
         $input['country_id'] = $data;
         $input['currency'] = Currency::where('country_id',$input['country_id'])->value('currency');
         $input['phone_with_code'] = $input['country_code'].$input['phone_number'];
+        $input['vehicle_model'] = "ادخال موديل المركبة";
         $input['vehicle_type'] = "ادخال نوع المركبة";
         $input['daily'] = 1;
         $input['rental'] = 0;
