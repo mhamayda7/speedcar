@@ -131,10 +131,10 @@ class DriverController extends Controller
 
         if($phone_array[0] == 0) {
             $phone_without = substr($input['phone_number'], 1);
-            return $phone_without;
+
         } else {
             $phone_without = $input['phone_number'];
-            return $phone_without;
+
         }
 
         $input['phone_with_code'] = $input['country_code'].$phone_without;
