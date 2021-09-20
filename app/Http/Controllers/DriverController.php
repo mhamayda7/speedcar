@@ -104,13 +104,13 @@ class DriverController extends Controller
             // 'last_name' => 'required',
             'full_name' => 'required',
             'country_code' => 'required',
-            'phone_with_code' => 'required',
             'phone_number' => 'required|numeric|digits_between:9,20|unique:customers,phone_number',
             'email' => 'required|email|regex:/^[a-zA-Z]{1}/|unique:customers,email',
             'password' => 'required',
             'gender' => 'required',
             'date_of_birth' => 'required',
             'licence_number' => 'required',
+
             'fcm_token' => 'required'
         ]);
 
@@ -126,6 +126,35 @@ class DriverController extends Controller
         $data = Country::where('phone_code',$input['country_code'])->value('id');
         $input['country_id'] = $data;
         $input['currency'] = Currency::where('country_id',$input['country_id'])->value('currency');
+        $input['phone_with_code'] = $input['country_code'].$input['phone_number'];
+        if ($request->hasFile('profile_picture')){
+            $image = $request->file('profile_picture');
+            $imageName = $image->getClientOriginalName();
+            $request->profile_picture->move(public_path('/uploads/drivers'), $imageName);
+            $input['profile_picture'] = 'drivers/'.$imageName;
+        }
+
+        if ($request->hasFile('id_proof')){
+            $image = $request->file('id_proof');
+            $proofImage = $image->getClientOriginalName();
+            $request->id_proof->move(public_path('/uploads/image'), $proofImage);
+            $input['id_proof'] =$proofImage;
+        }
+
+        if ($request->hasFile('vehicle_image')){
+            $image = $request->file('vehicle_image');
+            $vehicle_image = $image->getClientOriginalName();
+            $request->vehicle_image->move(public_path('/uploads/captain_vehicle_image'), $vehicle_image);
+            $input['vehicle_image'] =$vehicle_image;
+        }
+
+        if ($request->hasFile('vehicle_licence')){
+            $image = $request->file('vehicle_licence');
+            $vehicle_licence = $image->getClientOriginalName();
+            $request->vehicle_licence->move(public_path('/uploads/captain_vehicle_licence'), $vehicle_licence);
+            $input['vehicle_licence'] =$vehicle_licence;
+        }
+
         $driver = Driver::create($input);
 
         //$factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
