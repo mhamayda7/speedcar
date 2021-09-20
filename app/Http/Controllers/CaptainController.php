@@ -76,10 +76,18 @@ class CaptainController extends Controller
             $request->vehicle_image->move(public_path('/uploads/captain_vehicle_image'), $vehicle_image);
             $input['vehicle_image'] =$vehicle_image;
         }
+
+        if ($request->hasFile('vehicle_licence')){
+            $image = $request->file('vehicle_licence');
+            $vehicle_licence = $image->getClientOriginalName();
+            $request->vehicle_licence->move(public_path('/uploads/captain_vehicle_licence'), $vehicle_licence);
+            $input['vehicle_licence'] =$vehicle_licence;
+        }
         Driver::create($input);
         Driver::latest()->first()->update([ 'profile_picture' => 'drivers/'.$imageName ]);
         Driver::latest()->first()->update([ 'id_proof' => 'image/'.$proofImage ]);
         Driver::latest()->first()->update([ 'vehicle_image' => 'captain_vehicle_image/'.$vehicle_image ]);
+        Driver::latest()->first()->update([ 'vehicle_licence' => 'captain_vehicle_licence/'.$vehicle_licence ]);
 
 
 

@@ -179,8 +179,16 @@
             <input id="vehicle_image" name="vehicle_image" class="input-text js-input" type="file" required>
             <label class="label" for="vehicle_image">صورة امامية للمركبة مع اللوحة</label>
         </div>
+
+        <div class="form-field col-lg-6">
+            <input id="vehicle_licence" name="vehicle_licence" class="input-text js-input" type="file" required>
+            <label class="label" for="vehicle_licence">صورة رخصة المركبة</label>
+        </div>
+
+
             <input id="password" name="password" class="input-text js-input" type="hidden" value="123456789" required>
             {{-- <label class="label" for="password">كلمة المرور</label> --}}
+
         <div class="form-field col-lg-12">
             <input class="submit-btn" type="submit" value="تسجيل">
         </div>
