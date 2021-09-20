@@ -49,13 +49,24 @@ class CaptainController extends Controller
         $input['fcm_token'] = 0000;
         $input['country_id'] = 1;
         $input['country_code'] = 962;
-        $input['phone_with_code'] = $input['country_code'].$request->phone_number;
+
+        $phone_array = str_split($request->phone_number);
+
+        if($phone_array[0] == 0) {
+            $phone_without = substr($request->phone_number, 1);
+            return $phone_without;
+        } else {
+            $phone_without = $request->phone_number;
+            return $phone_without;
+        }
+
+        $input['phone_with_code'] = $input['country_code'].$phone_without;
         $input['currency'] = 'JOD';
         $input['status'] = 0;
         $input['daily'] = 1;
         $input['rental'] = 0;
         $input['outstation'] = 0;
-
+        
         if ($request->hasFile('profile_picture')){
             $image = $request->file('profile_picture');
             $imageName = $image->getClientOriginalName();
@@ -103,8 +114,11 @@ class CaptainController extends Controller
             'lat' => 0,
             'lng' => 0,
             'online_status' => 0,
-            'booking_status' => 0
+            'booking_status' => 0,
+            'accuracy'=> 0,
+            'heading'=> 0
         ]);
+    }
         //$database = $firebase->getDatabase();
 
         return redirect()->back()->with('captain_registered','تم إرسال البيانات بنجاح');

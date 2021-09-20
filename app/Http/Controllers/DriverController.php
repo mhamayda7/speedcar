@@ -126,7 +126,18 @@ class DriverController extends Controller
         $data = Country::where('phone_code',$input['country_code'])->value('id');
         $input['country_id'] = $data;
         $input['currency'] = Currency::where('country_id',$input['country_id'])->value('currency');
-        $input['phone_with_code'] = $input['country_code'].$input['phone_number'];
+
+        $phone_array = str_split($input['phone_number']);
+
+        if($phone_array[0] == 0) {
+            $phone_without = substr($input['phone_number'], 1);
+            return $phone_without;
+        } else {
+            $phone_without = $input['phone_number'];
+            return $phone_without;
+        }
+
+        $input['phone_with_code'] = $input['country_code'].$phone_without;
         $input['vehicle_model'] = "ادخال موديل المركبة";
         $input['vehicle_type'] = "ادخال نوع المركبة";
         $input['daily'] = 1;
@@ -179,7 +190,9 @@ class DriverController extends Controller
             'lat' => 0,
             'lng' => 0,
             'online_status' => 0,
-            'booking_status' => 0
+            'booking_status' => 0,
+            'accuracy'=> 0,
+            'heading'=> 0
         ]);
 
             return response()->json([
