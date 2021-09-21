@@ -56,6 +56,7 @@ Route::post('customer/distance', 'App\Http\Controllers\BookingController@custome
 // Route::post('customer/reward_point', 'App\Http\Controllers\BookingController@reward_point');
 Route::post('customer/get_reward', 'App\Http\Controllers\BookingController@get_reward');
 Route::post('customer/get_invoice', 'App\Http\Controllers\BookingController@get_invoice');
+Route::post('customer/point', 'App\Http\Controllers\BookingController@point');
 Route::get('splash', 'App\Http\Controllers\Controller@splash');
 
 

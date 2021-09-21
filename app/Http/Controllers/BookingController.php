@@ -1120,6 +1120,41 @@ class BookingController extends Controller
         ]);
     }
 
+    public function point(Request $request)
+    {
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'customer_id' => 'required',
+            'point'=> 'required|numeric'
+        ]);
+
+        $value = DB::table('app_settings')->value('points');
+        $to_wallet = $input['point'] / $value;
+        $return_point = $input['point'] % $value;
+        $point = Customer::where('id', $input['customer_id'])->value('points');
+        $new_point = $point - $input['point'] + $return_point;
+        $to_wallet = intval($to_wallet);
+        $wallet = Customer::where('id', $input['customer_id'])->value('wallet');
+        $new_wallet = $wallet + $to_wallet;
+        Customer::where('id', $input['customer_id'])->update(['points'=>$new_point,'wallet'=>$new_wallet]);
+
+        $point = new Point;
+        $point->customer_id = $input['customer_id'];
+        $point->trip_id = 0;
+        $point->type = 2;
+        $point->point = $input['point'] - $return_point;
+        $point->details = 0;
+        $point->icon = "rewards/taxi.png";
+        $point->save();
+
+        return response()->json([
+            "trip" => $point,
+            "message" => 'Success',
+            "status" => 1
+        ]);
+
+    }
+
     public function get_reward(Request $request)
     {
         $input = $request->all();

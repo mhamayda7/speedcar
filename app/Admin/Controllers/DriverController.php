@@ -42,6 +42,7 @@ class DriverController extends AdminController
         // $grid->column('last_name', __('Last Name'));
         $grid->column('phone_number', __('Phone number'));
         $grid->column('phone_with_code', __('Phone number with Code'));
+        $grid->column('wallet', __('wallet'));
         $grid->column('email', __('Email'));
         $grid->column('password', __('Password'))->hide();
         $grid->column('profile_picture', __('Profile picture'))->hide();
@@ -162,9 +163,10 @@ class DriverController extends AdminController
         $form->text('phone_number', __('Phone number'))->rules(function ($form) {
                 return 'numeric|digits_between:9,20|required';
         });
-         $form->text('phone_with_code', __('Phone number with code'))->rules(function ($form) {
+        $form->text('phone_with_code', __('Phone number with code'))->rules(function ($form) {
                 return 'required';
         });
+        $form->text('wallet', __('Wallet'))->disable();
         $form->email('email', __('Email'))->rules(function ($form) {
                 return 'required|max:100';
         });
