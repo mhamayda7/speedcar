@@ -104,8 +104,8 @@ class DriverController extends Controller
             // 'last_name' => 'required',
             'full_name' => 'required',
             'country_code' => 'required',
-            'phone_number' => 'required|numeric|digits_between:9,20|unique:customers,phone_number',
-            'email' => 'required|email|regex:/^[a-zA-Z]{1}/|unique:customers,email',
+            'phone_number' => 'required|numeric|digits_between:9,20|unique:drivers,phone_number',
+            'email' => 'required|email|regex:/^[a-zA-Z]{1}/|unique:drivers,email',
             'password' => 'required',
             'gender' => 'required',
             'date_of_birth' => 'required',
@@ -171,7 +171,16 @@ class DriverController extends Controller
             $request->vehicle_licence->move(public_path('/uploads/captain_vehicle_licence'), $vehicle_licence);
             $input['vehicle_licence'] =$vehicle_licence;
         }
+        $otp = rand(1000, 9999);
+        $input['otp']=$otp;
 
+        $phone = '+'.$input['phone_with_code'];
+
+        $message = "Hi " . env('APP_NAME') . "  , Your OTP code is:" . $otp;
+
+        // $this->sendSms($phone, $message);
+        // $this->sendSms($input['phone_with_code'], $message);
+        // $this->smsSe($phone, $message);
         $driver = Driver::create($input);
 
         //$factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
