@@ -194,6 +194,7 @@ class DriverController extends Controller
             $newPost = $database
             ->getReference('drivers/'.$driver->id)
             ->update([
+            "id" => $driver->id,
             'driver_name' => $input['full_name'],
             'status' => $input['status'],
             'lat' => 0,
