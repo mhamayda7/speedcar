@@ -1166,7 +1166,7 @@ class BookingController extends Controller
         {
             $to_wallet = $input['point'] / $value;
             $return_point = $input['point'] % $value;
-            $new_point = $point - $input['point'] + $return_point;
+            $new_point = $point - $input['point'];
             $to_wallet = intval($to_wallet);
             $wallet = Customer::where('id', $input['customer_id'])->value('wallet');
             $new_wallet = $wallet + $to_wallet;
