@@ -183,7 +183,8 @@ class DriverController extends Controller
         // $this->smsSe($phone, $message);
         $driver = Driver::create($input);
 
-        //$factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
+        // $factory = (new Factory())->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
+        // $factory = (new Factory())->withServiceAccount('/config/speed-3b614-8627a2a4f157.json');
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
         //$database = $firebase->getDatabase();
