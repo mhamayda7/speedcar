@@ -1122,14 +1122,46 @@ class BookingController extends Controller
 
     public function point(Request $request)
     {
+
         $input = $request->all();
         $validator = Validator::make($input, [
             'customer_id' => 'required',
-            'point'=> 'required|numeric'
         ]);
 
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors());
+        }
+
+        $point = Customer::where('id', $input['customer_id'])->value('points');
+        $value = DB::table('app_settings')->value('points');
+        $point_back = $point % $value;
+        $point_to_wallet = $point - $point_back;
+        $to_wallet = $point_to_wallet/$value;
+        return response()->json([
+            "point_to_wallet" => $point_to_wallet,
+            "to_wallet" => $to_wallet,
+            "message" => 'Success',
+            "status" => 1
+        ]);
+
+    }
+
+
+    public function point_to_wallet(Request $request)
+    {
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'customer_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors());
+        }
         $value = DB::table('app_settings')->value('points');
         $point = Customer::where('id', $input['customer_id'])->value('points');
+        $point_back = $point % $value;
+        $input['point'] = $point - $point_back;
+
         if ( $point >= $input['point'])
         {
             $to_wallet = $input['point'] / $value;

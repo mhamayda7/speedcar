@@ -194,7 +194,7 @@ class DriverController extends Controller
 
             $newPost = $database
             ->getReference('drivers/'.$driver->id)
-            ->update([
+            ->update([[
             "id" => $driver->id,
             'driver_name' => $input['full_name'],
             'status' => $input['status'],
@@ -204,7 +204,7 @@ class DriverController extends Controller
             'booking_status' => 0,
             'accuracy'=> 0,
             'heading'=> 0
-        ]);
+        ]]);
 
             return response()->json([
                 "result" => $driver,

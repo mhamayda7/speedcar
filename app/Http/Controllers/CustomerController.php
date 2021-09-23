@@ -252,6 +252,20 @@ class CustomerController extends Controller
     function unique_random($chars = 5)
     {
     }
+
+    public function referral(Request $request) {
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'customer_id' => 'required',
+            'referral_code' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors());
+        }
+        Customer::where('referral_code', $input['referral_code'])->update;
+        Customer::where('id', $input['customer_id'])->update(['refered_by'=>$input['referral_code']]);
+
+    }
     /*public function register(Request $request)
     {
         $input = $request->all();
