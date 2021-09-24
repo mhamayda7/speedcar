@@ -189,13 +189,9 @@ class DriverController extends Controller
         $database = $factory->createDatabase();
         //$database = $firebase->getDatabase();
 
-
-        if (is_object($driver)) {
-
-            $newPost = $database
-            ->getReference('/drivers/'. $driver->id)
+        $newPost = $database
+            ->getReference('/drivers/'.$driver->id)
             ->update([
-            "id" => $driver->id,
             'driver_name' => $input['full_name'],
             'status' => $input['status'],
             'lat' => 0,
@@ -205,7 +201,7 @@ class DriverController extends Controller
             'accuracy'=> 0,
             'heading'=> 0
         ]);
-
+        if (is_object($driver)) {
             return response()->json([
                 "result" => $driver,
                 "message" => 'Registered Successfully',
