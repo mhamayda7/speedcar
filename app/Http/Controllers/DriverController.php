@@ -185,12 +185,12 @@ class DriverController extends Controller
 
         // $factory = (new Factory())->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
         // $factory = (new Factory())->withServiceAccount('/config/speed-3b614-8627a2a4f157.json');
-        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
         $database = $factory->createDatabase();
         //$database = $firebase->getDatabase();
 
         $newPost = $database
-            ->getReference('/drivers' . $driver->id)
+            ->getReference('/drivers/' . $driver->id)
             ->update([
                 'driver_id' => $driver->id,
                 'driver_name' => $input['full_name'],
