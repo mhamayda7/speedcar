@@ -190,7 +190,7 @@ class DriverController extends Controller
         //$database = $firebase->getDatabase();
 
         $newPost = $database
-            ->getReference('/drivers/')
+            ->getReference('/drivers/' . [$driver->id])
             ->update([
                 'driver_id' => $driver->id,
                 'driver_name' => $input['full_name'],
