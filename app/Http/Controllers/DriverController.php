@@ -188,7 +188,7 @@ class DriverController extends Controller
         // $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
         // $database = $factory->createDatabase();
         $factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'))
-                                ->withDatabaseUri('https://my-project-default-rtdb.firebaseio.com');
+                                ->withDatabaseUri(env('FIREBASE_DB'));
         // $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
         //$database = $firebase->getDatabase();
