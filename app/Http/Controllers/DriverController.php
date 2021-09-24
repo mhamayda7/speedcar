@@ -190,17 +190,18 @@ class DriverController extends Controller
         //$database = $firebase->getDatabase();
 
         $newPost = $database
-            ->getReference('/drivers/'.$driver->id)
+            ->getReference('/drivers/')
             ->update([
-            'driver_name' => $input['full_name'],
-            'status' => $input['status'],
-            'lat' => 0,
-            'lng' => 0,
-            'online_status' => 0,
-            'booking_status' => 0,
-            'accuracy'=> 0,
-            'heading'=> 0
-        ]);
+                'driver_id' => $driver->id,
+                'driver_name' => $input['full_name'],
+                'status' => $input['status'],
+                'lat' => 0,
+                'lng' => 0,
+                'online_status' => 0,
+                'booking_status' => 0,
+                'accuracy'=> 0,
+                'heading'=> 0
+            ]);
         if (is_object($driver)) {
             return response()->json([
                 "result" => $driver,
