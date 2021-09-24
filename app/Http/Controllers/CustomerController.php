@@ -174,9 +174,7 @@ class CustomerController extends Controller
         // $this->sendSms($phone, $message);
         // $this->sendSms($input['phone_with_code'], $message);
         // $this->smsSe($phone, $message);
-        //$factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
-        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
-        $database = $factory->createDatabase();
+
         //$database = $firebase->getDatabase();
 
 
@@ -226,9 +224,13 @@ class CustomerController extends Controller
 
             $customer->referral_code = $random;
             Customer::where('id', $customer->id)->update(['referral_code' => $customer->referral_code]);
-
+            $token = $customer->createToken('name')->plainTextToken;
+            //$factory = (new Factory)
+            $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))
+                                    ->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
+            $database = $factory->createDatabase();
             $newPost = $database
-                ->getReference('customers/' . $customer->id)
+                ->getReference('/customers/' . $customer->id)
                 ->update([
                     'booking_id' => 0,
                     'booking_status' => 0,
@@ -239,6 +241,7 @@ class CustomerController extends Controller
             return response()->json([
                 "result" => $customer,
                 "OTP" => $otp,
+                "token" => $token,
                 "message" => 'Registered Successfully',
                 "status" => 1
             ]);
@@ -418,7 +421,7 @@ class CustomerController extends Controller
         }
 
         // $result = Customer::select('id', 'first_name', 'last_name', 'phone_with_code', 'gender', 'email', 'status')->where('id', $input['customer_id'])->first();
-        $result = Customer::select('id', 'full_name', 'phone_with_code', 'gender', 'email', 'status')->where('id', $input['customer_id'])->first();
+        $result = Customer::select('id', 'full_name', 'phone_with_code', 'gender', 'email', 'points', 'wallet' ,'status')->where('id', $input['customer_id'])->first();
 
         if (is_object($result)) {
             if ($result->gender == 0) {

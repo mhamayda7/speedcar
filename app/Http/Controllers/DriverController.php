@@ -193,7 +193,7 @@ class DriverController extends Controller
         if (is_object($driver)) {
 
             $newPost = $database
-            ->getReference('drivers/'. $driver->id)
+            ->getReference('/drivers/'. $driver->id)
             ->update([
             "id" => $driver->id,
             'driver_name' => $input['full_name'],

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,6 +18,12 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 // Route::get('promo', 'PromoCodeController@promo');
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('sendsms', 'App\Http\Controllers\Controller@sendS');
+    Route::get('splash', 'App\Http\Controllers\Controller@splash');
+});
 
 //Customer
 Route::post('sendsms', 'App\Http\Controllers\Controller@sendS');
@@ -58,7 +65,7 @@ Route::post('customer/get_reward', 'App\Http\Controllers\BookingController@get_r
 Route::post('customer/get_invoice', 'App\Http\Controllers\BookingController@get_invoice');
 Route::post('customer/point', 'App\Http\Controllers\BookingController@point');
 Route::post('customer/point_to_wallet', 'App\Http\Controllers\BookingController@point_to_wallet');
-Route::get('splash', 'App\Http\Controllers\Controller@splash');
+
 
 
 //driver
