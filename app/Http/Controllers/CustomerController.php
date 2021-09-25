@@ -19,6 +19,7 @@ use App\PromoCode;
 use App\AppSetting;
 use App\Trip;
 use Cartalyst\Stripe\Stripe;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Kreait\Firebase;
 use Kreait\Firebase\Factory;
@@ -226,7 +227,7 @@ class CustomerController extends Controller
             Customer::where('id', $customer->id)->update(['referral_code' => $customer->referral_code]);
             $token = $customer->createToken('name')->plainTextToken;
             //$factory = (new Factory)
-
+            dd(config_path()."/");
             $factory = (new Factory())->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'))
                                 ->withDatabaseUri(env('FIREBASE_DB'));
             $database = $factory->createDatabase();
@@ -357,9 +358,10 @@ class CustomerController extends Controller
             if ($customer->status == 1) {
 
                 Customer::where('id', $customer->id)->update(['fcm_token' => $input['fcm_token']]);
-
+                $token = $customer->createToken('name')->plainTextToken;
                 return response()->json([
                     "result" => $customer,
+                    "token" => $token,
                     "message" => 'Success',
                     "status" => 1
                 ]);
@@ -412,17 +414,17 @@ class CustomerController extends Controller
 
     public function profile(Request $request)
     {
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            'customer_id' => 'required'
-        ]);
+        // $input = $request->all();
+        // $validator = Validator::make($input, [
+        //     'customer_id' => 'required'
+        // ]);
 
-        if ($validator->fails()) {
-            return $this->sendError($validator->errors());
-        }
+        // if ($validator->fails()) {
+        //     return $this->sendError($validator->errors());
+        // }
 
         // $result = Customer::select('id', 'first_name', 'last_name', 'phone_with_code', 'gender', 'email', 'status')->where('id', $input['customer_id'])->first();
-        $result = Customer::select('id', 'full_name', 'phone_with_code', 'gender', 'email', 'points', 'wallet' ,'status')->where('id', $input['customer_id'])->first();
+        $result = Customer::select('id', 'full_name', 'phone_with_code', 'gender', 'email', 'points', 'wallet' ,'status')->where('id', Auth::user()->id)->first();
 
         if (is_object($result)) {
             if ($result->gender == 0) {

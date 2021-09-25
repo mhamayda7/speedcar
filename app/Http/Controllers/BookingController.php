@@ -41,7 +41,7 @@ use App\CustomerWalletHistory;
 use App\Models\Point;
 use App\PromoCode;
 use Encore\Admin\Show;
-
+use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
@@ -51,7 +51,7 @@ class BookingController extends Controller
         $validator = Validator::make($input, [
             'km' => 'required',
             'vehicle_type' => 'required',
-            'customer_id' => 'required',
+            // 'customer_id' => 'required',
             'promo' => 'required',
             'country_id' => 'required',
             'pickup_address' => 'required',
@@ -67,6 +67,8 @@ class BookingController extends Controller
             return $this->sendError($validator->errors());
         }
 
+        $input['customer_id'] = Auth::user()->id;
+
         $input['pickup_date'] = date("Y-m-d H:i:s", strtotime($input['pickup_date']));
         $current_date = $this->get_date($input['country_id']);
         $interval_time = $this->date_difference($input['pickup_date'], $current_date);
@@ -78,7 +80,7 @@ class BookingController extends Controller
             $input['status'] = 2;
         }
         //$factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
-        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
         $database = $factory->createDatabase();
 
         $drivers = $database->getReference('/vehicles/' . $input['vehicle_type'])
@@ -785,14 +787,15 @@ class BookingController extends Controller
 
     public function customer_bookings(Request $request)
     {
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            'customer_id' => 'required'
-        ]);
-        if ($validator->fails()) {
-            return $this->sendError($validator->errors());
-        }
-
+        // $input = $request->all();
+        // $validator = Validator::make($input, [
+        //     'customer_id' => 'required'
+        // ]);
+        // if ($validator->fails()) {
+        //     return $this->sendError($validator->errors());
+        // }
+        $id = Auth::user()->id;
+        // dd($id);
         $data = DB::table('trips')
             ->leftJoin('customers', 'customers.id', 'trips.customer_id')
             ->leftJoin('drivers', 'drivers.id', 'trips.driver_id')
@@ -803,7 +806,7 @@ class BookingController extends Controller
             ->leftJoin('booking_statuses', 'booking_statuses.id', 'trips.status')
             // ->select('trips.*','customers.first_name as customer_name','drivers.first_name as driver_name','drivers.profile_picture','payment_methods.payment','driver_vehicles.brand','driver_vehicles.color','driver_vehicles.vehicle_name','driver_vehicles.vehicle_number','trip_types.name as trip_type','booking_statuses.status_name','vehicle_categories.vehicle_type')
             ->select('trips.*', 'customers.full_name as customer_name', 'drivers.full_name as driver_name', 'drivers.profile_picture', 'payment_methods.payment', 'driver_vehicles.brand', 'driver_vehicles.color', 'driver_vehicles.vehicle_name', 'driver_vehicles.vehicle_number', 'trip_types.name as trip_type', 'booking_statuses.status_name', 'vehicle_categories.vehicle_type')
-            ->where('trips.customer_id', $input['customer_id'])->orderBy('id', 'DESC')
+            ->where('trips.customer_id', $id)->orderBy('id', 'DESC')
             ->get();
 
         return response()->json([
@@ -1249,15 +1252,16 @@ class BookingController extends Controller
         //     "status" => 1
         // ]);
 
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            // 'trip_id' => 'required',
-            'customer_id' => 'required',
-        ]);
-        if ($validator->fails()) {
-            return $this->sendError($validator->errors());
-        }
-        $id = $input['customer_id'];
+        // $input = $request->all();
+        // $validator = Validator::make($input, [
+        //     // 'trip_id' => 'required',
+        //     'customer_id' => 'required',
+        // ]);
+        // if ($validator->fails()) {
+        //     return $this->sendError($validator->errors());
+        // }
+
+        $id = Auth::user()->id;
         $trip_request = TripRequest::select('status')->where('customer_id', $id)->get()->last();
         // $status = $trip_request->status;
 
@@ -1841,14 +1845,14 @@ class BookingController extends Controller
 
     public function customer_distance(Request $request)
     {
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            'customer_id' => 'required'
-        ]);
-        if ($validator->fails()) {
-            return $this->sendError($validator->errors());
-        }
-
+        // $input = $request->all();
+        // $validator = Validator::make($input, [
+        //     'customer_id' => 'required'
+        // ]);
+        // if ($validator->fails()) {
+        //     return $this->sendError($validator->errors());
+        // }
+        $input['customer_id'] = Auth::user()->id;
         $data = Trip::where('trips.customer_id', $input['customer_id'])->sum('distance');
         // $count = Trip::where('trips.customer_id',$input['customer_id'])->get('distance');
         $wallet = Customer::where('customers.id', $input['customer_id'])->value('wallet');

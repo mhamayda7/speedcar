@@ -27,8 +27,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('customer/profile_picture', 'App\Http\Controllers\CustomerController@profile_picture');
     Route::post('customer/profile', 'App\Http\Controllers\CustomerController@profile');
     Route::post('customer/profile_update', 'App\Http\Controllers\CustomerController@profile_update');
+    Route::post('customer/my_bookings', 'App\Http\Controllers\BookingController@customer_bookings');
+    Route::post('customer/ride_confirm', 'App\Http\Controllers\BookingController@ride_confirm');
 
+    Route::post('customer/get_status', 'App\Http\Controllers\BookingController@get_statuses');
 
+    Route::post('customer/get_reward', 'App\Http\Controllers\BookingController@get_reward');
+    Route::post('customer/get_invoice', 'App\Http\Controllers\BookingController@get_invoice');
+    Route::post('customer/distance', 'App\Http\Controllers\BookingController@customer_distance');
     Route::post('customer/point', 'App\Http\Controllers\BookingController@point'); //done sanctum
     Route::post('customer/point_to_wallet', 'App\Http\Controllers\BookingController@point_to_wallet');
 });
@@ -42,7 +48,6 @@ Route::post('customer/faq', 'App\Http\Controllers\FaqController@customer_faq');
 Route::post('customer/policy', 'App\Http\Controllers\PrivacyPolicyController@customer_policy');
 Route::get('app_setting', 'App\Http\Controllers\AppSettingController@index');
 Route::get('whatsapp', 'App\Http\Controllers\AppSettingController@whatsapp');
-
 Route::post('customer/add_wallet', 'App\Http\Controllers\CustomerController@add_wallet');
 Route::post('customer/get_wallet', 'App\Http\Controllers\CustomerController@get_wallet');
 Route::post('customer/get_complaint_sub_category', 'App\Http\Controllers\ComplaintController@get_complaint_sub_categories');
@@ -58,17 +63,15 @@ Route::post('customer/get_promo_codes', 'App\Http\Controllers\RideDetailsControl
 Route::post('customer/forgot', 'App\Http\Controllers\CustomerController@forgot');
 Route::post('customer/reset_password', 'App\Http\Controllers\CustomerController@reset_password');
 Route::post('customer/get_categories', 'App\Http\Controllers\CustomerController@get_vehicle_categories');
-Route::post('customer/ride_confirm', 'App\Http\Controllers\BookingController@ride_confirm');
+
 Route::post('customer/get_fare', 'App\Http\Controllers\BookingController@get_fare');
-Route::post('customer/my_bookings', 'App\Http\Controllers\BookingController@customer_bookings');
+
 Route::post('customer/payment_method', 'App\Http\Controllers\CustomerController@payment_method');
 Route::post('customer/wallet_payment_methods', 'App\Http\Controllers\CustomerController@wallet_payment_methods');
 Route::post('customer/trip_cancel', 'App\Http\Controllers\BookingController@trip_cancel_by_customer');
-Route::post('customer/get_status', 'App\Http\Controllers\BookingController@get_statuses');
-Route::post('customer/distance', 'App\Http\Controllers\BookingController@customer_distance');
+
 // Route::post('customer/reward_point', 'App\Http\Controllers\BookingController@reward_point');
-Route::post('customer/get_reward', 'App\Http\Controllers\BookingController@get_reward');
-Route::post('customer/get_invoice', 'App\Http\Controllers\BookingController@get_invoice');
+
 
 
 
