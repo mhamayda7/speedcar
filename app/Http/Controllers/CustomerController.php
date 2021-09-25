@@ -227,7 +227,7 @@ class CustomerController extends Controller
             Customer::where('id', $customer->id)->update(['referral_code' => $customer->referral_code]);
             $token = $customer->createToken('name')->plainTextToken;
             //$factory = (new Factory)
-            dd(config_path()."/");
+            // dd(config_path()."/");
             $factory = (new Factory())->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'))
                                 ->withDatabaseUri(env('FIREBASE_DB'));
             $database = $factory->createDatabase();
