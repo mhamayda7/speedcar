@@ -1196,17 +1196,10 @@ class BookingController extends Controller
         }
     }
 
-    public function get_reward(Request $request)
+    public function get_reward()
     {
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            'customer_id' => 'required',
-        ]);
-        if ($validator->fails()) {
-            return $this->sendError($validator->errors());
-        }
-        $total_point = Customer::where('id', $input['customer_id'])->value('points');
-        $reward = Point::where('customer_id', $input['customer_id'])->get()->all();
+        $total_point = Customer::where('id', Auth::user()->id)->value('points');
+        $reward = Point::where('customer_id', Auth::user()->id)->get()->all();
         return response()->json([
             "total_point" => $total_point,
             "result" => $reward,
@@ -1214,17 +1207,11 @@ class BookingController extends Controller
             "status" => 1
         ]);
     }
+
     public function get_invoice(Request $request)
     {
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            'customer_id' => 'required',
-        ]);
-        if ($validator->fails()) {
-            return $this->sendError($validator->errors());
-        }
-        $invoice = CustomerWalletHistory::where('customer_id', $input['customer_id'])->get()->all();
-        $wallet = Customer::where('id', $input['customer_id'])->value('wallet');
+        $invoice = CustomerWalletHistory::where('customer_id', Auth::user()->id)->get()->all();
+        $wallet = Customer::where('id', Auth::user()->id)->value('wallet');
         return response()->json([
             "wallet" => $wallet,
             "result" => $invoice,
