@@ -41,7 +41,7 @@ use App\CustomerWalletHistory;
 use App\Models\Point;
 use App\PromoCode;
 use Encore\Admin\Show;
-
+use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
@@ -1120,19 +1120,21 @@ class BookingController extends Controller
         ]);
     }
 
-    public function point(Request $request)
+    public function point()
     {
 
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            'customer_id' => 'required',
-        ]);
+        // $input = $request->all();
+        // $validator = Validator::make($input, [
+        //     'customer_id' => 'required',
+        // ]);
 
-        if ($validator->fails()) {
-            return $this->sendError($validator->errors());
-        }
+        // if ($validator->fails()) {
+        //     return $this->sendError($validator->errors());
+        // }
+        // Auth::user()->id;
+        // dd( $input['customer_id']);
 
-        $point = Customer::where('id', $input['customer_id'])->value('points');
+        $point = Customer::where('id', Auth::user()->id)->value('points');
         $value = DB::table('app_settings')->value('points');
         $point_back = $point % $value;
         $point_to_wallet = $point - $point_back;
@@ -1147,18 +1149,18 @@ class BookingController extends Controller
     }
 
 
-    public function point_to_wallet(Request $request)
+    public function point_to_wallet()
     {
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            'customer_id' => 'required',
-        ]);
+        // $input = $request->all();
+        // $validator = Validator::make($input, [
+        //     'customer_id' => 'required',
+        // ]);
 
-        if ($validator->fails()) {
-            return $this->sendError($validator->errors());
-        }
+        // if ($validator->fails()) {
+        //     return $this->sendError($validator->errors());
+        // }
         $value = DB::table('app_settings')->value('points');
-        $point = Customer::where('id', $input['customer_id'])->value('points');
+        $point = Customer::where('id', Auth::user()->id)->value('points');
         $point_back = $point % $value;
         $input['point'] = $point - $point_back;
 
@@ -1168,12 +1170,12 @@ class BookingController extends Controller
             $return_point = $input['point'] % $value;
             $new_point = $point - $input['point'];
             $to_wallet = intval($to_wallet);
-            $wallet = Customer::where('id', $input['customer_id'])->value('wallet');
+            $wallet = Customer::where('id', Auth::user()->id)->value('wallet');
             $new_wallet = $wallet + $to_wallet;
-            Customer::where('id', $input['customer_id'])->update(['points'=>$new_point,'wallet'=>$new_wallet]);
+            Customer::where('id', Auth::user()->id)->update(['points'=>$new_point,'wallet'=>$new_wallet]);
 
             $point = new Point;
-            $point->customer_id = $input['customer_id'];
+            $point->customer_id = Auth::user()->id;
             $point->trip_id = 0;
             $point->type = 2;
             $point->point = $input['point'] - $return_point;
