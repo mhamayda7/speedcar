@@ -482,7 +482,7 @@ class BookingController extends Controller
             ->update($data);
 
         $newPost = $database
-            ->getReference('customers/' . $trip['customer_id'])
+            ->getReference('/customers/' . $trip['customer_id'])
             ->update([
                 'booking_id' => $id,
                 'booking_status' => 2
