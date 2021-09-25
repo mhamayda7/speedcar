@@ -449,14 +449,16 @@ class CustomerController extends Controller
 
     public function profile_update(Request $request)
     {
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            'id' => 'required'
-        ]);
+        // $input = $request->all();
+        // $validator = Validator::make($input, [
+        //     'id' => 'required'
+        // ]);
 
-        if ($validator->fails()) {
-            return $this->sendError($validator->errors());
-        }
+        // if ($validator->fails()) {
+        //     return $this->sendError($validator->errors());
+        // }
+        $input['id']= Auth::user()->id;
+
         if ($request->password) {
             $options = [
                 'cost' => 12,
