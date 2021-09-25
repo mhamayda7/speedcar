@@ -153,7 +153,7 @@ class BookingController extends Controller
         }
 
         $newPost = $database
-            ->getReference('customers/' . $input['customer_id'])
+            ->getReference('/customers/' . $input['customer_id'])
             ->update([
                 'booking_id' => $id,
                 'booking_status' => 1
@@ -251,7 +251,7 @@ class BookingController extends Controller
 
         if ($min_driver_id == 0) {
             $newPost = $database
-                ->getReference('customers/' . $trip_request->customer_id)
+                ->getReference('/customers/' . $trip_request->customer_id)
                 ->update([
                     'booking_id' => 0,
                     'booking_status' => 0
@@ -337,7 +337,7 @@ class BookingController extends Controller
         ]);*/
 
         $newPost = $database
-            ->getReference('drivers/' . $input['driver_id'])
+            ->getReference('/drivers/' . $input['driver_id'])
             ->update([
                 'booking_status' => 0
             ]);
@@ -476,7 +476,7 @@ class BookingController extends Controller
         $data['bearing'] = 0;
 
         $newPost = $database
-            ->getReference('trips/' . $trip_details->id)
+            ->getReference('/trips/' . $trip_details->id)
             ->update($data);
 
         $newPost = $database
@@ -487,7 +487,7 @@ class BookingController extends Controller
             ]);
 
         $newPost = $database
-            ->getReference('drivers/' . $input['driver_id'])
+            ->getReference('/drivers/' . $input['driver_id'])
             ->update([
                 'booking_status' => 2
             ]);
@@ -538,14 +538,14 @@ class BookingController extends Controller
         $database = $factory->createDatabase();
 
         $newPost = $database
-            ->getReference('customers/' . $trip->customer_id)
+            ->getReference('/customers/' . $trip->customer_id)
             ->update([
                 'booking_id' => 0,
                 'booking_status' => 0
             ]);
 
         $newPost = $database
-            ->getReference('drivers/' . $trip->driver_id)
+            ->getReference('/drivers/' . $trip->driver_id)
             ->update([
                 'booking_status' => 0
             ]);
@@ -565,7 +565,7 @@ class BookingController extends Controller
             ]);
 
         $newPost = $database
-            ->getReference('trips/' . $input['trip_id'])
+            ->getReference('/trips/' . $input['trip_id'])
             ->update([
                 'status' => $input['status']
             ]);
@@ -1032,14 +1032,14 @@ class BookingController extends Controller
 
 
             $newPost = $database
-                ->getReference('customers/' . $trip->customer_id)
+                ->getReference('/customers/' . $trip->customer_id)
                 ->update([
                     'booking_id' => 0,
                     'booking_status' => 0
                 ]);
 
             $newPost = $database
-                ->getReference('drivers/' . $trip->driver_id)
+                ->getReference('/drivers/' . $trip->driver_id)
                 ->update([
                     'booking_status' => 0
                 ]);
@@ -1087,7 +1087,7 @@ class BookingController extends Controller
             $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $fcm_token);
         }
         $newPost = $database
-            ->getReference('trips/' . $input['trip_id'])
+            ->getReference('/trips/' . $input['trip_id'])
             ->update([
                 'customer_status_name' => $current_status->customer_status_name,
                 'status' => $current_status->id,
@@ -1487,14 +1487,14 @@ class BookingController extends Controller
         $database = $factory->createDatabase();
 
         $newPost = $database
-            ->getReference('customers/' . $data['customer_id'])
+            ->getReference('/customers/' . $data['customer_id'])
             ->update([
                 'booking_id' => $id,
                 'booking_status' => 1
             ]);
 
         $newPost = $database
-            ->getReference('drivers/' . $input['driver_id'])
+            ->getReference('/drivers/' . $input['driver_id'])
             ->update([
                 'booking_status' => 1
             ]);
@@ -1621,18 +1621,18 @@ class BookingController extends Controller
         $data['bearing'] = 0;
 
         $newPost = $database
-            ->getReference('trips/' . $trip_details->id)
+            ->getReference('/trips/' . $trip_details->id)
             ->update($data);
 
         $newPost = $database
-            ->getReference('customers/' . $trip['customer_id'])
+            ->getReference('/customers/' . $trip['customer_id'])
             ->update([
                 'booking_id' => $id,
                 'booking_status' => 2
             ]);
 
         $newPost = $database
-            ->getReference('drivers/' . $input['driver_id'])
+            ->getReference('/drivers/' . $input['driver_id'])
             ->update([
                 'booking_status' => 2
             ]);

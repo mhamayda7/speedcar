@@ -228,7 +228,7 @@ class DriverController extends AdminController
         // ->create();
         // $database = $firebase->getDatabase();
         $newPost = $database
-        ->getReference('drivers/'.$id)
+        ->getReference('/drivers/'.$id)
         ->update([
             'driver_name' => $driver_name,
             'status' => $status,

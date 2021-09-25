@@ -572,7 +572,7 @@ class DriverController extends Controller
         ]);
 
          $newPost = $database
-        ->getReference('drivers/'.$input['id'])
+        ->getReference('/drivers/'.$input['id'])
         ->update([
             'online_status' => (int) $input['online_status']
         ]);
