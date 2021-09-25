@@ -1234,7 +1234,7 @@ class BookingController extends Controller
     }
 
 
-    public function get_statuses(Request $request)
+    public function get_statuses()
     {
         // $input = $request->all();
         // $validator = Validator::make($input, [
@@ -1295,6 +1295,7 @@ class BookingController extends Controller
 
         // $show = TripRequest::findOrFail($id);
     }
+
     public function calculate_fare($trip_id)
     {
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
