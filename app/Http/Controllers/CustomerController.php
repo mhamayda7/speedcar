@@ -19,7 +19,6 @@ use App\PromoCode;
 use App\AppSetting;
 use App\Trip;
 use Cartalyst\Stripe\Stripe;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Kreait\Firebase;
 use Kreait\Firebase\Factory;
@@ -229,7 +228,7 @@ class CustomerController extends Controller
             //$factory = (new Factory)
 
             $factory = (new Factory())->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'))
-                                      ->withDatabaseUri(env('FIREBASE_DB'));
+                                ->withDatabaseUri(env('FIREBASE_DB'));
             $database = $factory->createDatabase();
             $newPost = $database
                 ->getReference('/customers/' . $customer->id)
@@ -358,9 +357,8 @@ class CustomerController extends Controller
             if ($customer->status == 1) {
 
                 Customer::where('id', $customer->id)->update(['fcm_token' => $input['fcm_token']]);
-                $token = $customer->createToken('name')->plainTextToken;
+
                 return response()->json([
-                    "token" => $token,
                     "result" => $customer,
                     "message" => 'Success',
                     "status" => 1
@@ -383,6 +381,7 @@ class CustomerController extends Controller
 
         $input = $request->all();
         $validator = Validator::make($input, [
+            'customer_id' => 'required',
             'profile_picture' => 'required|image|mimes:jpeg,png,jpg,gif,svg'
         ]);
 
@@ -390,16 +389,15 @@ class CustomerController extends Controller
             return $this->sendError($validator->errors());
         }
 
-        dd(Auth::user()->id);
         if ($request->hasFile('profile_picture')) {
             $image = $request->file('profile_picture');
             $name = time() . '.' . $image->getClientOriginalExtension();
             $destinationPath = public_path('/uploads/images');
             $image->move($destinationPath, $name);
-            if (Customer::where('id', Auth::user()->id)->update(['profile_picture' => 'images/' . $name])) {
+            if (Customer::where('id', $input['customer_id'])->update(['profile_picture' => 'images/' . $name])) {
                 return response()->json([
                     // "result" => Customer::select('id', 'first_name', 'last_name', 'phone_with_code', 'email', 'profile_picture', 'password', 'status')->where('id', $input['customer_id'])->first(),
-                    "result" => Customer::select('id', 'full_name', 'phone_with_code', 'email', 'profile_picture', 'password', 'status')->where('id', Auth::user()->id)->first(),
+                    "result" => Customer::select('id', 'full_name', 'phone_with_code', 'email', 'profile_picture', 'password', 'status')->where('id', $input['customer_id'])->first(),
                     "message" => 'Success',
                     "status" => 1
                 ]);
@@ -412,19 +410,19 @@ class CustomerController extends Controller
         }
     }
 
-    public function profile()
+    public function profile(Request $request)
     {
-        // $input = $request->all();
-        // $validator = Validator::make($input, [
-        //     'customer_id' => 'required'
-        // ]);
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'customer_id' => 'required'
+        ]);
 
-        // if ($validator->fails()) {
-        //     return $this->sendError($validator->errors());
-        // }
-        // dd(Auth::user()->id);
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors());
+        }
+
         // $result = Customer::select('id', 'first_name', 'last_name', 'phone_with_code', 'gender', 'email', 'status')->where('id', $input['customer_id'])->first();
-        $result = Customer::select('id', 'full_name', 'phone_with_code', 'gender', 'email', 'points', 'wallet' ,'status')->where('id', Auth::user()->id)->first();
+        $result = Customer::select('id', 'full_name', 'phone_with_code', 'gender', 'email', 'points', 'wallet' ,'status')->where('id', $input['customer_id'])->first();
 
         if (is_object($result)) {
             if ($result->gender == 0) {
