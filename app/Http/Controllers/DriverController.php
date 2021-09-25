@@ -566,7 +566,7 @@ class DriverController extends Controller
         $database = $factory->createDatabase();
         //$database = $firebase->getDatabase();
         $newPost = $database
-        ->getReference('vehicles/'.$vehicle->vehicle_type.'/'.$input['id'])
+        ->getReference('/vehicles/'.$vehicle->vehicle_type.'/'.$input['id'])
         ->update([
             'online_status' => (int) $input['online_status']
         ]);

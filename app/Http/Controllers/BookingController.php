@@ -162,7 +162,7 @@ class BookingController extends Controller
             $input['drop_address'] = "Sorry, customer not mentioned";
         }
         $newPost = $database
-            ->getReference('vehicles/' . $input['vehicle_type'] . '/' . $min_driver_id)
+            ->getReference('/vehicles/' . $input['vehicle_type'] . '/' . $min_driver_id)
             ->update([
                 'booking_id' => $id,
                 'booking_status' => 1,
@@ -265,7 +265,7 @@ class BookingController extends Controller
         }
 
         $newPost = $database
-            ->getReference('vehicles/' . $trip_request->vehicle_type . '/' . $min_driver_id)
+            ->getReference('/vehicles/' . $trip_request->vehicle_type . '/' . $min_driver_id)
             ->update([
                 'booking_id' => $trip_request->id,
                 'booking_status' => 1,
@@ -343,7 +343,7 @@ class BookingController extends Controller
             ]);
 
         $newPost = $database
-            ->getReference('vehicles/' . $trip->vehicle_type . '/' . $input['driver_id'])
+            ->getReference('/vehicles/' . $trip->vehicle_type . '/' . $input['driver_id'])
             ->update([
                 'booking_id' => 0,
                 'booking_status' => 0,
@@ -493,7 +493,7 @@ class BookingController extends Controller
             ]);
 
         $newPost = $database
-            ->getReference('vehicles/' . $trip['vehicle_type'] . '/' . $input['driver_id'])
+            ->getReference('/vehicles/' . $trip['vehicle_type'] . '/' . $input['driver_id'])
             ->update([
                 'booking_id' => $id,
                 'booking_status' => 2
@@ -553,7 +553,7 @@ class BookingController extends Controller
         $vehicle_type = DriverVehicle::where('id', $trip->vehicle_id)->value('vehicle_type');
 
         $newPost = $database
-            ->getReference('vehicles/' . $vehicle_type . '/' . $trip->driver_id)
+            ->getReference('/vehicles/' . $vehicle_type . '/' . $trip->driver_id)
             ->update([
                 'booking_id' => 0,
                 'booking_status' => 0,
@@ -1046,7 +1046,7 @@ class BookingController extends Controller
             $vehicle_type = DriverVehicle::where('id', $trip->vehicle_id)->value('vehicle_type');
 
             $newPost = $database
-                ->getReference('vehicles/' . $vehicle_type . '/' . $trip->driver_id)
+                ->getReference('/vehicles/' . $vehicle_type . '/' . $trip->driver_id)
                 ->update([
                     'booking_id' => 0,
                     'booking_status' => 0,
@@ -1500,7 +1500,7 @@ class BookingController extends Controller
             ]);
 
         $newPost = $database
-            ->getReference('vehicles/' . $data['vehicle_type'] . '/' . $input['driver_id'])
+            ->getReference('/vehicles/' . $data['vehicle_type'] . '/' . $input['driver_id'])
             ->update([
                 'booking_id' => $id,
                 'booking_status' => 1,
@@ -1638,7 +1638,7 @@ class BookingController extends Controller
             ]);
 
         $newPost = $database
-            ->getReference('vehicles/' . $trip['vehicle_type'] . '/' . $input['driver_id'])
+            ->getReference('/vehicles/' . $trip['vehicle_type'] . '/' . $input['driver_id'])
             ->update([
                 'booking_id' => $id,
                 'booking_status' => 2

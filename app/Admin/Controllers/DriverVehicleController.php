@@ -175,7 +175,7 @@ class DriverVehicleController extends AdminController
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
         $newPost = $database
-        ->getReference('vehicles/'.$vehicle_type.'/'.$driver_id)
+        ->getReference('/vehicles/'.$vehicle_type.'/'.$driver_id)
         ->update([
             'booking_status' => 0,
             'driver_id' => $driver_id,
