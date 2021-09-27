@@ -787,6 +787,15 @@ class BookingController extends Controller
         return $data;
     }
 
+    public function fare() {
+        $data = DB::table('daily_fare_management')->select('base_fare','price_per_km','price_time')->where('id', 1)->first();
+        return response()->json([
+            "result" => $data,
+            "message" => 'Success',
+            "status" => 1
+        ]);
+    }
+
     public function customer_bookings(Request $request)
     {
         // $input = $request->all();

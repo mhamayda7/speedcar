@@ -69,6 +69,7 @@ Route::post('customer/get_fare', 'App\Http\Controllers\BookingController@get_far
 Route::post('customer/payment_method', 'App\Http\Controllers\CustomerController@payment_method');
 Route::post('customer/wallet_payment_methods', 'App\Http\Controllers\CustomerController@wallet_payment_methods');
 Route::post('customer/trip_cancel', 'App\Http\Controllers\BookingController@trip_cancel_by_customer');
+Route::get('fare', 'App\Http\Controllers\BookingController@fare');
 
 // Route::post('customer/reward_point', 'App\Http\Controllers\BookingController@reward_point');
 
