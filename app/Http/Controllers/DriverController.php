@@ -146,28 +146,28 @@ class DriverController extends Controller
 
         if ($request->hasFile('profile_picture')){
             $image = $request->file('profile_picture');
-            $imageName = $image->getClientOriginalName();
+            $imageName =  time() . '_' . $image->getClientOriginalName();
             $request->profile_picture->move(public_path('/uploads/drivers'), $imageName);
             $input['profile_picture'] = 'drivers/'.$imageName;
         }
 
         if ($request->hasFile('id_proof')){
             $image = $request->file('id_proof');
-            $proofImage = $image->getClientOriginalName();
+            $proofImage =  time() . '_' . $image->getClientOriginalName();
             $request->id_proof->move(public_path('/uploads/image'), $proofImage);
             $input['id_proof'] =$proofImage;
         }
 
         if ($request->hasFile('vehicle_image')){
             $image = $request->file('vehicle_image');
-            $vehicle_image = $image->getClientOriginalName();
+            $vehicle_image =  time() . '_' . $image->getClientOriginalName();
             $request->vehicle_image->move(public_path('/uploads/captain_vehicle_image'), $vehicle_image);
             $input['vehicle_image'] =$vehicle_image;
         }
 
         if ($request->hasFile('vehicle_licence')){
             $image = $request->file('vehicle_licence');
-            $vehicle_licence = $image->getClientOriginalName();
+            $vehicle_licence = time() . '_' . $image->getClientOriginalName();
             $request->vehicle_licence->move(public_path('/uploads/captain_vehicle_licence'), $vehicle_licence);
             $input['vehicle_licence'] =$vehicle_licence;
         }
