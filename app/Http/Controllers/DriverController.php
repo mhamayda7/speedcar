@@ -19,6 +19,7 @@ use App\DriverWithdrawal;
 use App\DriverWalletHistory;
 use App\VehicleCategory;
 use App\CustomerWalletHistory;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Kreait\Firebase;
 use Kreait\Firebase\Factory;
@@ -182,6 +183,7 @@ class DriverController extends Controller
         // $this->sendSms($input['phone_with_code'], $message);
         // $this->smsSe($phone, $message);
         $driver = Driver::create($input);
+        $token = $driver->createToken('name')->plainTextToken;
 
         // $factory = (new Factory())->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
         // $factory = (new Factory())->withServiceAccount('/config/speed-3b614-8627a2a4f157.json');
@@ -222,6 +224,7 @@ class DriverController extends Controller
         if (is_object($driver)) {
             return response()->json([
                 "result" => $driver,
+                "token" => $token,
                 "message" => 'Registered Successfully',
                 "status" => 1
             ]);
@@ -263,10 +266,11 @@ class DriverController extends Controller
             if($driver->status == 1  ){
                 $vehicle = DriverVehicle::where('driver_id', $driver->id)->first();
                 if(is_object($vehicle)){
-                   Driver::where('id', $driver->id)->update([ 'fcm_token' => $input['fcm_token']]);
-
+                    Driver::where('id', $driver->id)->update([ 'fcm_token' => $input['fcm_token']]);
+                    $token = $driver->createToken('name')->plainTextToken;
                     return response()->json([
                         "result" => $driver,
+                        "token" => $token,
                         "message" => 'Success',
                         "status" => 1
                     ]);
@@ -325,18 +329,18 @@ class DriverController extends Controller
 
         }
 
-      public function profile(Request $request)
+      public function profile()
         {
-            $input = $request->all();
-            $validator = Validator::make($input, [
-                'driver_id' => 'required'
-            ]);
+            // $input = $request->all();
+            // $validator = Validator::make($input, [
+            //     'driver_id' => 'required'
+            // ]);
 
-            if ($validator->fails()) {
-                return $this->sendError($validator->errors());
-            }
+            // if ($validator->fails()) {
+            //     return $this->sendError($validator->errors());
+            // }
 
-            $result = Driver::where('id',$input['driver_id'])->first();
+            $result = Driver::where('id',Auth::user()->id)->first();
 
             if (is_object($result)) {
                 return response()->json([
@@ -392,23 +396,23 @@ class DriverController extends Controller
 
      public function driver_earning(Request $request){
 
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            'id' => 'required'
-        ]);
-        if ($validator->fails()) {
-            return $this->sendError($validator->errors());
-        }
+        // $input = $request->all();
+        // $validator = Validator::make($input, [
+        //     'id' => 'required'
+        // ]);
+        // if ($validator->fails()) {
+        //     return $this->sendError($validator->errors());
+        // }
 
         /*$data['total_earnings'] = DriverEarning::where('driver_id',$input['id'])->get()->sum("amount");
         $data['today_earnings'] = DriverEarning::where('driver_id',$input['id'])->whereDay('created_at', now()->day)->sum("amount");
         $data['earnings'] = DriverEarning::where('driver_id',$input['id'])->get();*/
 
-        $total_earnings = DriverEarning::where('driver_id',$input['id'])->get()->sum("amount");
+        $total_earnings = DriverEarning::where('driver_id',Auth::user()->id)->get()->sum("amount");
         $data['total_earnings'] = number_format((float)$total_earnings, 2, '.', '');
-        $today_earnings = DriverEarning::where('driver_id',$input['id'])->whereDay('created_at', now()->day)->sum("amount");
+        $today_earnings = DriverEarning::where('driver_id',Auth::user()->id)->whereDay('created_at', now()->day)->sum("amount");
         $data['today_earnings'] = number_format((float)$today_earnings, 2, '.', '');
-        $data['earnings'] = DriverEarning::where('driver_id',$input['id'])->get();
+        $data['earnings'] = DriverEarning::where('driver_id',Auth::user()->id)->get();
 
 
         if($data){
@@ -428,17 +432,17 @@ class DriverController extends Controller
     }
     public function driver_wallet(Request $request){
 
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            'id' => 'required'
-        ]);
-        if ($validator->fails()) {
-            return $this->sendError($validator->errors());
-        }
+        // $input = $request->all();
+        // $validator = Validator::make($input, [
+        //     'id' => 'required'
+        // ]);
+        // if ($validator->fails()) {
+        //     return $this->sendError($validator->errors());
+        // }
 
-        $data['wallet_amount'] = Driver::where('id',$input['id'])->value('wallet');
+        $data['wallet_amount'] = Driver::where('id',Auth::user()->id)->value('wallet');
 
-        $data['wallets'] = DriverWalletHistory::where('driver_id',$input['id'])->get();
+        $data['wallets'] = DriverWalletHistory::where('driver_id',Auth::user()->id)->get();
 
         if($data){
             return response()->json([
@@ -557,9 +561,9 @@ class DriverController extends Controller
 
     public function change_online_status(Request $request){
         $input = $request->all();
-        Driver::where('id',$input['id'])->update([ 'online_status' => $input['online_status']]);
+        Driver::where('id',Auth::user()->id->update([ 'online_status' => $input['online_status']]);
 
-        $vehicle = DriverVehicle::where('driver_id',$input['id'])->first();
+        $vehicle = DriverVehicle::where('driver_id',Auth::user()->id)->first();
 
         //$factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));

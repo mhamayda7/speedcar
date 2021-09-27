@@ -320,11 +320,13 @@ class BookingController extends Controller
         $input = $request->all();
         $validator = Validator::make($input, [
             'trip_id' => 'required',
-            'driver_id' => 'required'
+            // 'driver_id' => 'required'
         ]);
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
+
+        $input['driver_id'] = Auth::user()->id;
 
         $trip = TripRequest::where('id', $input['trip_id'])->first();
 
@@ -379,12 +381,12 @@ class BookingController extends Controller
         $input = $request->all();
         $validator = Validator::make($input, [
             'trip_id' => 'required',
-            'driver_id' => 'required'
+            // 'driver_id' => 'required'
         ]);
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-
+        $input['driver_id'] = Auth::user()->id;
         $trip = TripRequest::where('id', $input['trip_id'])->first()->toArray();
         $customer_id = TripRequest::where('id', $input['trip_id'])->value('customer_id');
         $phone_with_code = Customer::where('id', $customer_id)->value('phone_with_code');
@@ -819,13 +821,13 @@ class BookingController extends Controller
 
     public function driver_bookings(Request $request)
     {
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            'driver_id' => 'required'
-        ]);
-        if ($validator->fails()) {
-            return $this->sendError($validator->errors());
-        }
+        // $input = $request->all();
+        // $validator = Validator::make($input, [
+        //     'driver_id' => 'required'
+        // ]);
+        // if ($validator->fails()) {
+        //     return $this->sendError($validator->errors());
+        // }
 
         $data = DB::table('trips')
             ->leftJoin('customers', 'customers.id', 'trips.customer_id')
@@ -836,7 +838,7 @@ class BookingController extends Controller
             ->leftJoin('booking_statuses', 'booking_statuses.id', 'trips.status')
             // ->select('trips.*','customers.first_name as customer_name','drivers.first_name as driver_name','customers.profile_picture','payment_methods.payment','driver_vehicles.brand','driver_vehicles.color','driver_vehicles.vehicle_name','driver_vehicles.vehicle_number','booking_statuses.status_name','vehicle_categories.vehicle_type')
             ->select('trips.*', 'customers.full_name as customer_name', 'drivers.full_name as driver_name', 'customers.profile_picture', 'payment_methods.payment', 'driver_vehicles.brand', 'driver_vehicles.color', 'driver_vehicles.vehicle_name', 'driver_vehicles.vehicle_number', 'booking_statuses.status_name', 'vehicle_categories.vehicle_type')
-            ->where('trips.driver_id', $input['driver_id'])->orderBy('id', 'DESC')
+            ->where('trips.driver_id', Auth::user()->id)->orderBy('id', 'DESC')
             ->get();
 
         return response()->json([

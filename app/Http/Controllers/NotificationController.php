@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\NotificationMessage;
+use Illuminate\Support\Facades\Auth;
 use Validator;
 
 class NotificationController extends Controller
@@ -19,7 +20,7 @@ class NotificationController extends Controller
             return $this->sendError($validator->errors());
         }
         $data = NotificationMessage::where('status',1)->where('type',1)->where('country_id',$input['country_id'])->orderBy('id', 'DESC')->get();
-        
+
         return response()->json([
             "result" => $data,
             "count" => count($data),
@@ -33,13 +34,14 @@ class NotificationController extends Controller
         $input = $request->all();
         $validator = Validator::make($input, [
             'country_id' => 'required',
-            'driver_id' => 'required'
+            // 'driver_id' => 'required'
         ]);
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
+        $input['driver_id'] = Auth::user()->id;
         $data = NotificationMessage::where('status',1)->where('type',2)->where('country_id',$input['country_id'])->orderBy('id', 'DESC')->get();
-        
+
         return response()->json([
             "result" => $data,
             "count" => count($data),
@@ -47,14 +49,14 @@ class NotificationController extends Controller
             "status" => 1
         ]);
     }
-    
-    
-    
+
+
+
     public function sendError($message) {
         $message = $message->all();
         $response['error'] = "validation_error";
         $response['message'] = implode('',$message);
         $response['status'] = "0";
         return response()->json($response, 200);
-    } 
+    }
 }

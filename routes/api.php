@@ -73,38 +73,48 @@ Route::post('customer/trip_cancel', 'App\Http\Controllers\BookingController@trip
 // Route::post('customer/reward_point', 'App\Http\Controllers\BookingController@reward_point');
 
 
+Route::prefix('driver/')->middleware('auth:sanctum')->group(function () {
+    Route::post('profile', 'App\Http\Controllers\DriverController@profile');
+    Route::post('get_notification_messages', 'App\Http\Controllers\NotificationController@get_driver_notification_messages');
+    Route::post('earning', 'App\Http\Controllers\DriverController@driver_earning');
+    Route::post('wallet', 'App\Http\Controllers\DriverController@driver_wallet');
+    Route::post('change_online_status', 'App\Http\Controllers\DriverController@change_online_status');
+    Route::post('my_bookings', 'App\Http\Controllers\BookingController@driver_bookings');
+    Route::post('accept', 'App\Http\Controllers\BookingController@trip_accept');
+    Route::post('reject', 'App\Http\Controllers\BookingController@trip_reject');
+    Route::post('change_statuses', 'App\Http\Controllers\BookingController@change_statuses');
 
-
+});
 
 //driver
 Route::post('driver/login', 'App\Http\Controllers\DriverController@login');
 Route::post('driver/register', 'App\Http\Controllers\DriverController@register');
+
 Route::post('driver/check_phone', 'App\Http\Controllers\DriverController@check_phone');
 Route::post('driver/profile_picture', 'App\Http\Controllers\DriverController@profile_picture');
-Route::post('driver/profile', 'App\Http\Controllers\DriverController@profile');
 Route::post('driver/profile_update', 'App\Http\Controllers\DriverController@profile_update');
+
 Route::post('driver/faq', 'App\Http\Controllers\FaqController@driver_faq');
 Route::get('driver/ride_list', 'App\Http\Controllers\RideDetailsController@driver_ride_list');
 Route::get('driver/ride_details', 'App\Http\Controllers\RideDetailsController@driver_ride_details');
-Route::post('driver/get_notification_messages', 'App\Http\Controllers\NotificationController@get_driver_notification_messages');
 Route::post('driver/withdrawal_request', 'App\Http\Controllers\DriverController@driver_withdrawal_request');
 Route::post('driver/withdrawal_history', 'App\Http\Controllers\DriverController@driver_withdrawal_history');
-Route::post('driver/earning', 'App\Http\Controllers\DriverController@driver_earning');
-Route::post('driver/wallet', 'App\Http\Controllers\DriverController@driver_wallet');
+
+
 Route::post('driver/policy', 'App\Http\Controllers\PrivacyPolicyController@driver_policy');
 Route::post('driver/get_kyc', 'App\Http\Controllers\DriverController@get_bank_kyc_details');
 Route::post('driver/update_kyc', 'App\Http\Controllers\DriverController@bank_kyc_update');
-Route::post('driver/change_online_status', 'App\Http\Controllers\DriverController@change_online_status');
+
 Route::post('driver_tutorials', 'App\Http\Controllers\DriverController@get_tutorials');
 Route::post('driver/forgot_password', 'App\Http\Controllers\DriverController@forgot_password');
 Route::post('driver/reset_password', 'App\Http\Controllers\DriverController@reset_password');
 Route::post('driver/get_vehicles', 'App\Http\Controllers\DriverController@get_vehicles');
-Route::post('driver/my_bookings', 'App\Http\Controllers\BookingController@driver_bookings');
+
 Route::post('driver/dashboard', 'App\Http\Controllers\DriverController@driver_dashboard');
 Route::post('driver/rating_upload', 'App\Http\Controllers\DriverController@driver_ratings');
-Route::post('driver/accept', 'App\Http\Controllers\BookingController@trip_accept');
-Route::post('driver/reject', 'App\Http\Controllers\BookingController@trip_reject');
-Route::post('driver/change_statuses', 'App\Http\Controllers\BookingController@change_statuses');
+
+
+
 Route::get('calculate_earnings/{id}', 'App\Http\Controllers\BookingController@calculate_earnings');
 //Route::post('booking/send_mail', 'App\Http\Controllers\BookingController@ride_completeion_mail');
 Route::post('stripe_payment', 'App\Http\Controllers\CustomerController@stripe_payment');
