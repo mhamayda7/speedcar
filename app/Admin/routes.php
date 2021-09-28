@@ -1,8 +1,14 @@
 <?php
 
+use Encore\Admin\Facades\Admin;
 use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Route;
 
 Admin::routes();
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('admin/sendsms', 'App\Http\Controllers\Controller@sendS');
+});
 
 Route::group([
     'prefix'        => config('admin.route.prefix'),
@@ -12,6 +18,7 @@ Route::group([
 
 
     $router->get('/', 'HomeController@index')->name('admin.home');
+
     $router->get('tracking', 'HomeController@tracking');
     $router->get('get-vehicle-category', 'GeneralController@GetVehicleCategory');
     $router->get('get-drivers', 'GeneralController@GetDrivers');

@@ -21,7 +21,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 
 Route::middleware('auth:sanctum')->group(function () {
-    Route::post('sendsms', 'App\Http\Controllers\Controller@sendS');
+
     Route::get('splash', 'App\Http\Controllers\Controller@splash');
 
     Route::post('customer/profile_picture', 'App\Http\Controllers\CustomerController@profile_picture');

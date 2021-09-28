@@ -578,7 +578,8 @@ class DriverController extends Controller
         $vehicle = DriverVehicle::where('driver_id',Auth::user()->id)->first();
 
         //$factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
-        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+        $factory = (new Factory())->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'))
+        ->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
         //$database = $firebase->getDatabase();
         $newPost = $database
