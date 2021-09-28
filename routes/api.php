@@ -93,6 +93,7 @@ Route::post('driver/withdrawal_history', 'App\Http\Controllers\DriverController@
 
 Route::prefix('driver/')->middleware('auth:sanctum')->group(function () {
     Route::post('profile', 'App\Http\Controllers\DriverController@profile');
+    Route::post('profile_info', 'App\Http\Controllers\CustomerController@profile_info');
     Route::post('get_notification_messages', 'App\Http\Controllers\NotificationController@get_driver_notification_messages');
     Route::post('earning', 'App\Http\Controllers\DriverController@driver_earning');
     Route::post('wallet', 'App\Http\Controllers\DriverController@driver_wallet');
