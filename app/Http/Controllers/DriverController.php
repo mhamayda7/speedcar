@@ -295,6 +295,16 @@ class DriverController extends Controller
         }
 
     }
+
+    public function signout(Request $request){
+        Driver::where('id', Auth::user()->id)->update(['fcm_token'=> null]);
+        $request->user()->currentAccessToken()->delete();
+        return response()->json([
+            "message" => 'Success Sign Out',
+            "status" => 1
+        ]);
+    }
+
     public function profile_picture(Request $request){
 
             $input = $request->all();

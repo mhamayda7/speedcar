@@ -17,6 +17,7 @@ use App\CustomerWalletHistory;
 use App\InstantOffer;
 use App\PromoCode;
 use App\AppSetting;
+use App\Models\User;
 use App\Trip;
 use Cartalyst\Stripe\Stripe;
 use Illuminate\Support\Facades\Auth;
@@ -380,13 +381,14 @@ class CustomerController extends Controller
     }
 
     public function signout(Request $request){
+        Customer::where('id', Auth::user()->id)->update(['fcm_token'=> null]);
         $request->user()->currentAccessToken()->delete();
-
         return response()->json([
             "message" => 'Success Sign Out',
             "status" => 1
         ]);
     }
+
     public function profile_picture(Request $request)
     {
 

@@ -37,7 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('customer/distance', 'App\Http\Controllers\BookingController@customer_distance');
     Route::post('customer/point', 'App\Http\Controllers\BookingController@point'); //done sanctum
     Route::post('customer/point_to_wallet', 'App\Http\Controllers\BookingController@point_to_wallet');
-    Route::post('signout', 'App\Http\Controllers\CustomerController@signout');
+    Route::post('customer/signout', 'App\Http\Controllers\CustomerController@signout');
 });
 
 //Customer
@@ -101,6 +101,7 @@ Route::prefix('driver/')->middleware('auth:sanctum')->group(function () {
     Route::post('accept', 'App\Http\Controllers\BookingController@trip_accept');
     Route::post('reject', 'App\Http\Controllers\BookingController@trip_reject');
     Route::post('change_statuses', 'App\Http\Controllers\BookingController@change_statuses');
+    Route::post('signout', 'App\Http\Controllers\DriverController@signout');
 
 });
 
