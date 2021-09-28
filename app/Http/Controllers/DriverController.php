@@ -340,11 +340,13 @@ class DriverController extends Controller
             //     return $this->sendError($validator->errors());
             // }
 
-            $result = Driver::where('id',Auth::user()->id)->first();
-
+            $result = Driver::where('id',Auth::user()->id)->select('id','full_name','phone_with_code','wallet','overall_ratings')->first();
+            $booking_complete = Trip::where('driver_id',Auth::user()->id)->where('status',5)->count();
+            // dd( $booking_complete);
             if (is_object($result)) {
                 return response()->json([
                     "result" => $result,
+                    "booking_complete" => $booking_complete,
                     "message" => 'Success',
                     "status" => 1
                 ]);
@@ -561,7 +563,7 @@ class DriverController extends Controller
 
     public function change_online_status(Request $request){
         $input = $request->all();
-        Driver::where('id',Auth::user()->id->update([ 'online_status' => $input['online_status']]);
+        Driver::where('id',Auth::user()->id)->update([ 'online_status' => $input['online_status']]);
 
         $vehicle = DriverVehicle::where('driver_id',Auth::user()->id)->first();
 

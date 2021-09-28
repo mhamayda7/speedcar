@@ -37,6 +37,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('customer/distance', 'App\Http\Controllers\BookingController@customer_distance');
     Route::post('customer/point', 'App\Http\Controllers\BookingController@point'); //done sanctum
     Route::post('customer/point_to_wallet', 'App\Http\Controllers\BookingController@point_to_wallet');
+    Route::post('signout', 'App\Http\Controllers\CustomerController@signout');
 });
 
 //Customer
@@ -74,18 +75,7 @@ Route::get('fare', 'App\Http\Controllers\BookingController@fare');
 // Route::post('customer/reward_point', 'App\Http\Controllers\BookingController@reward_point');
 
 
-Route::prefix('driver/')->middleware('auth:sanctum')->group(function () {
-    Route::post('profile', 'App\Http\Controllers\DriverController@profile');
-    Route::post('get_notification_messages', 'App\Http\Controllers\NotificationController@get_driver_notification_messages');
-    Route::post('earning', 'App\Http\Controllers\DriverController@driver_earning');
-    Route::post('wallet', 'App\Http\Controllers\DriverController@driver_wallet');
-    Route::post('change_online_status', 'App\Http\Controllers\DriverController@change_online_status');
-    Route::post('my_bookings', 'App\Http\Controllers\BookingController@driver_bookings');
-    Route::post('accept', 'App\Http\Controllers\BookingController@trip_accept');
-    Route::post('reject', 'App\Http\Controllers\BookingController@trip_reject');
-    Route::post('change_statuses', 'App\Http\Controllers\BookingController@change_statuses');
 
-});
 
 //driver
 Route::post('driver/login', 'App\Http\Controllers\DriverController@login');
@@ -101,6 +91,18 @@ Route::get('driver/ride_details', 'App\Http\Controllers\RideDetailsController@dr
 Route::post('driver/withdrawal_request', 'App\Http\Controllers\DriverController@driver_withdrawal_request');
 Route::post('driver/withdrawal_history', 'App\Http\Controllers\DriverController@driver_withdrawal_history');
 
+Route::prefix('driver/')->middleware('auth:sanctum')->group(function () {
+    Route::post('profile', 'App\Http\Controllers\DriverController@profile');
+    Route::post('get_notification_messages', 'App\Http\Controllers\NotificationController@get_driver_notification_messages');
+    Route::post('earning', 'App\Http\Controllers\DriverController@driver_earning');
+    Route::post('wallet', 'App\Http\Controllers\DriverController@driver_wallet');
+    Route::post('change_online_status', 'App\Http\Controllers\DriverController@change_online_status');
+    Route::post('my_bookings', 'App\Http\Controllers\BookingController@driver_bookings');
+    Route::post('accept', 'App\Http\Controllers\BookingController@trip_accept');
+    Route::post('reject', 'App\Http\Controllers\BookingController@trip_reject');
+    Route::post('change_statuses', 'App\Http\Controllers\BookingController@change_statuses');
+
+});
 
 Route::post('driver/policy', 'App\Http\Controllers\PrivacyPolicyController@driver_policy');
 Route::post('driver/get_kyc', 'App\Http\Controllers\DriverController@get_bank_kyc_details');

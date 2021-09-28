@@ -378,6 +378,15 @@ class CustomerController extends Controller
             ]);
         }
     }
+
+    public function signout(Request $request){
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            "message" => 'Success Sign Out',
+            "status" => 1
+        ]);
+    }
     public function profile_picture(Request $request)
     {
 
