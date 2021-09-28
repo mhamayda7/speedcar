@@ -573,6 +573,7 @@ class DriverController extends Controller
 
     public function change_online_status(Request $request){
         $input = $request->all();
+        $input['id']=Auth::user()->id;
         Driver::where('id',Auth::user()->id)->update([ 'online_status' => $input['online_status']]);
 
         $vehicle = DriverVehicle::where('driver_id',Auth::user()->id)->first();
