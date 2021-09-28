@@ -19,7 +19,7 @@ class NotificationController extends Controller
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-        $data = NotificationMessage::where('status',1)->where('type',1)->where('country_id',$input['country_id'])->orderBy('id', 'DESC')->get();
+        $data = NotificationMessage::where('status',1)->where('type',1)->orderBy('id', 'DESC')->get();
 
         return response()->json([
             "result" => $data,
@@ -40,7 +40,7 @@ class NotificationController extends Controller
             return $this->sendError($validator->errors());
         }
         $input['driver_id'] = Auth::user()->id;
-        $data = NotificationMessage::where('status',1)->where('type',2)->where('country_id',$input['country_id'])->orderBy('id', 'DESC')->get();
+        $data = NotificationMessage::where('status',1)->where('type',2)->orderBy('id', 'DESC')->get();
 
         return response()->json([
             "result" => $data,
