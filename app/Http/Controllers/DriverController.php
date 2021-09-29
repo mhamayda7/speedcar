@@ -602,11 +602,20 @@ class DriverController extends Controller
     public function change_online_status(Request $request)
     {
         $input = $request->all();
+        $validator = Validator::make($input, [
+            'online_status' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors());
+        }
+
         $input['id'] = Auth::user()->id;
+        // dd($input['id']);
         Driver::where('id', Auth::user()->id)->update(['online_status' => $input['online_status']]);
 
         $vehicle = DriverVehicle::where('driver_id', Auth::user()->id)->first();
-
+        // dd($vehicle);
         //$factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
         $factory = (new Factory())->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'))
             ->withDatabaseUri(env('FIREBASE_DB'));
