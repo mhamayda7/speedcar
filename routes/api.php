@@ -102,6 +102,7 @@ Route::prefix('driver/')->middleware('auth:sanctum')->group(function () {
     Route::post('accept', 'App\Http\Controllers\BookingController@trip_accept');
     Route::post('reject', 'App\Http\Controllers\BookingController@trip_reject');
     Route::post('change_statuses', 'App\Http\Controllers\BookingController@change_statuses');
+    Route::post('get_invoice', 'App\Http\Controllers\DriverController@get_invoice');
     Route::post('signout', 'App\Http\Controllers\DriverController@signout');
 
 });

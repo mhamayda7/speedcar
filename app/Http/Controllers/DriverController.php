@@ -262,7 +262,8 @@ class DriverController extends Controller
         if (Hash::check($credentials['password'], $driver->password)) {
 
             if ($driver->status == 1) {
-                $vehicle = DriverVehicle::where('driver_id', $driver->id)->first();
+                $vehicle = DB::table('driver_vehicles')->where('driver_id', $driver->id)->first();
+                // dd($vehicle);
                 if (is_object($vehicle)) {
                     Driver::where('id', $driver->id)->update(['fcm_token' => $input['fcm_token']]);
                     $token = $driver->createToken('name')->plainTextToken;
@@ -455,6 +456,19 @@ class DriverController extends Controller
             ]);
         }
     }
+
+    public function get_invoice(Request $request)
+    {
+        $invoice = DriverWalletHistory::where('driver_id', Auth::user()->id)->get()->all();
+        $wallet = Driver::where('id', Auth::user()->id)->value('wallet');
+        return response()->json([
+            "wallet" => $wallet,
+            "result" => $invoice,
+            "message" => 'Success',
+            "status" => 1
+        ]);
+    }
+
     public function driver_wallet(Request $request)
     {
 
