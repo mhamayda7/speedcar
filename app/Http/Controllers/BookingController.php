@@ -1115,6 +1115,7 @@ class BookingController extends Controller
             "status" => 1
         ]);
     }
+
     public function reward_point($trip_id)
     {
 

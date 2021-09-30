@@ -17,6 +17,7 @@ use App\CustomerWalletHistory;
 use App\InstantOffer;
 use App\PromoCode;
 use App\AppSetting;
+use App\Models\Point;
 use App\Models\User;
 use App\Trip;
 use Cartalyst\Stripe\Stripe;
@@ -635,6 +636,56 @@ class CustomerController extends Controller
             "message" => 'Success',
             "status" => 1
         ]);
+    }
+
+    public function customer_invite(Request $request)
+    {
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'referral_code' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors());
+        }
+        $refferd = Customer::where('id', Auth::user()->id)->value('refered_by');
+        if ($refferd == null) {
+            $customer_point = Customer::where('referral_code', $input['referral_code'])->value('points');
+            $customer_id = Customer::where('referral_code', $input['referral_code'])->value('id');
+            $referral_bonus = DB::table('referral_settings')->where('id',1)->value('referral_bonus');
+            // dd($referral_settings);
+            $points_add = $referral_bonus + $customer_point;
+            Customer::where('referral_code', $input['referral_code'])->update(['points' => $points_add ]);
+            Customer::where('id', Auth::user()->id)->update(['refered_by' => $input['referral_code'] ]);
+
+
+            $point = new Point;
+            $point->customer_id = $customer_id;
+            $point->trip_id = 0;
+            $point->type = 1;
+            $point->point = intval($points_add);
+            $point->details = "دعوة صديق";
+            $point->icon = "rewards/taxi.png";
+            $point->save();
+
+            $customer_fcm = Customer::where('referral_code', $input['referral_code'])->value('fcm_token');
+
+            if ($customer_fcm) {
+                $this->send_fcm('نقاط مكتسبة', 'قمت بدعوة صديق و اضافة'. $points_add . ' نقاط', $customer_fcm);
+            }
+
+
+            return response()->json([
+                "message" => 'Success',
+                "status" => 1
+            ]);
+        } else {
+
+            return response()->json([
+                "message" => 'قمت باضافة كود الدعوة من قبل',
+                "status" => 1
+            ]);
+        }
+
     }
 
     public function update_view_status(Request $request)

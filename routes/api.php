@@ -38,6 +38,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('customer/point', 'App\Http\Controllers\BookingController@point'); //done sanctum
     Route::post('customer/point_to_wallet', 'App\Http\Controllers\BookingController@point_to_wallet');
     Route::post('customer/signout', 'App\Http\Controllers\CustomerController@signout');
+    Route::post('customer/invite', 'App\Http\Controllers\CustomerController@customer_invite');
+
 });
 
 //Customer
