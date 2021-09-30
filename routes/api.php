@@ -39,10 +39,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('customer/point_to_wallet', 'App\Http\Controllers\BookingController@point_to_wallet');
     Route::post('customer/signout', 'App\Http\Controllers\CustomerController@signout');
     Route::post('customer/invite', 'App\Http\Controllers\CustomerController@customer_invite');
-
 });
 
 //Customer
+Route::post('customer/fcm', 'App\Http\Controllers\CustomerController@sendFcm');
 Route::post('customer/check_phone', 'App\Http\Controllers\CustomerController@check_phone');
 Route::post('customer/register', 'App\Http\Controllers\CustomerController@register');
 Route::post('customer/login', 'App\Http\Controllers\CustomerController@login');

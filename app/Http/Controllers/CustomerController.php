@@ -936,4 +936,31 @@ class CustomerController extends Controller
         $response['status'] = "0";
         return response()->json($response, 200);
     }
+
+    public function sendFcm(Request $request)
+    {
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'customer_id' => 'required',
+            // 'customer_id' => 'required',
+            // 'customer_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors());
+        }
+
+        $customer_fcm = Customer::where('id', $input['customer_id'])->value('fcm_token');
+
+        if ($customer_fcm) {
+            $this->send_fcm('نقاط مكتسبة', 'قمت بدعوة صديق و اضافة' . ' نقاط', $customer_fcm);
+        }
+
+        return response()->json([
+            "message" => 'Success',
+            "status" => 1
+        ]);
+
+    }
+
 }
