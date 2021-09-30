@@ -43,7 +43,7 @@ class Controller extends BaseController
     public function send_fcm($title, $description, $token)
     {
 
-        /*$factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
+        $factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
         $messaging = $factory->createMessaging();
 
         $message = CloudMessage::fromArray([
@@ -65,7 +65,7 @@ class Controller extends BaseController
 
         $message = $message->withAndroidConfig($config);
 
-        $messaging->send($message);*/
+        $messaging->send($message);
     }
 
     public function sendSms($phone_number, $message)
