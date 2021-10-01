@@ -32,13 +32,14 @@
 <script>
     // Replace your Configuration here..
     var config = {
-        apiKey: "******************************",
-        authDomain: "**************************",
-        databaseURL: "***************************",
-        projectId: "***********",
-        storageBucket: "******************",
-        messagingSenderId: "*********",
-        appId: "******************************"
+        apiKey: "AIzaSyDtkokltx1sxsd7SfUR0x7_vo5HH9ji760",
+        authDomain: "speedcar-c3847.firebaseapp.com",
+        databaseURL: "https://speedcar-c3847-default-rtdb.firebaseio.com",
+        projectId: "speedcar-c3847",
+        storageBucket: "speedcar-c3847.appspot.com",
+        messagingSenderId: "300750503082",
+        appId: "1:300750503082:web:0f093c702cb756a77b64d3",
+        measurementId: "G-J2X1WR6XJE"
     };
     firebase.initializeApp(config);
 </script>
