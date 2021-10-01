@@ -147,3 +147,4 @@ Route::post('get_gender', 'App\Http\Controllers\CustomerController@get_gender');
 Route::get('get_trip_type', 'App\Http\Controllers\RideDetailsController@get_trip_type');
 Route::get('get_package', 'App\Http\Controllers\CustomerController@get_package');
 Route::get('ride_later','App\Http\Controllers\BookingController@ride_later');
+// Route::post('distances','App\Http\Controllers\BookingController@distances');
