@@ -49,7 +49,7 @@ class BookingController extends Controller
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-            'km' => 'required',
+            // 'km' => 'required',
             'vehicle_type' => 'required',
             // 'customer_id' => 'required',
             'promo' => 'required',
@@ -93,8 +93,7 @@ class BookingController extends Controller
         foreach ($drivers as $key => $value) {
             if ($value && array_key_exists('gender', $value)) {
                 // $value['gender'] == $input['filter'] || $input['filter'] == 0
-                if (1) {
-
+                // if (1) {
                     $distance = $this->distance($input['pickup_lat'], $input['pickup_lng'], $value['lat'], $value['lng'], 'K');
                     if ($distance <= $booking_searching_radius && $value['online_status'] == 1 && $value['booking_status'] == 0) {
                         if ($min_distance == 0) {
@@ -105,9 +104,11 @@ class BookingController extends Controller
                             $min_driver_id = $value['driver_id'];
                         }
                     }
-                }
+                // }
             }
         }
+
+        $input['km'] = $distance;
         if ($min_driver_id == 0) {
             return response()->json([
                 "message" => 'Sorry drivers not available right now',
@@ -119,28 +120,26 @@ class BookingController extends Controller
         $img = 'trip_request_static_map/' . md5(time()) . '.png';
         file_put_contents('uploads/' . $img, file_get_contents($url));
 
-        if ($input['trip_type'] == 1) {
-            $fares = $this->calculate_daily_fare($input['vehicle_type'], $input['km'], $input['promo'], $input['country_id']);
-        }
+        // if ($input['trip_type'] == 1) {
+        //     $fares = $this->calculate_daily_fare($input['vehicle_type'], $input['km'], $input['promo'], $input['country_id']);
+        // }
 
-        if ($input['trip_type'] == 2) {
-            $fares = $this->calculate_rental_fare($input['vehicle_type'], $input['package_id'], $input['promo'], $input['country_id'], 0, 0);
-        }
+        // if ($input['trip_type'] == 2) {
+        //     $fares = $this->calculate_rental_fare($input['vehicle_type'], $input['package_id'], $input['promo'], $input['country_id'], 0, 0);
+        // }
 
-        if ($input['trip_type'] == 3) {
-            $fares = $this->calculate_outstation_fare($input['vehicle_type'], $input['km'], $input['promo'], $input['country_id'], 1);
-        }
+        // if ($input['trip_type'] == 3) {
+        //     $fares = $this->calculate_outstation_fare($input['vehicle_type'], $input['km'], $input['promo'], $input['country_id'], 1);
+        // }
+        $fares = $this->calculate_daily_fare(1, $distance, $input['promo'], $input['country_id']);
 
         $booking_request = $input;
         $booking_request['distance'] = $input['km'];
         unset($booking_request['km']);
         $booking_request['total'] = $fares['total_fare'];
-        // $booking_request['total'] = 10;
         $booking_request['sub_total'] = $fares['fare'];
-        // $booking_request['sub_total'] = 12;
         $booking_request['discount'] = $fares['discount'];
-        // $booking_request['tax'] = $fares['tax'];
-        $booking_request['tax'] = 0;
+        $booking_request['tax'] = $fares['tax'];
         $booking_request['static_map'] = $img;
         $booking_request['payment_method'] = $input['payment_method'];
         $id = TripRequest::create($booking_request)->id;
@@ -155,14 +154,26 @@ class BookingController extends Controller
         }
 
         $newPost = $database
+        ->getReference('/triprequest/' . $id)
+        ->update([
+            'booking_id' => $id,
+            // 'driver_id' => $driver[''],
+            'pikup_lat' => $input['pickup_lat'],
+            'pikup_lng' => $input['pickup_lng'],
+        ]);
+
+
+        $newPost = $database
             ->getReference('/customers/' . $input['customer_id'])
             ->update([
                 'booking_id' => $id,
-                'booking_status' => 1
+                'booking_status' => 1,
+
             ]);
         if ($input['trip_type'] == 2) {
             $input['drop_address'] = "Sorry, customer not mentioned";
         }
+
         $newPost = $database
             ->getReference('/vehicles/' . $input['vehicle_type'] . '/' . $min_driver_id)
             ->update([
@@ -1369,6 +1380,41 @@ class BookingController extends Controller
             return $miles;
         }
     }
+
+    // function distances(Request $request)
+    // {
+    //     $input = $request->all();
+    //     $validator = Validator::make($input, [
+    //         'lat1' => 'required',
+    //         'lon1' => 'required',
+    //         'lat2' => 'required',
+    //         'lon2' => 'required',
+    //         'km' => 'required'
+    //     ]);
+    //     if ($validator->fails()) {
+    //         return $this->sendError($validator->errors());
+    //     }
+    //     $lat1 = $input['lat1'];
+    //     $lat2 = $input['lat2'];
+    //     $lon1 = $input['lon1'];
+    //     $lon2 = $input['lon2'];
+    //     $unit = $input['km'];
+
+    //     $theta = $lon1 - $lon2;
+    //     $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
+    //     $dist = acos($dist);
+    //     $dist = rad2deg($dist);
+    //     $miles = $dist * 60 * 1.1515;
+    //     $unit = strtoupper($unit);
+
+    //     if ($unit == "K") {
+    //         return ($miles * 1.609344);
+    //     } else if ($unit == "N") {
+    //         return ($miles * 0.8684);
+    //     } else {
+    //         return $miles;
+    //     }
+    // }
 
     public function calculate_earnings($trip_id)
     {
