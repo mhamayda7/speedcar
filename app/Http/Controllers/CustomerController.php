@@ -102,7 +102,7 @@ class CustomerController extends Controller
 
         $input = $request->all();
         $validator = Validator::make($input, [
-            'id' => 'required',
+            'phone_with_code' => 'required',
             'password' => 'required'
         ]);
 
@@ -115,7 +115,7 @@ class CustomerController extends Controller
         ];
         $input['password'] = password_hash($input["password"], PASSWORD_DEFAULT, $options);
 
-        if (Customer::where('id', $input['id'])->update($input)) {
+        if (Customer::where('phone_with_code', $input['phone_with_code'])->update($input)) {
             return response()->json([
                 "message" => 'Success',
                 "status" => 1
