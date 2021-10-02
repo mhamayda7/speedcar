@@ -83,8 +83,7 @@ class BookingController extends Controller
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
         $database = $factory->createDatabase();
 
-        $drivers = $database->getReference('/vehicles/' . $input['vehicle_type'])
-            ->getSnapshot()->getValue();
+
 
         $min_distance = 0;
         $min_driver_id = 0;
@@ -154,10 +153,11 @@ class BookingController extends Controller
         }
 
         $newPost = $database
+
         ->getReference('/triprequest/' . $id)
         ->update([
-            'booking_id' => $id,
-            // 'driver_id' => $driver[''],
+            'request_id' => $id,
+            'driver_id' => $driver[''],
             'pikup_lat' => $input['pickup_lat'],
             'pikup_lng' => $input['pickup_lng'],
         ]);
@@ -373,7 +373,6 @@ class BookingController extends Controller
         if ($trip->booking_type == 1) {
             TripRequest::where('id', $input['trip_id'])->update(['status' => 4]);
         }
-
 
         $data['driver_id'] = $input['driver_id'];
         $data['trip_request_id'] = $input['trip_id'];
@@ -1918,4 +1917,25 @@ class BookingController extends Controller
             "status" => 1
         ]);
     }
+
+    public function drivers() {
+        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
+        $database = $factory->createDatabase();
+
+        $drivers = $database->getReference('/vehicles/' . 1)
+        ->getSnapshot()->getValue();
+        $driver_selected = [];
+        $i=1;
+
+        foreach ($drivers as $key => $value) {
+            // $test = $value['booking_status'];
+            if($value['booking_status'] == 0 && $value['online_status'] == 1){
+                $driver_selected[$i] = $value['driver_id'];
+            }
+            $i++;
+        }
+
+        return $driver_selected;
+    }
+
 }
