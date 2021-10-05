@@ -642,12 +642,10 @@ class BookingController extends Controller
         $data['trip_id'] = $trip_id;
         $data['trip_type'] = $trip_details->trip_type;
         $data['customer_id'] = $trip_details->customer_id;
-        // $data['customer_name'] = $customer->first_name;
         $data['customer_name'] = $customer->full_name;
         $data['customer_profile_picture'] = $customer->profile_picture;
         $data['customer_phone_number'] = $customer->phone_number;
         $data['driver_id'] = $trip_details->driver_id;
-        // $data['driver_name'] = $driver->first_name;
         $data['driver_name'] = $driver->full_name;
         $data['driver_profile_picture'] = $driver->profile_picture;
         $data['driver_phone_number'] = $driver->phone_number;
