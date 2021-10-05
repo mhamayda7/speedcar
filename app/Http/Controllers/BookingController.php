@@ -45,20 +45,182 @@ use Illuminate\Support\Facades\Auth;
 
 class BookingController extends Controller
 {
+    // public function ride_confirm(Request $request)
+    // {
+    //     $input = $request->all();
+    //     $validator = Validator::make($input, [
+    //         // 'km' => 'required',
+    //         'vehicle_type' => 'required',
+    //         // 'customer_id' => 'required',
+    //         'promo' => 'required',
+    //         'country_id' => 'required',
+    //         'pickup_address' => 'required',
+    //         'pickup_date' => 'required',
+    //         'pickup_lat' => 'required',
+    //         'pickup_lng' => 'required',
+    //         'trip_type' => 'required',
+    //         'drop_address' => 'required',
+    //         'drop_lat' => 'required',
+    //         'drop_lng' => 'required',
+    //     ]);
+    //     if ($validator->fails()) {
+    //         return $this->sendError($validator->errors());
+    //     }
+
+    //     $input['customer_id'] = Auth::user()->id;
+
+    //     $input['pickup_date'] = date("Y-m-d H:i:s", strtotime($input['pickup_date']));
+    //     $current_date = $this->get_date($input['country_id']);
+    //     $interval_time = $this->date_difference($input['pickup_date'], $current_date);
+    //     if ($interval_time <= 30) {
+    //         $input['booking_type'] = 1;
+    //         $input['status'] = 1;
+    //     } else {
+    //         $input['booking_type'] = 2;
+    //         $input['status'] = 2;
+    //     }
+    //     //$factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
+    //     $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
+    //     $database = $factory->createDatabase();
+
+    //     $drivers = $database->getReference('/vehicles/' . $input['vehicle_type'])
+    //     ->getSnapshot()->getValue();
+
+    //     $i=1;
+    //     $min_distance = 0;
+    //     $min_driver_id = 0;
+    //     $booking_searching_radius = TripSetting::value('booking_searching_radius');
+
+
+    //     foreach ($drivers as $key => $value) {
+    //         if ($value && array_key_exists('gender', $value)) {
+    //                 $distance = $this->distance($input['pickup_lat'], $input['pickup_lng'], $value['lat'], $value['lng'], 'K');
+    //                 if ($distance <= $booking_searching_radius && $value['online_status'] == 1 && $value['booking_status'] == 0) {
+    //                     $driver_selected[$i] = $value['driver_id'];
+
+    //                     if ($min_distance == 0) {
+    //                         $min_distance = $distance;
+    //                         $min_driver_id = $value['driver_id'];
+    //                     } else if ($distance < $min_distance) {
+    //                         $min_distance = $distance;
+    //                         $min_driver_id = $value['driver_id'];
+    //                     }
+    //                 }
+    //             $i++;
+    //         }
+    //     }
+    //     dd($driver_selected);
+    //     // $drivers = $database->getReference('/vehicles/' . 1)
+    //     // ->getSnapshot()->getValue();
+    //     // $driver_selected = [];
+    //     // $i=1;
+
+    //     // foreach ($drivers as $key => $value) {
+    //     //     // $test = $value['booking_status'];
+    //     //     if($value['booking_status'] == 0 && $value['online_status'] == 1){
+    //     //         $driver_selected[$i] = $value['driver_id'];
+    //     //     }
+    //     //     $i++;
+    //     // }
+
+
+    //     $input['km'] = $distance;
+    //     if ($min_driver_id == 0) {
+    //         return response()->json([
+    //             "message" => 'Sorry drivers not available right now',
+    //             "status" => 0
+    //         ]);
+    //     }
+
+    //     $url = 'https://maps.googleapis.com/maps/api/staticmap?center=' . $input['pickup_lat'] . ',' . $input['pickup_lng'] . '&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:L%7C' . $input['pickup_lat'] . ',' . $input['pickup_lng'] . '&key=' . env('MAP_KEY');
+    //     $img = 'trip_request_static_map/' . md5(time()) . '.png';
+    //     file_put_contents('uploads/' . $img, file_get_contents($url));
+
+    //     // if ($input['trip_type'] == 1) {
+    //     //     $fares = $this->calculate_daily_fare($input['vehicle_type'], $input['km'], $input['promo'], $input['country_id']);
+    //     // }
+
+    //     // if ($input['trip_type'] == 2) {
+    //     //     $fares = $this->calculate_rental_fare($input['vehicle_type'], $input['package_id'], $input['promo'], $input['country_id'], 0, 0);
+    //     // }
+
+    //     // if ($input['trip_type'] == 3) {
+    //     //     $fares = $this->calculate_outstation_fare($input['vehicle_type'], $input['km'], $input['promo'], $input['country_id'], 1);
+    //     // }
+    //     $fares = $this->calculate_daily_fare(1, $distance, $input['promo'], $input['country_id']);
+
+    //     $booking_request = $input;
+    //     $booking_request['distance'] = $input['km'];
+    //     unset($booking_request['km']);
+    //     $booking_request['total'] = $fares['total_fare'];
+    //     $booking_request['sub_total'] = $fares['fare'];
+    //     $booking_request['discount'] = $fares['discount'];
+    //     $booking_request['tax'] = $fares['tax'];
+    //     $booking_request['static_map'] = $img;
+    //     $booking_request['payment_method'] = $input['payment_method'];
+    //     $id = TripRequest::create($booking_request)->id;
+
+    //     if ($input['booking_type'] == 2) {
+    //         return response()->json([
+    //             "result" => $id,
+    //             "booking_type" => $input['booking_type'],
+    //             "message" => 'Success',
+    //             "status" => 1
+    //         ]);
+    //     }
+
+    //     $newPost = $database
+
+    //     ->getReference('/triprequest/' . $id)
+    //     ->update([
+    //         'request_id' => $id,
+    //         'driver_id' => $driver_selected[1],
+    //         'pikup_lat' => $input['pickup_lat'],
+    //         'pikup_lng' => $input['pickup_lng'],
+    //     ]);
+
+
+    //     $newPost = $database
+    //         ->getReference('/customers/' . $input['customer_id'])
+    //         ->update([
+    //             'booking_id' => $id,
+    //             'booking_status' => 1,
+
+    //         ]);
+    //     if ($input['trip_type'] == 2) {
+    //         $input['drop_address'] = "Sorry, customer not mentioned";
+    //     }
+
+    //     $newPost = $database
+    //         ->getReference('/vehicles/' . $input['vehicle_type'] . '/' . $min_driver_id)
+    //         ->update([
+    //             'booking_id' => $id,
+    //             'booking_status' => 1,
+    //             'pickup_address' => $input['pickup_address'],
+    //             'drop_address' => $input['drop_address'],
+    //             'total' => $fares['total_fare'],
+    //             // 'customer_name' => Customer::where('id',$input['customer_id'])->value('first_name'),
+    //             'customer_name' => Customer::where('id', $input['customer_id'])->value('full_name'),
+    //             'static_map' => $img,
+    //             'trip_type' => DB::table('trip_types')->where('id', $input['trip_type'])->value('name')
+    //         ]);
+
+    //     return response()->json([
+    //         "result" => $id,
+    //         "booking_type" => $input['booking_type'],
+    //         "message" => 'Success',
+    //         "status" => 1
+    //     ]);
+    // }
     public function ride_confirm(Request $request)
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-            // 'km' => 'required',
-            'vehicle_type' => 'required',
-            // 'customer_id' => 'required',
             'promo' => 'required',
-            'country_id' => 'required',
             'pickup_address' => 'required',
             'pickup_date' => 'required',
             'pickup_lat' => 'required',
             'pickup_lng' => 'required',
-            'trip_type' => 'required',
             'drop_address' => 'required',
             'drop_lat' => 'required',
             'drop_lng' => 'required',
@@ -67,70 +229,63 @@ class BookingController extends Controller
             return $this->sendError($validator->errors());
         }
 
-        $input['customer_id'] = Auth::user()->id;
-
+        $input['vehicle_type']= 1;
+        $input['customer_id']= Auth::user()->id;
+        $input['country_id']= 1;
+        $input['trip_type']= 1;
+        $input['km'] = $this->distance($input['pickup_lat'], $input['pickup_lng'], $input['drop_lat'], $input['drop_lng'], 'K') ;
         $input['pickup_date'] = date("Y-m-d H:i:s", strtotime($input['pickup_date']));
+
         $current_date = $this->get_date($input['country_id']);
-        $interval_time = $this->date_difference($input['pickup_date'], $current_date);
-        if ($interval_time <= 30) {
+        $interval_time = $this->date_difference($input['pickup_date'],$current_date);
+
+        if($interval_time <= 30){
             $input['booking_type'] = 1;
             $input['status'] = 1;
-        } else {
+        }else{
             $input['booking_type'] = 2;
             $input['status'] = 2;
         }
-        //$factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
+
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
         $database = $factory->createDatabase();
 
-
+        $drivers = $database->getReference('/vehicles/'.$input['vehicle_type'])
+                    ->getSnapshot()->getValue();
 
         $min_distance = 0;
         $min_driver_id = 0;
         $booking_searching_radius = TripSetting::value('booking_searching_radius');
 
-        foreach ($drivers as $key => $value) {
-            if ($value && array_key_exists('gender', $value)) {
-                // $value['gender'] == $input['filter'] || $input['filter'] == 0
-                // if (1) {
-                    $distance = $this->distance($input['pickup_lat'], $input['pickup_lng'], $value['lat'], $value['lng'], 'K');
-                    if ($distance <= $booking_searching_radius && $value['online_status'] == 1 && $value['booking_status'] == 0) {
-                        if ($min_distance == 0) {
-                            $min_distance = $distance;
-                            $min_driver_id = $value['driver_id'];
-                        } else if ($distance < $min_distance) {
-                            $min_distance = $distance;
-                            $min_driver_id = $value['driver_id'];
-                        }
+        foreach($drivers as $key => $value){
+            if($value && array_key_exists('gender', $value)){
+                $distance = $this->distance($input['pickup_lat'], $input['pickup_lng'], $value['lat'], $value['lng'], 'K') ;
+                if($value['online_status'] == 1 && $value['booking_status'] == 0){
+                    if($min_distance == 0){
+                        $min_distance = $distance;
+                        $min_driver_id = $value['driver_id'];
+                    }else if($distance < $min_distance){
+                        $min_distance = $distance;
+                        $min_driver_id = $value['driver_id'];
                     }
-                // }
+                }
             }
         }
 
-        $input['km'] = $distance;
-        if ($min_driver_id == 0) {
+        if($min_driver_id == 0){
             return response()->json([
                 "message" => 'Sorry drivers not available right now',
                 "status" => 0
             ]);
         }
 
-        $url = 'https://maps.googleapis.com/maps/api/staticmap?center=' . $input['pickup_lat'] . ',' . $input['pickup_lng'] . '&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:L%7C' . $input['pickup_lat'] . ',' . $input['pickup_lng'] . '&key=' . env('MAP_KEY');
-        $img = 'trip_request_static_map/' . md5(time()) . '.png';
-        file_put_contents('uploads/' . $img, file_get_contents($url));
+        $url = 'https://maps.googleapis.com/maps/api/staticmap?center='.$input['pickup_lat'].','.$input['pickup_lng'].'&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:L%7C'.$input['pickup_lat'].','.$input['pickup_lng'].'&key='.env('MAP_KEY');
+            $img = 'trip_request_static_map/'.md5(time()).'.png';
+        file_put_contents('uploads/'.$img, file_get_contents($url));
 
-        // if ($input['trip_type'] == 1) {
-        //     $fares = $this->calculate_daily_fare($input['vehicle_type'], $input['km'], $input['promo'], $input['country_id']);
-        // }
-
-        // if ($input['trip_type'] == 2) {
-        //     $fares = $this->calculate_rental_fare($input['vehicle_type'], $input['package_id'], $input['promo'], $input['country_id'], 0, 0);
-        // }
-
-        // if ($input['trip_type'] == 3) {
-        //     $fares = $this->calculate_outstation_fare($input['vehicle_type'], $input['km'], $input['promo'], $input['country_id'], 1);
-        // }
-        $fares = $this->calculate_daily_fare(1, $distance, $input['promo'], $input['country_id']);
+        if($input['trip_type'] == 1){
+            $fares = $this->calculate_daily_fare($input['vehicle_type'],$input['km'],$input['promo'],$input['country_id']);
+        }
 
         $booking_request = $input;
         $booking_request['distance'] = $input['km'];
@@ -138,55 +293,40 @@ class BookingController extends Controller
         $booking_request['total'] = $fares['total_fare'];
         $booking_request['sub_total'] = $fares['fare'];
         $booking_request['discount'] = $fares['discount'];
-        $booking_request['tax'] = $fares['tax'];
+        $booking_request['tax'] = 0;
         $booking_request['static_map'] = $img;
         $booking_request['payment_method'] = $input['payment_method'];
         $id = TripRequest::create($booking_request)->id;
 
-        if ($input['booking_type'] == 2) {
-            return response()->json([
-                "result" => $id,
-                "booking_type" => $input['booking_type'],
-                "message" => 'Success',
-                "status" => 1
-            ]);
-        }
+        $newPost = $database
+        ->getReference('/customers/'.$input['customer_id'])
+        ->update([
+            'booking_id' => $id,
+            'booking_status' => 1
+        ]);
 
         $newPost = $database
+        ->getReference('/vehicles/'.$input['vehicle_type'].'/'.$min_driver_id)
+        ->update([
+            'booking_id' => $id,
+            'booking_status' => 1,
+            'pickup_address' => $input['pickup_address'],
+            'drop_address' => $input['drop_address'],
+            'total' => $fares['total_fare'],
+            'customer_name' => Customer::where('id',$input['customer_id'])->value('full_name'),
+            'static_map' => $img,
+            'trip_type'=>DB::table('trip_types')->where('id',$input['trip_type'])->value('name')
+        ]);
+
+         $newPost = $database
 
         ->getReference('/triprequest/' . $id)
         ->update([
             'request_id' => $id,
-            'driver_id' => $driver[''],
+            'driver_id' => $min_driver_id,
             'pikup_lat' => $input['pickup_lat'],
             'pikup_lng' => $input['pickup_lng'],
         ]);
-
-
-        $newPost = $database
-            ->getReference('/customers/' . $input['customer_id'])
-            ->update([
-                'booking_id' => $id,
-                'booking_status' => 1,
-
-            ]);
-        if ($input['trip_type'] == 2) {
-            $input['drop_address'] = "Sorry, customer not mentioned";
-        }
-
-        $newPost = $database
-            ->getReference('/vehicles/' . $input['vehicle_type'] . '/' . $min_driver_id)
-            ->update([
-                'booking_id' => $id,
-                'booking_status' => 1,
-                'pickup_address' => $input['pickup_address'],
-                'drop_address' => $input['drop_address'],
-                'total' => $fares['total_fare'],
-                // 'customer_name' => Customer::where('id',$input['customer_id'])->value('first_name'),
-                'customer_name' => Customer::where('id', $input['customer_id'])->value('full_name'),
-                'static_map' => $img,
-                'trip_type' => DB::table('trip_types')->where('id', $input['trip_type'])->value('name')
-            ]);
 
         return response()->json([
             "result" => $id,
@@ -194,6 +334,26 @@ class BookingController extends Controller
             "message" => 'Success',
             "status" => 1
         ]);
+    }
+
+    public function drivers() {
+        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
+        $database = $factory->createDatabase();
+
+        $drivers = $database->getReference('/vehicles/' . 1)
+        ->getSnapshot()->getValue();
+        $driver_selected = [];
+        $i=1;
+
+        foreach ($drivers as $key => $value) {
+            // $test = $value['booking_status'];
+            if($value['booking_status'] == 0 && $value['online_status'] == 1){
+                $driver_selected[$i] = $value['driver_id'];
+            }
+            $i++;
+        }
+
+        return $driver_selected;
     }
 
     public function ride_later()
@@ -247,7 +407,7 @@ class BookingController extends Controller
 
                     $distance = $this->distance($trip_request->pickup_lat, $trip_request->pickup_lng, $value['lat'], $value['lng'], 'K');
 
-                    if ($distance <= $booking_searching_radius && $value['online_status'] == 1 && $value['booking_status'] == 0) {
+                    if ( $value['online_status'] == 1 && $value['booking_status'] == 0) {
 
                         if ($min_distance == 0) {
                             $min_distance = $distance;
@@ -289,6 +449,13 @@ class BookingController extends Controller
                 // 'customer_name' => Customer::where('id',$trip_request->customer_id)->value('first_name'),
                 'customer_name' => Customer::where('id', $trip_request->customer_id)->value('full_name'),
                 'trip_type' => DB::table('trip_types')->where('id', $trip_request->trip_type)->value('name')
+            ]);
+
+            $newPost = $database
+
+            ->getReference('/triprequest/' . $trip_request->id)
+            ->update([
+                'driver_id' => $min_driver_id,
             ]);
 
         return $trip_request->id;
@@ -344,12 +511,30 @@ class BookingController extends Controller
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
 
+        // dd($drivers_id);
+        // $i = 1;
+        // foreach ($drivers_id as $driver_del) {
+        //     $n = "$i";
+        //     // dd($n);
+
+        //     if ($driver_del[$n]->toArray() == strval(Auth::user()->id) )
+        //     {
+        //         $driver_del[$i] = null;
+        //     }
+        //     $i = intval($i);
+        //     $i++;
+        // }
+        // dd($drivers_id);
+
+
         /*$newPost = $database
         ->getReference('customers/'.$trip->customer_id)
         ->update([
             'booking_id' => 0,
             'booking_status' => 0
         ]);*/
+
+        // remove($toBeDeleted);
 
         $newPost = $database
             ->getReference('/drivers/' . $input['driver_id'])
@@ -1918,24 +2103,6 @@ class BookingController extends Controller
         ]);
     }
 
-    public function drivers() {
-        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
-        $database = $factory->createDatabase();
 
-        $drivers = $database->getReference('/vehicles/' . 1)
-        ->getSnapshot()->getValue();
-        $driver_selected = [];
-        $i=1;
-
-        foreach ($drivers as $key => $value) {
-            // $test = $value['booking_status'];
-            if($value['booking_status'] == 0 && $value['online_status'] == 1){
-                $driver_selected[$i] = $value['driver_id'];
-            }
-            $i++;
-        }
-
-        return $driver_selected;
-    }
 
 }

@@ -41,6 +41,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('customer/invite', 'App\Http\Controllers\CustomerController@customer_invite');
 });
 
+// Route::post('sendsms', 'App\Http\Controllers\Controller@sendS');
+
 //Customer
 Route::post('customer/fcm', 'App\Http\Controllers\CustomerController@sendFcm');
 Route::post('customer/check_phone', 'App\Http\Controllers\CustomerController@check_phone');
