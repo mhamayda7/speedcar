@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Supplier;
+
 return [
 
     /*
@@ -41,6 +43,11 @@ return [
             'provider' => 'users',
         ],
 
+        'supplier' => [
+            'driver' => 'session',
+            'provider' => 'suppliers',
+        ],
+
         'api' => [
             'driver' => 'token',
             'provider' => 'users',
@@ -69,6 +76,11 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\User::class,
+        ],
+
+        'suppliers' => [
+            'driver' => 'eloquent',
+            'model' => Supplier::class,
         ],
 
         // 'users' => [
