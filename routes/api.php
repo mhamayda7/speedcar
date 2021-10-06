@@ -41,7 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('customer/invite', 'App\Http\Controllers\CustomerController@customer_invite');
 });
 
-// Route::post('sendsms', 'App\Http\Controllers\Controller@sendS');
+Route::post('sendsms', 'App\Http\Controllers\Controller@sendS');
 
 //Customer
 Route::post('customer/fcm', 'App\Http\Controllers\CustomerController@sendFcm');
@@ -108,6 +108,7 @@ Route::prefix('driver/')->middleware('auth:sanctum')->group(function () {
     Route::post('change_statuses', 'App\Http\Controllers\BookingController@change_statuses');
     Route::post('get_invoice', 'App\Http\Controllers\DriverController@get_invoice');
     Route::post('signout', 'App\Http\Controllers\DriverController@signout');
+    Route::post('driver_trip', 'App\Http\Controllers\DriverController@driver_trip');
 
 });
 

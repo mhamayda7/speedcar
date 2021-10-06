@@ -90,7 +90,6 @@ class DriverController extends Controller
             $data['otp'] = rand(1000, 9999);
             $message = "Hi" . env('APP_NAME') . " , Your OTP code is:" . $data['otp'];
             $this->sendSms($input['phone_with_code'], $message);
-
             return response()->json([
                 "message" => 'Sorry this number not available please contact admin',
                 "status" => 0
@@ -101,8 +100,6 @@ class DriverController extends Controller
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-            // 'first_name' => 'required',
-            // 'last_name' => 'required',
             'full_name' => 'required',
             'country_code' => 'required',
             'phone_number' => 'required|numeric|digits_between:9,20|unique:drivers,phone_number',
@@ -111,7 +108,6 @@ class DriverController extends Controller
             'gender' => 'required',
             'date_of_birth' => 'required',
             'licence_number' => 'required',
-
             'fcm_token' => 'required'
         ]);
 
@@ -129,7 +125,6 @@ class DriverController extends Controller
         $input['currency'] = Currency::where('country_id', $input['country_id'])->value('currency');
 
         $phone_array = str_split($input['phone_number']);
-
         if ($phone_array[0] == 0) {
             $phone_without = substr($input['phone_number'], 1);
         } else {
@@ -170,29 +165,18 @@ class DriverController extends Controller
             $request->vehicle_licence->move(public_path('/uploads/captain_vehicle_licence'), $vehicle_licence);
             $input['vehicle_licence'] = $vehicle_licence;
         }
+
         $otp = rand(1000, 9999);
         $input['otp'] = $otp;
-
         $phone = '+' . $input['phone_with_code'];
-
         $message = "Hi " . env('APP_NAME') . "  , Your OTP code is:" . $otp;
 
-        // $this->sendSms($phone, $message);
-        // $this->sendSms($input['phone_with_code'], $message);
-        // $this->smsSe($phone, $message);
         $driver = Driver::create($input);
         $token = $driver->createToken('name')->plainTextToken;
 
-        // $factory = (new Factory())->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
-        // $factory = (new Factory())->withServiceAccount('/config/speed-3b614-8627a2a4f157.json');
-        // $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
-        // $database = $factory->createDatabase();
         $factory = (new Factory)->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'))
             ->withDatabaseUri(env('FIREBASE_DB'));
-        // $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
-        //$database = $firebase->getDatabase();
-
 
         $newPost = $database->getReference('/drivers/' . $driver->id)
         ->set([
@@ -925,7 +909,19 @@ class DriverController extends Controller
         }
     }
 
+    public function driver_trip() {
+        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+        $database = $factory->createDatabase();
 
+        $driver_id = Auth::user()->id;
+        $trip = Trip::where('driver_id', $driver_id)->get()->last();
+        $data = $database->getReference('/trips/' . $trip->id)
+            ->getSnapshot()->getValue();
+
+        return response()->json([
+            $data
+        ]);
+    }
 
     public function sendError($message)
     {

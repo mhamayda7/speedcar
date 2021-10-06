@@ -95,9 +95,11 @@ class Controller extends BaseController
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-        // $message = mb_convert_encoding($input['message'], "UCS2");
-        $this->smsSe($input['phone'], $input['message']);
+        $message = mb_convert_encoding($input['message'], "UTF-8");
+        // dd($message);
+        $result = $this->smsSe($input['phone'],$message);
         return response()->json([
+            "result" => $result,
             "message" => 'Succsess Send sms',
             "status" => 1
         ]);
@@ -115,6 +117,7 @@ class Controller extends BaseController
             'sender' => 'SpeedCar',
             'message' => $message,
             'recipients' => [],
+            // 'encoding' => 'UTF-8',
         ];
         foreach ($recipients as $msisdn) {
             $json['recipients'][] = ['msisdn' => $msisdn];
@@ -127,11 +130,11 @@ class Controller extends BaseController
         curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
         curl_setopt($ch, CURLOPT_USERPWD, $api_token . ":");
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($json));
-        curl_setopt($ch, CURLOPT_ENCODING, "UCS2");
+        // curl_setopt($ch, CURLOPT_ENCODING, "UCS2");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         $result = curl_exec($ch);
         curl_close($ch);
-        // print($result);
+        return  $result;
         // $json = json_decode($result);
         // print_r($json->ids);
     }
