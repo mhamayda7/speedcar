@@ -617,7 +617,8 @@ class BookingController extends Controller
 
         //Firebase
         //$factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
-        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+
+        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
         $database = $factory->createDatabase();
 
 
