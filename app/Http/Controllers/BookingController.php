@@ -234,7 +234,8 @@ class BookingController extends Controller
         $input['country_id']= 1;
         $input['trip_type']= 1;
         $input['km'] = $this->distance($input['pickup_lat'], $input['pickup_lng'], $input['drop_lat'], $input['drop_lng'], 'K') ;
-        $input['pickup_date'] = date("Y-m-d H:i:s", strtotime($input['pickup_date']));
+
+        $input['pickup_date'] = date("Y-m-d H:i:s");
 
         $current_date = $this->get_date($input['country_id']);
         $interval_time = $this->date_difference($input['pickup_date'],$current_date);
@@ -256,7 +257,7 @@ class BookingController extends Controller
         $min_distance = 0;
         $min_driver_id = 0;
         $booking_searching_radius = TripSetting::value('booking_searching_radius');
-
+        dd($drivers);
         foreach($drivers as $key => $value){
             if($value && array_key_exists('gender', $value)){
                 $distance = $this->distance($input['pickup_lat'], $input['pickup_lng'], $value['lat'], $value['lng'], 'K') ;
@@ -336,7 +337,8 @@ class BookingController extends Controller
         ]);
     }
 
-    public function drivers() {
+    public function drivers()
+    {
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
         $database = $factory->createDatabase();
 
@@ -698,6 +700,10 @@ class BookingController extends Controller
                 'booking_id' => $id,
                 'booking_status' => 2
             ]);
+
+        $newPost = $database
+            ->getReference('/triprequest/' . $input['trip_id'])
+            ->remove();
 
         TripRequest::where('id', $input['trip_id'])->update(['status' => 3]);
 

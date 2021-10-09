@@ -84,6 +84,7 @@ class DriverController extends AdminController
                 return "<span class='label label-danger'>$status_name</span>";
             }
         });
+        $grid->column('note', __('Notes'))->hide();
 
         $grid->disableExport();
         //$grid->disableCreateButton();
@@ -138,6 +139,7 @@ class DriverController extends AdminController
         $show->field('vehicle_licence', __('Vehicle Licence'));
         $show->field('address', __('Address'));
         $show->field('status', __('Status'));
+        $show->field('note', __('Notes'));
         $show->field('created_at', __('Created at'));
         $show->field('updated_at', __('Updated at'));
 
@@ -177,13 +179,15 @@ class DriverController extends AdminController
         $form->image('id_proof', __('Id proof'))->rules('max:3000');
         $form->image('vehicle_image', __('Vehicle Image'))->rules('max:3000');
         $form->image('vehicle_licence', __('Vehicle Licence'))->rules('max:3000');
-        $form->textarea('address', __('Address'))->rules('required|max:250');
+        $form->textarea('address', __('Address'))->rules('max:250');
         $form->select('currency','Currency')->options($currencies)->rules('required');
         $form->select('daily','Daily')->options([1 => 'Yes', 0 => 'No'])->default(1)->rules('required');
         $form->select('rental','Rental')->options([1 => 'Yes', 0 => 'No'])->rules('required');
         $form->select('outstation','Outstation')->options([1 => 'Yes', 0 => 'No'])->rules('required');
         $form->select('status','Status')->options($statuses)->rules('required');
-
+        $form->textarea('note', __('Notes'))->rules('max:250');
+        $form->text('created_at', __('Created at'));
+        $form->text('updated_at', __('Updated at'));
 
         $form->saving(function ($form) {
             if($form->password && $form->model()->password != $form->password)
