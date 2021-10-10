@@ -168,7 +168,7 @@ class DriverController extends AdminController
         $form->text('phone_with_code', __('Phone number with code'))->rules(function ($form) {
                 return 'required';
         });
-        $form->text('wallet', __('Wallet'))->disable();
+        $form->text('wallet', __('Wallet'));
         $form->email('email', __('Email'))->rules(function ($form) {
                 return 'required|max:100';
         });

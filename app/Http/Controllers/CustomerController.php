@@ -127,6 +127,37 @@ class CustomerController extends Controller
             ]);
         }
     }
+    public function forget_password(Request $request)
+    {
+
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'phone_with_code' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors());
+        }
+        $newPassword = rand(100000,999999);
+        $options = [
+            'cost' => 12,
+        ];
+        $cryptNewPassword = password_hash($newPassword, PASSWORD_DEFAULT, $options);
+
+        if (Customer::where('phone_with_code', $input['phone_with_code'])->update(['password'=>$cryptNewPassword])) {
+            $message ="Your new password is: " . $newPassword;
+            $this->sendSms($input['phone_with_code'], $message);
+            return response()->json([
+                "message" => 'Success',
+                "status" => 1
+            ]);
+        } else {
+            return response()->json([
+                "message" => 'Sorry something went wrong',
+                "status" => 0
+            ]);
+        }
+    }
 
     public function register(Request $request)
     {
@@ -256,11 +287,13 @@ class CustomerController extends Controller
             ]);
         }
     }
+
     function unique_random($chars = 5)
     {
     }
 
-    public function referral(Request $request) {
+    public function referral(Request $request)
+    {
         $input = $request->all();
         $validator = Validator::make($input, [
             'customer_id' => 'required',
