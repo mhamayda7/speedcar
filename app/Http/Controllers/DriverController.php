@@ -928,7 +928,8 @@ class DriverController extends Controller
         ]);
         } else {
             return response()->json([
-                null
+                "message" => 'عذراً لا يوجد لديك رحلات حالياً',
+                "status" => 0
             ]);
         }
     }
