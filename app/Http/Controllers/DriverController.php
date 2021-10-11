@@ -924,7 +924,8 @@ class DriverController extends Controller
             ->getSnapshot()->getValue();
 
         return response()->json([
-            $data
+            "trip" => $data,
+            "status" => 1
         ]);
         } else {
             return response()->json([
