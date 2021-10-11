@@ -77,7 +77,7 @@ class Controller extends BaseController
             ->withNotification([
                 'title' => $input['title'],
                 'body' => $input['description'],
-                'icon' => 'stock_ticker_update',
+                'icon' => $input['icon'],
                 // 'color' => '#f45342',
                 'sound' => 'default',
             ]);
