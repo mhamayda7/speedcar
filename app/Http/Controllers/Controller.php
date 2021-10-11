@@ -67,6 +67,24 @@ class Controller extends BaseController
         $messaging->send($message);
     }
 
+    public function send_fcmAll(Request $request)
+    {
+        $input = $request->all();
+        $factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
+        $messaging = $factory->createMessaging();
+        $topic = 'all';
+        $message = CloudMessage::withTarget('topic', $topic)
+            ->withNotification([
+                'title' => $input['title'],
+                'body' => $input['description'],
+                'icon' => 'stock_ticker_update',
+                // 'color' => '#f45342',
+                'sound' => 'default',
+            ]);
+        ;
+        $messaging->send($message);
+    }
+
     public function sendSms($phone_number, $message)
     {
         $sid    = env('TWILIO_SID');
@@ -86,7 +104,8 @@ class Controller extends BaseController
         });
     }
 
-    public function sendS(Request $request) {
+    public function sendS(Request $request)
+    {
         $input = $request->all();
         $validator = Validator::make($input, [
             'phone' => 'required',
@@ -148,5 +167,7 @@ class Controller extends BaseController
             "status" => 1
         ]);
     }
+
+
 
 }

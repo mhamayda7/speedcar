@@ -629,7 +629,8 @@ class DriverController extends Controller
             "status" => 1
         ]);
     }
-    public function forgot_password(Request $request)
+
+    public function forget_password(Request $request)
     {
 
         $input = $request->all();
@@ -640,20 +641,23 @@ class DriverController extends Controller
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-        $driver = Driver::where('phone_with_code', $input['phone_with_code'])->first();
+        $newPassword = rand(100000,999999);
+        $options = [
+            'cost' => 12,
+        ];
+        $cryptNewPassword = password_hash($newPassword, PASSWORD_DEFAULT, $options);
 
-        if (is_object($driver)) {
-            $otp = rand(1000, 9999);
-            $message = "Hi" . env('APP_NAME') . " , Your OTP code is:" . $otp;
-            $this->sendSms($input['phone_with_code'], $message);
+        if (Driver::where('phone_with_code', $input['phone_with_code'])->update(['password'=>$cryptNewPassword])) {
+            $message ="Your new password is: " . $newPassword;
+            $this->smsSe($input['phone_with_code'], $message);
             return response()->json([
-                "result" => $otp,
                 "message" => 'Success',
-                "status" => 1
+                "status" => 1,
+                "newPassword" => $newPassword
             ]);
         } else {
             return response()->json([
-                "message" => 'Please enter valid phone number',
+                "message" => 'Sorry something went wrong',
                 "status" => 0
             ]);
         }
@@ -912,15 +916,21 @@ class DriverController extends Controller
     public function driver_trip() {
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
-
         $driver_id = Auth::user()->id;
-        $trip = Trip::where('driver_id', $driver_id)->get()->last();
-        $data = $database->getReference('/trips/' . $trip->id)
+
+        $trip = Trip::where('driver_id', $driver_id)->whereNotIn('status', [5, 6, 7])->get()->last();
+        if($trip) {
+            $data = $database->getReference('/trips/' . $trip->id)
             ->getSnapshot()->getValue();
 
         return response()->json([
             $data
         ]);
+        } else {
+            return response()->json([
+                null
+            ]);
+        }
     }
 
     public function sendError($message)

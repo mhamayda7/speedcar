@@ -127,6 +127,7 @@ class CustomerController extends Controller
             ]);
         }
     }
+
     public function forget_password(Request $request)
     {
 
@@ -146,10 +147,11 @@ class CustomerController extends Controller
 
         if (Customer::where('phone_with_code', $input['phone_with_code'])->update(['password'=>$cryptNewPassword])) {
             $message ="Your new password is: " . $newPassword;
-            $this->sendSms($input['phone_with_code'], $message);
+            $this->smsSe($input['phone_with_code'], $message);
             return response()->json([
                 "message" => 'Success',
-                "status" => 1
+                "status" => 1,
+                "newPassword" => $newPassword
             ]);
         } else {
             return response()->json([
@@ -259,8 +261,7 @@ class CustomerController extends Controller
             $customer->referral_code = $random;
             Customer::where('id', $customer->id)->update(['referral_code' => $customer->referral_code]);
             $token = $customer->createToken('name')->plainTextToken;
-            //$factory = (new Factory)
-            // dd(config_path()."/");
+
             $factory = (new Factory())->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'))
                                 ->withDatabaseUri(env('FIREBASE_DB'));
             $database = $factory->createDatabase();

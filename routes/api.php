@@ -48,6 +48,7 @@ Route::post('customer/fcm', 'App\Http\Controllers\CustomerController@sendFcm');
 Route::post('customer/check_phone', 'App\Http\Controllers\CustomerController@check_phone');
 Route::post('customer/register', 'App\Http\Controllers\CustomerController@register');
 Route::post('customer/login', 'App\Http\Controllers\CustomerController@login');
+Route::post('customer/forget_password', 'App\Http\Controllers\CustomerController@forget_password');
 
 Route::post('customer/faq', 'App\Http\Controllers\FaqController@customer_faq');
 Route::post('customer/policy', 'App\Http\Controllers\PrivacyPolicyController@customer_policy');
@@ -84,6 +85,7 @@ Route::get('fare', 'App\Http\Controllers\BookingController@fare');
 //driver
 Route::post('driver/login', 'App\Http\Controllers\DriverController@login');
 Route::post('driver/register', 'App\Http\Controllers\DriverController@register');
+Route::post('driver/forget_password', 'App\Http\Controllers\DriverController@forget_password');
 
 Route::post('driver/check_phone', 'App\Http\Controllers\DriverController@check_phone');
 Route::post('driver/profile_picture', 'App\Http\Controllers\DriverController@profile_picture');
@@ -150,4 +152,6 @@ Route::get('get_trip_type', 'App\Http\Controllers\RideDetailsController@get_trip
 Route::get('get_package', 'App\Http\Controllers\CustomerController@get_package');
 Route::get('ride_later','App\Http\Controllers\BookingController@ride_later');
 Route::post('drivers','App\Http\Controllers\BookingController@drivers');
+Route::post('fcmAll','App\Http\Controllers\Controller@send_fcmAll');
+
 // Route::post('distances','App\Http\Controllers\BookingController@distances');
