@@ -257,7 +257,6 @@ class BookingController extends Controller
         $min_distance = 0;
         $min_driver_id = 0;
         $booking_searching_radius = TripSetting::value('booking_searching_radius');
-        dd($drivers);
         foreach($drivers as $key => $value){
             if($value && array_key_exists('gender', $value)){
                 $distance = $this->distance($input['pickup_lat'], $input['pickup_lng'], $value['lat'], $value['lng'], 'K') ;
