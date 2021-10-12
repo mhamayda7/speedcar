@@ -11,16 +11,8 @@ class NotificationController extends Controller
 {
     public function get_customer_notification_messages(Request $request)
     {
-        $input = $request->all();
-        $validator = Validator::make($input, [
-
-        ]);
-        if ($validator->fails()) {
-            return $this->sendError($validator->errors());
-        }
-
-        $input['customer_id'] = Auth::user()->id;
-        $data = NotificationMessage::where('status',1)->where('type',1)->whereIn('user_id',[$input['customer_id'],0])->orderBy('id', 'DESC')->get();
+        $id = Auth::user()->id;
+        $data = NotificationMessage::where('status',1)->where('type',1)->whereIn('user_id',[$id,0])->orderBy('id', 'DESC')->get();
 
         return response()->json([
             "result" => $data,
