@@ -333,7 +333,7 @@ class DriverController extends Controller
 
     public function profile_info()
     {
-        $result = Driver::select('id', 'full_name', 'phone_with_code', 'gender', 'email', 'address', 'date_of_birth','status')->where('id', Auth::user()->id)->first();
+        $result = Driver::select('id', 'full_name', 'phone_with_code', 'gender', 'email', 'address', 'date_of_birth','status', 'online_status')->where('id', Auth::user()->id)->first();
 
         if (is_object($result)) {
             if ($result->gender == 0) {

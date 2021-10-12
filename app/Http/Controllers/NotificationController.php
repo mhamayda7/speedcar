@@ -13,13 +13,14 @@ class NotificationController extends Controller
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-            'country_id' => 'required',
-            'customer_id' => 'required'
+
         ]);
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-        $data = NotificationMessage::where('status',1)->where('type',1)->orderBy('id', 'DESC')->get();
+
+        $input['customer_id'] = Auth::user()->id;
+        $data = NotificationMessage::where('status',1)->where('type',1)->whereIn('user_id',[$input['customer_id'],0])->orderBy('id', 'DESC')->get();
 
         return response()->json([
             "result" => $data,
@@ -33,14 +34,13 @@ class NotificationController extends Controller
     {
         $input = $request->all();
         $validator = Validator::make($input, [
-            'country_id' => 'required',
-            // 'driver_id' => 'required'
+
         ]);
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
         $input['driver_id'] = Auth::user()->id;
-        $data = NotificationMessage::where('status',1)->where('type',2)->orderBy('id', 'DESC')->get();
+        $data = NotificationMessage::where('status',1)->where('type',2)->whereIn('user_id',[$input['driver_id'],0])->orderBy('id', 'DESC')->get();
 
         return response()->json([
             "result" => $data,
@@ -52,7 +52,8 @@ class NotificationController extends Controller
 
 
 
-    public function sendError($message) {
+    public function sendError($message)
+    {
         $message = $message->all();
         $response['error'] = "validation_error";
         $response['message'] = implode('',$message);

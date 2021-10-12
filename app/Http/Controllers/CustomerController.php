@@ -987,6 +987,7 @@ class CustomerController extends Controller
         $customer_fcm = Customer::where('id', $input['customer_id'])->value('fcm_token');
 
         if ($customer_fcm) {
+
             $this->send_fcm('نقاط مكتسبة', 'قمت بدعوة صديق و اضافة' . ' نقاط', $customer_fcm);
         }
 

@@ -17,21 +17,16 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-// Route::get('promo', 'PromoCodeController@promo');
-
+Route::post('sendsms', 'App\Http\Controllers\Controller@sendS');
 
 Route::middleware('auth:sanctum')->group(function () {
-
     Route::get('splash', 'App\Http\Controllers\Controller@splash');
-
     Route::post('customer/profile_picture', 'App\Http\Controllers\CustomerController@profile_picture');
     Route::post('customer/profile', 'App\Http\Controllers\CustomerController@profile');
     Route::post('customer/profile_update', 'App\Http\Controllers\CustomerController@profile_update');
     Route::post('customer/my_bookings', 'App\Http\Controllers\BookingController@customer_bookings');
     Route::post('customer/ride_confirm', 'App\Http\Controllers\BookingController@ride_confirm');
-
     Route::post('customer/get_status', 'App\Http\Controllers\BookingController@get_statuses');
-
     Route::post('customer/get_reward', 'App\Http\Controllers\BookingController@get_reward');
     Route::post('customer/get_invoice', 'App\Http\Controllers\BookingController@get_invoice');
     Route::post('customer/distance', 'App\Http\Controllers\BookingController@customer_distance');
@@ -41,15 +36,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('customer/invite', 'App\Http\Controllers\CustomerController@customer_invite');
 });
 
-Route::post('sendsms', 'App\Http\Controllers\Controller@sendS');
-
 //Customer
 Route::post('customer/fcm', 'App\Http\Controllers\CustomerController@sendFcm');
 Route::post('customer/check_phone', 'App\Http\Controllers\CustomerController@check_phone');
 Route::post('customer/register', 'App\Http\Controllers\CustomerController@register');
 Route::post('customer/login', 'App\Http\Controllers\CustomerController@login');
 Route::post('customer/forget_password', 'App\Http\Controllers\CustomerController@forget_password');
-
 Route::post('customer/faq', 'App\Http\Controllers\FaqController@customer_faq');
 Route::post('customer/policy', 'App\Http\Controllers\PrivacyPolicyController@customer_policy');
 Route::get('app_setting', 'App\Http\Controllers\AppSettingController@index');
@@ -69,28 +61,20 @@ Route::post('customer/get_promo_codes', 'App\Http\Controllers\RideDetailsControl
 Route::post('customer/forgot', 'App\Http\Controllers\CustomerController@forgot');
 Route::post('customer/reset_password', 'App\Http\Controllers\CustomerController@reset_password');
 Route::post('customer/get_categories', 'App\Http\Controllers\CustomerController@get_vehicle_categories');
-
 Route::post('customer/get_fare', 'App\Http\Controllers\BookingController@get_fare');
-
 Route::post('customer/payment_method', 'App\Http\Controllers\CustomerController@payment_method');
 Route::post('customer/wallet_payment_methods', 'App\Http\Controllers\CustomerController@wallet_payment_methods');
 Route::post('customer/trip_cancel', 'App\Http\Controllers\BookingController@trip_cancel_by_customer');
 Route::get('fare', 'App\Http\Controllers\BookingController@fare');
-
 // Route::post('customer/reward_point', 'App\Http\Controllers\BookingController@reward_point');
-
-
-
 
 //driver
 Route::post('driver/login', 'App\Http\Controllers\DriverController@login');
 Route::post('driver/register', 'App\Http\Controllers\DriverController@register');
 Route::post('driver/forget_password', 'App\Http\Controllers\DriverController@forget_password');
-
 Route::post('driver/check_phone', 'App\Http\Controllers\DriverController@check_phone');
 Route::post('driver/profile_picture', 'App\Http\Controllers\DriverController@profile_picture');
 Route::post('driver/profile_update', 'App\Http\Controllers\DriverController@profile_update');
-
 Route::post('driver/faq', 'App\Http\Controllers\FaqController@driver_faq');
 Route::get('driver/ride_list', 'App\Http\Controllers\RideDetailsController@driver_ride_list');
 Route::get('driver/ride_details', 'App\Http\Controllers\RideDetailsController@driver_ride_details');
@@ -111,22 +95,18 @@ Route::prefix('driver/')->middleware('auth:sanctum')->group(function () {
     Route::post('get_invoice', 'App\Http\Controllers\DriverController@get_invoice');
     Route::post('signout', 'App\Http\Controllers\DriverController@signout');
     Route::post('driver_trip', 'App\Http\Controllers\DriverController@driver_trip');
+    Route::post('driver_invoice', 'App\Http\Controllers\BookingController@driver_invoice');
 });
 
 Route::post('driver/policy', 'App\Http\Controllers\PrivacyPolicyController@driver_policy');
 Route::post('driver/get_kyc', 'App\Http\Controllers\DriverController@get_bank_kyc_details');
 Route::post('driver/update_kyc', 'App\Http\Controllers\DriverController@bank_kyc_update');
-
 Route::post('driver_tutorials', 'App\Http\Controllers\DriverController@get_tutorials');
 Route::post('driver/forgot_password', 'App\Http\Controllers\DriverController@forgot_password');
 Route::post('driver/reset_password', 'App\Http\Controllers\DriverController@reset_password');
 Route::post('driver/get_vehicles', 'App\Http\Controllers\DriverController@get_vehicles');
-
 Route::post('driver/dashboard', 'App\Http\Controllers\DriverController@driver_dashboard');
 Route::post('driver/rating_upload', 'App\Http\Controllers\DriverController@driver_ratings');
-
-
-
 Route::get('calculate_earnings/{id}', 'App\Http\Controllers\BookingController@calculate_earnings');
 //Route::post('booking/send_mail', 'App\Http\Controllers\BookingController@ride_completeion_mail');
 Route::post('stripe_payment', 'App\Http\Controllers\CustomerController@stripe_payment');
@@ -141,7 +121,6 @@ Route::post('driver/upload', 'App\Http\Controllers\DriverController@upload');
 Route::post('vehicle_type_list', 'App\Http\Controllers\DriverController@vehicle_type_list');
 Route::post('vehicle_update', 'App\Http\Controllers\DriverController@vehicle_update');
 Route::post('vehicle/image_upload', 'App\Http\Controllers\DriverController@vehicle_image_upload');
-
 Route::post('driver/register_query', 'App\Http\Controllers\DriverController@register_query');
 Route::post('add_sos_contact', 'App\Http\Controllers\CustomerController@add_sos_contact');
 Route::post('delete_sos_contact', 'App\Http\Controllers\CustomerController@delete_sos_contact');
@@ -153,5 +132,4 @@ Route::get('get_package', 'App\Http\Controllers\CustomerController@get_package')
 Route::get('ride_later','App\Http\Controllers\BookingController@ride_later');
 Route::post('drivers','App\Http\Controllers\BookingController@drivers');
 Route::post('fcmAll','App\Http\Controllers\Controller@send_fcmAll');
-
 // Route::post('distances','App\Http\Controllers\BookingController@distances');

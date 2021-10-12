@@ -77,7 +77,7 @@ class Controller extends BaseController
             ->withNotification([
                 'title' => $input['title'],
                 'body' => $input['description'],
-                'icon' => $input['icon'],
+                'image' => $input['icon'],
                 // 'color' => '#f45342',
                 'sound' => 'default',
             ]);

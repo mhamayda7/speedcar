@@ -354,7 +354,6 @@ class BookingController extends Controller
             }
             $i++;
         }
-
         return $driver_selected;
     }
 
@@ -707,6 +706,7 @@ class BookingController extends Controller
 
         TripRequest::where('id', $input['trip_id'])->update(['status' => 3]);
 
+
         $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $customer->fcm_token);
 
         return response()->json([
@@ -989,7 +989,8 @@ class BookingController extends Controller
         return $data;
     }
 
-    public function fare() {
+    public function fare()
+    {
         $data = DB::table('daily_fare_management')->select('base_fare','price_per_km','price_time')->where('id', 1)->first();
         return response()->json([
             "result" => $data,
@@ -1060,137 +1061,6 @@ class BookingController extends Controller
         ]);
     }
 
-    // public function change_statuses(Request $request)
-    // {
-    //     $input = $request->all();
-    //     $validator = Validator::make($input, [
-    //         'trip_id' => 'required',
-    //         'status' => 'required'
-    //     ]);
-    //     if ($validator->fails()) {
-    //         return $this->sendError($validator->errors());
-    //     }
-    //     Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
-
-    //     $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
-    //     $database = $factory->createDatabase();
-
-    //     Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
-
-    //     if ($input['status'] == 3) {
-    //         Trip::where('id', $input['trip_id'])->update(['start_time' => date('Y-m-d H:i:s'), 'actual_pickup_address' => $input['address'], 'actual_pickup_lat' => $input['lat'], 'actual_pickup_lng' => $input['lng']]);
-    //     }
-
-    //     $trip = Trip::where('id', $input['trip_id'])->first();
-
-    //     if ($input['status'] == 4) {
-    //         Trip::where('id', $input['trip_id'])->update(['end_time' => date('Y-m-d H:i:s'), 'actual_drop_address' => $input['address'], 'actual_drop_lat' => $input['lat'], 'actual_drop_lng' => $input['lng']]);
-
-    //         $this->calculate_fare($input['trip_id']);
-
-    //         $newPost = $database
-    //             ->getReference('customers/' . $trip->customer_id)
-    //             ->update([
-    //                 'booking_id' => 0,
-    //                 'booking_status' => 0
-    //             ]);
-
-    //         $newPost = $database
-    //             ->getReference('drivers/' . $trip->driver_id)
-    //             ->update([
-    //                 'booking_status' => 0
-    //             ]);
-    //         $vehicle_type = DriverVehicle::where('id', $trip->vehicle_id)->value('vehicle_type');
-
-    //         $newPost = $database
-    //             ->getReference('vehicles/' . $vehicle_type . '/' . $trip->driver_id)
-    //             ->update([
-    //                 'booking_id' => 0,
-    //                 'booking_status' => 0,
-    //                 'pickup_address' => "",
-    //                 'customer_name' => "",
-    //                 'drop_address' => "",
-    //                 'total' => ""
-    //             ]);
-    //     }
-
-    //     if ($input['status'] != 5) {
-    //         $current_status = BookingStatus::where('id', $input['status'])->first();
-    //         $new_status = BookingStatus::where('id', $input['status'])->first();
-    //     } else {
-    //         $current_status = BookingStatus::where('id', $input['status'])->first();
-    //         $new_status = BookingStatus::where('id', $input['status'])->first();
-
-    //         $this->calculate_earnings($input['trip_id']);
-    //         //$this->create_reward($input['trip_id']);
-
-    //         $distance = Trip::where('id', $input['trip_id'])->sum('distance');
-    //         $trip_customer = Trip::where('id', $input['trip_id'])->value('customer_id');
-    //         $customer = Customer::find($trip_customer);
-    //         //            dd($distance);/
-    //         $customer->points += $distance;
-    //         $customer->save();
-    //         // $points = Customer::where('id', $trip_customer)->value('points');
-    //         $this->reward_point($input['trip_id']);
-    //         $trans = [];
-    //         //invoice
-
-    //         $payment_method = Trip::where('trip_id', $input['trip_id'])->value('payment_method');
-    //         // $trip = Trip::where('id', $input['trip_id'])->first();
-    //         $distance = $this->get_distance($input['trip_id']);
-    //         dd($trip);
-    //         $fare = $this->calculate_daily_fare($trip->vehicle_type, $distance, $trip->promo_code, $trip->country_id);
-    //         if ($payment_method == 1)
-    //         {
-    //             $amonut_trip = $this->calculate_fare($input['trip_id']);
-    //             // dd($amonut_trip);
-    //             $trans = new Transaction();
-    //             $trans->customer_id = $trip_customer;
-    //             $trans->amount = $fare;
-    //             $trans->payment_method = $payment_method;
-    //             $trans->type = 1;
-    //             $trans->save();
-    //             // Transaction::create($data);
-    //         } elseif ($payment_method == 2)
-    //         {
-    //             $amonut_trip = $this->calculate_fare($input['trip_id']);
-    //             // dd($amonut_trip);
-    //             $trans = new Transaction();
-    //             $trans->customer_id = $trip_customer;
-    //             $trans->amount = $amonut_trip;
-    //             $amount = Customer::where('id', $trip_customer)->value('wallet');
-    //             $new_amount = $amount - $trans->amount;
-    //             Customer::where('id', $customer->id)->update(['wallet' => $new_amount]);
-    //             $trans->payment_method = $payment_method;
-    //             $trans->type = 1;
-    //             $trans->save();
-    //         }
-
-    //     }
-
-    //     $fcm_token = Customer::where('id', $trip->customer_id)->value('fcm_token');
-
-    //     if ($fcm_token) {
-    //         $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $fcm_token);
-    //     }
-
-
-    //     $newPost = $database
-    //         ->getReference('trips/' . $input['trip_id'])
-    //         ->update([
-    //             'customer_status_name' => $current_status->customer_status_name,
-    //             'status' => $current_status->id,
-    //             'driver_status_name' => $current_status->status_name,
-    //             'new_status' => $new_status->id,
-    //             'new_driver_status_name' => $new_status->status_name
-    //         ]);
-    //     $test = $trans ;
-    //     return response()->json([
-    //         "transction" => $test,
-    //         "message" => 'Success',
-    //         "status" => 1
-    //     ]);
-    // }
     public function change_statuses(Request $request)
     {
         $input = $request->all();
@@ -1437,31 +1307,6 @@ class BookingController extends Controller
 
     public function get_statuses()
     {
-        // $input = $request->all();
-        // $validator = Validator::make($input, [
-        //     // 'trip_id' => 'required',
-        // ]);
-        // if ($validator->fails()) {
-        //     return $this->sendError($validator->errors());
-        // }
-        // $id = $input['trip_id'];
-        // $show = TripRequest::findOrFail($id);
-
-        // return response()->json([
-        //     "result" => $show->status,
-        //     "message" => 'Success',
-        //     "status" => 1
-        // ]);
-
-        // $input = $request->all();
-        // $validator = Validator::make($input, [
-        //     // 'trip_id' => 'required',
-        //     'customer_id' => 'required',
-        // ]);
-        // if ($validator->fails()) {
-        //     return $this->sendError($validator->errors());
-        // }
-
         $id = Auth::user()->id;
         $trip_request = TripRequest::select('status')->where('customer_id', $id)->get()->last();
         // $status = $trip_request->status;
@@ -1570,41 +1415,6 @@ class BookingController extends Controller
             return $miles;
         }
     }
-
-    // function distances(Request $request)
-    // {
-    //     $input = $request->all();
-    //     $validator = Validator::make($input, [
-    //         'lat1' => 'required',
-    //         'lon1' => 'required',
-    //         'lat2' => 'required',
-    //         'lon2' => 'required',
-    //         'km' => 'required'
-    //     ]);
-    //     if ($validator->fails()) {
-    //         return $this->sendError($validator->errors());
-    //     }
-    //     $lat1 = $input['lat1'];
-    //     $lat2 = $input['lat2'];
-    //     $lon1 = $input['lon1'];
-    //     $lon2 = $input['lon2'];
-    //     $unit = $input['km'];
-
-    //     $theta = $lon1 - $lon2;
-    //     $dist = sin(deg2rad($lat1)) * sin(deg2rad($lat2)) +  cos(deg2rad($lat1)) * cos(deg2rad($lat2)) * cos(deg2rad($theta));
-    //     $dist = acos($dist);
-    //     $dist = rad2deg($dist);
-    //     $miles = $dist * 60 * 1.1515;
-    //     $unit = strtoupper($unit);
-
-    //     if ($unit == "K") {
-    //         return ($miles * 1.609344);
-    //     } else if ($unit == "N") {
-    //         return ($miles * 0.8684);
-    //     } else {
-    //         return $miles;
-    //     }
-    // }
 
     public function calculate_earnings($trip_id)
     {
@@ -2019,26 +1829,20 @@ class BookingController extends Controller
         $data['logo'] = $app_setting->logo;
         $data['booking_id'] = $booking_details->trip_id;
         $data['customer_name'] = Customer::where('id', $booking_details->customer_id)->value('first_name');
-        //            $data['customer_name'] = Customer::where('id',$booking_details->customer_id)->value('full_name');
         $data['pickup_address'] = $booking_details->pickup_address;
         $data['drop_address'] = $booking_details->drop_address;
         $data['start_time'] = $booking_details->start_time;
         $data['end_time'] = $booking_details->end_time;
-
-
         $data['driver'] = (Driver::where('id', $booking_details->driver_id)->value('first_name') != '') ? Driver::where('id', $booking_details->driver_id)->value('first_name') : "---";
-        //            $data['driver'] = (Driver::where('id',$booking_details->driver_id)->value('full_name') != '' ) ? Driver::where('id',$booking_details->driver_id)->value('full_name') : "---" ;
         $country = Country::where('phone_code', $input['country_code'])->value('id');
         $data['country_id'] = $country;
         $data['currency'] = Currency::where('country_id', $data['country_id'])->value('currency');
-
         $data['payment_method'] = PaymentMethod::where('id', $booking_details->payment_method)->value('payment');
         $data['sub_total'] = $booking_details->sub_total;
         $data['discount'] =  $booking_details->discount;
         $data['total'] =  $booking_details->total;
         $data['tax'] =  $booking_details->tax;
         $data['status'] =  Status::where('id', $booking_details->status)->value('name');
-
         $mail_header = array("data" => $data);
         $this->send_order_mail($mail_header, 'Enjoy the ride', $email);
         return response()->json([
@@ -2047,13 +1851,41 @@ class BookingController extends Controller
         ]);
     }
 
-    public function sendError($message)
+    public function driver_invoice(Request $request)
     {
-        $message = $message->all();
-        $response['error'] = "validation_error";
-        $response['message'] = implode('', $message);
-        $response['status'] = "0";
-        return response()->json($response, 200);
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'trip_id' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors());
+        }
+        $trip = Trip::where('id', $input['trip_id'])->first();
+        $app_setting = AppSetting::first();
+        $data = array();
+
+        $trip->start_time;
+        $trip->end_time;
+
+        $vehicle = DB::table('daily_fare_management')->where('id', 1)->first();
+        $base_fare = number_format((float)$vehicle->base_fare, 2, '.', '');
+        $distance = $this->get_distance($trip->trip_id);
+        $price_per_km = number_format((float)$vehicle->price_per_km, 2, '.', '');
+        $price_time = number_format((float)$vehicle->price_time, 2, '.', '');
+        $interval = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
+        // $fare = number_format((float)$base_far + ($price_per_km * $distance) + ($price_time * $interval));
+;
+
+        $data['sub_total'] = $price_per_km * $distance;
+        $data['waiting_time'] = $price_time * $interval;
+        $data['base_fare'] = $base_fare;
+        $data['discount'] =  $trip->discount;
+        $data['total'] =  $trip->total;
+        return response()->json([
+            "invoice" => $data,
+            "message" => 'Success',
+            "status" => 1
+        ]);
     }
 
     public function get_distance($trip_id)
@@ -2082,33 +1914,29 @@ class BookingController extends Controller
 
     public function customer_distance(Request $request)
     {
-        // $input = $request->all();
-        // $validator = Validator::make($input, [
-        //     'customer_id' => 'required'
-        // ]);
-        // if ($validator->fails()) {
-        //     return $this->sendError($validator->errors());
-        // }
         $input['customer_id'] = Auth::user()->id;
         $data = Trip::where('trips.customer_id', $input['customer_id'])->sum('distance');
-        // $count = Trip::where('trips.customer_id',$input['customer_id'])->get('distance');
         $wallet = Customer::where('customers.id', $input['customer_id'])->value('wallet');
         $name = Customer::where('customers.id', $input['customer_id'])->value('full_name');
         $phone = Customer::where('customers.id', $input['customer_id'])->value('phone_with_code');
         $point = Customer::where('customers.id',$input['customer_id'])->value('points');
-        // $award = Customer::where('customers.id',$input['customer_id'])->value('wallet');
         return response()->json([
             "full_name" => $name,
             "phone" => $phone,
             "distance" => $data,
             "point" => $point,
-
             "wallet" => $wallet,
             "message" => 'Success',
             "status" => 1
         ]);
     }
 
-
-
+    public function sendError($message)
+    {
+        $message = $message->all();
+        $response['error'] = "validation_error";
+        $response['message'] = implode('', $message);
+        $response['status'] = "0";
+        return response()->json($response, 200);
+    }
 }
