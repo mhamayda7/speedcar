@@ -235,7 +235,6 @@ class BookingController extends Controller
         $input['country_id']= 1;
         $input['trip_type']= 1;
         $input['km'] = $this->distance($input['pickup_lat'], $input['pickup_lng'], $input['drop_lat'], $input['drop_lng'], 'K') ;
-
         $input['pickup_date'] = date("Y-m-d H:i:s");
 
         $current_date = $this->get_date($input['country_id']);
@@ -259,7 +258,7 @@ class BookingController extends Controller
         $min_driver_id = 0;
         $booking_searching_radius = TripSetting::value('booking_searching_radius');
         foreach($drivers as $key => $value){
-            if($value && array_key_exists('gender', $value)){
+            // if($value && array_key_exists('gender', $value)){
                 $distance = $this->distance($input['pickup_lat'], $input['pickup_lng'], $value['lat'], $value['lng'], 'K') ;
                 if($value['online_status'] == 1 && $value['booking_status'] == 0){
                     if($min_distance == 0){
@@ -270,7 +269,7 @@ class BookingController extends Controller
                         $min_driver_id = $value['driver_id'];
                     }
                 }
-            }
+            // }
         }
 
         if($min_driver_id == 0){
