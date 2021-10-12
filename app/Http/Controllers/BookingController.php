@@ -39,6 +39,7 @@ use DateTime;
 use DateTimeZone;
 use App\CustomerWalletHistory;
 use App\Models\Point;
+use App\NotificationMessage;
 use App\PromoCode;
 use Encore\Admin\Show;
 use Illuminate\Support\Facades\Auth;
@@ -704,15 +705,27 @@ class BookingController extends Controller
             ->remove();
 
         TripRequest::where('id', $input['trip_id'])->update(['status' => 3]);
-
+        $image = "image/tripaccept.png";
 
         $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $customer->fcm_token);
-
+        $this->save_notifcation($trip_details->customer_id,1,$current_status->status_name,$current_status->customer_status_name,$image);
         return response()->json([
             "result" => $id,
             "message" => 'Success',
             "status" => 1
         ]);
+    }
+
+    public function save_notifcation($id, $type, $title, $message, $image) {
+        $data = array();
+        $data['user_id'] = $id;
+        $data['country_id'] = 1;
+        $data['type'] = $type;
+        $data['title'] = $title;
+        $data['message'] = $message;
+        $data['image'] = $image;
+        $data['status'] = 1;
+        NotificationMessage::create($data);
     }
 
     public function trip_cancel_by_customer(Request $request)
