@@ -13,7 +13,6 @@ class NotificationController extends Controller
     {
         $id = Auth::user()->id;
         $data = NotificationMessage::where('status',1)->where('type',1)->whereIn('user_id',[$id,0])->orderBy('id', 'DESC')->get();
-
         return response()->json([
             "result" => $data,
             "count" => count($data),

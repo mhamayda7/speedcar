@@ -34,6 +34,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('customer/point_to_wallet', 'App\Http\Controllers\BookingController@point_to_wallet');
     Route::post('customer/signout', 'App\Http\Controllers\CustomerController@signout');
     Route::post('customer/invite', 'App\Http\Controllers\CustomerController@customer_invite');
+    Route::post('customer/get_notification_messages', 'App\Http\Controllers\NotificationController@get_customer_notification_messages');
 });
 
 //Customer
@@ -51,7 +52,6 @@ Route::post('customer/get_wallet', 'App\Http\Controllers\CustomerController@get_
 Route::post('customer/get_complaint_sub_category', 'App\Http\Controllers\ComplaintController@get_complaint_sub_categories');
 Route::post('customer/get_complaint_category', 'App\Http\Controllers\ComplaintController@get_complaint_categories');
 Route::post('customer/add_complaint', 'App\Http\Controllers\ComplaintController@add_complaint');
-Route::post('customer/get_notification_messages', 'App\Http\Controllers\NotificationController@get_customer_notification_messages');
 Route::post('customer/ride_list', 'App\Http\Controllers\RideDetailsController@ride_list');
 Route::post('customer/ride_details', 'App\Http\Controllers\RideDetailsController@ride_details');
 Route::post('customer/get_referral_message', 'App\Http\Controllers\ReferralController@get_referral_message');
