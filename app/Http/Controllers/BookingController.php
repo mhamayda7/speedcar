@@ -716,7 +716,7 @@ class BookingController extends Controller
     }
 
     public function save_notifcation($id, $type, $title, $message, $image) {
-        $data = array();
+        $data = [];
         $data['user_id'] = $id;
         $data['country_id'] = 1;
         $data['type'] = $type;
