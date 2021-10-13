@@ -715,7 +715,8 @@ class BookingController extends Controller
         ]);
     }
 
-    public function save_notifcation($id, $type, $title, $message, $image) {
+    public function save_notifcation($id, $type, $title, $message, $image)
+    {
         $data = [];
         $data['user_id'] = $id;
         $data['country_id'] = 1;
@@ -1180,8 +1181,10 @@ class BookingController extends Controller
         }
         $customer_id = Trip::where('id', $input['trip_id'])->value('customer_id');
         $fcm_token = Customer::where('id', $customer_id)->value('fcm_token');
+        $image = "image/tripaccept.png";
         if ($fcm_token) {
             $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $fcm_token);
+            $this->save_notifcation($trip_customer,1,$current_status->status_name,$current_status->customer_status_name,$image);
         }
         $newPost = $database
             ->getReference('/trips/' . $input['trip_id'])
@@ -1314,7 +1317,6 @@ class BookingController extends Controller
             "status" => 1
         ]);
     }
-
 
     public function get_statuses()
     {
@@ -1707,8 +1709,9 @@ class BookingController extends Controller
             ]);
 
         TripRequest::where('id', $input['trip_id'])->update(['status' => 3]);
-
+        $image = "image/tripaccept.png";
         $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $customer->fcm_token);
+        $this->save_notifcation($trip_details->customer_id,1,$current_status->status_name,$current_status->customer_status_name,$image);
 
         return response()->json([
             "result" => $id,
