@@ -32,10 +32,8 @@ class BookingStatusController extends AdminController
         //$grid->column('created_at', __('Created at'));
         //$grid->column('updated_at', __('Updated at'));
 
-        $grid->disableCreateButton();
-        $grid->disableFilter();
         $grid->disableExport();
-        $grid->disableRowSelector();
+        //$grid->disableCreateButton();
         $grid->actions(function ($actions) {
             $actions->disableView();
             $actions->disableDelete();
@@ -43,13 +41,9 @@ class BookingStatusController extends AdminController
 
          $grid->filter(function ($filter) {
             //Get All status
-
             $filter->like('status_name', 'Status Name');
             $filter->like('customer_status_name', 'Customer Status Name');
-
-
         });
-
         return $grid;
     }
 
@@ -80,10 +74,12 @@ class BookingStatusController extends AdminController
         $form = new Form(new BookingStatus);
         $form->text('status_name', __('Status Name'));
         $form->text('customer_status_name', __('Customer Status Name'));
-         $form->tools(function (Form\Tools $tools) {
+
+        $form->tools(function (Form\Tools $tools) {
             $tools->disableDelete();
             $tools->disableView();
         });
+
         $form->footer(function ($footer) {
             $footer->disableViewCheck();
             $footer->disableEditingCheck();
