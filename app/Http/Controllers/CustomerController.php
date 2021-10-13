@@ -19,6 +19,7 @@ use App\PromoCode;
 use App\AppSetting;
 use App\Models\Point;
 use App\Models\User;
+use App\NotificationMessage;
 use App\Trip;
 use Cartalyst\Stripe\Stripe;
 use Illuminate\Support\Facades\Auth;
@@ -392,7 +393,6 @@ class CustomerController extends Controller
 
         if (Hash::check($credentials['password'], $customer->password)) {
             if ($customer->status == 1) {
-
                 Customer::where('id', $customer->id)->update(['fcm_token' => $input['fcm_token']]);
                 $token = $customer->createToken('name')->plainTextToken;
                 return response()->json([
@@ -415,7 +415,8 @@ class CustomerController extends Controller
         }
     }
 
-    public function signout(Request $request){
+    public function signout(Request $request)
+    {
         Customer::where('id', Auth::user()->id)->update(['fcm_token'=> null]);
         $request->user()->currentAccessToken()->delete();
         return response()->json([
@@ -702,12 +703,12 @@ class CustomerController extends Controller
             $point->save();
 
             $customer_fcm = Customer::where('referral_code', $input['referral_code'])->value('fcm_token');
+            $image = "image/tripaccept.png";
 
             if ($customer_fcm) {
                 $this->send_fcm('نقاط مكتسبة', 'قمت بدعوة صديق و اضافة'. $points_add . ' نقاط', $customer_fcm);
+                $this->save_notifcation($customer_id,1,'نقاط مكتسبة', 'قمت بدعوة صديق و اضافة',$image);
             }
-
-
             return response()->json([
                 "message" => 'Success',
                 "status" => 1
@@ -720,6 +721,19 @@ class CustomerController extends Controller
             ]);
         }
 
+    }
+
+    public function save_notifcation($id, $type, $title, $message, $image)
+    {
+        $data = [];
+        $data['user_id'] = $id;
+        $data['country_id'] = 1;
+        $data['type'] = $type;
+        $data['title'] = $title;
+        $data['message'] = $message;
+        $data['image'] = $image;
+        $data['status'] = 1;
+        NotificationMessage::create($data);
     }
 
     public function update_view_status(Request $request)
@@ -976,26 +990,17 @@ class CustomerController extends Controller
         $input = $request->all();
         $validator = Validator::make($input, [
             'customer_id' => 'required',
-            // 'customer_id' => 'required',
-            // 'customer_id' => 'required',
         ]);
-
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-
         $customer_fcm = Customer::where('id', $input['customer_id'])->value('fcm_token');
-
         if ($customer_fcm) {
-
             $this->send_fcm('نقاط مكتسبة', 'قمت بدعوة صديق و اضافة' . ' نقاط', $customer_fcm);
         }
-
         return response()->json([
             "message" => 'Success',
             "status" => 1
         ]);
-
     }
-
 }
