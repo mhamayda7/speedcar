@@ -93,9 +93,8 @@ class DriverController extends AdminController
             $actions->disableDelete();
         });
          $grid->filter(function ($filter) {
-         $statuses = Status::where('type','general')->pluck('name','id');
-         $countries = Country::pluck('country_name', 'id');
-
+            $statuses = Status::where('type','general')->pluck('name','id');
+            $countries = Country::pluck('country_name', 'id');
             $filter->disableIdFilter();
             $filter->equal('country_id', 'Country')->select($countries);
             $filter->like('full_name', 'Full Name');
@@ -109,8 +108,6 @@ class DriverController extends AdminController
             $filter->equal('status', 'Status')->select($statuses);
 
         });
-
-
         return $grid;
     }
 
