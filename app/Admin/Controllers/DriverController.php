@@ -173,9 +173,9 @@ class DriverController extends AdminController
         $form->image('profile_picture', __('Profile picture'))->move('drivers/')->uniqueName()->rules('required');
         $form->date('date_of_birth', __('Date of birth'))->default(date('Y-m-d'));
         $form->text('licence_number', __('Licence number'))->rules('required|max:250');
-        $form->image('id_proof', __('Id proof'))->move('vehicle_licence/')->uniqueName()->rules('required');
-        $form->image('vehicle_image', __('Vehicle Image'))->move('captain_vehicle_image/')->uniqueName()->rules('required');
-        $form->image('vehicle_licence', __('Vehicle Licence'))->move('captain_vehicle_licences/')->uniqueName()->rules('required');
+        $form->image('id_proof', __('Id proof'))->rules('max:3000');
+        $form->image('vehicle_image', __('Vehicle Image'))->rules('max:3000');
+        $form->image('vehicle_licence', __('Vehicle Licence'))->rules('max:3000');
         $form->textarea('address', __('Address'))->rules('max:250');
         $form->select('currency','Currency')->options($currencies)->rules('required');
         $form->select('daily','Daily')->options([1 => 'Yes', 0 => 'No'])->default(1)->rules('required');
