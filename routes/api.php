@@ -18,6 +18,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::post('sendsms', 'App\Http\Controllers\Controller@sendS');
+Route::get('suppliers', 'App\Http\Controllers\Controller@get_supplier');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('splash', 'App\Http\Controllers\Controller@splash');
@@ -95,7 +96,7 @@ Route::prefix('driver/')->middleware('auth:sanctum')->group(function () {
     Route::post('get_invoice', 'App\Http\Controllers\DriverController@get_invoice');
     Route::post('signout', 'App\Http\Controllers\DriverController@signout');
     Route::post('driver_trip', 'App\Http\Controllers\DriverController@driver_trip');
-    Route::post('driver_invoice', 'App\Http\Controllers\BookingController@driver_invoice');
+    Route::post('detailes_invoice', 'App\Http\Controllers\BookingController@driver_invoice');
 });
 
 Route::post('driver/policy', 'App\Http\Controllers\PrivacyPolicyController@driver_policy');

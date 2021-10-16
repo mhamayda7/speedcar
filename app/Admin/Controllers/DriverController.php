@@ -231,6 +231,9 @@ class DriverController extends AdminController
         $newPost = $database
         ->getReference('/drivers/'.$id)
         ->update([
+            'accuracy' => 0,
+            'heading' => 0,
+            'driver_id' => $id,
             'driver_name' => $driver_name,
             'status' => $status,
             'lat' => 0,

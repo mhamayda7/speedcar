@@ -1867,14 +1867,15 @@ class BookingController extends Controller
 
     public function driver_invoice(Request $request)
     {
-        $input = $request->all();
-        $validator = Validator::make($input, [
-            'trip_id' => 'required',
-        ]);
-        if ($validator->fails()) {
-            return $this->sendError($validator->errors());
-        }
-        $trip = Trip::where('id', $input['trip_id'])->first();
+        // $input = $request->all();
+        // $validator = Validator::make($input, [
+        //     'trip_id' => 'required',
+        // ]);
+        // if ($validator->fails()) {
+        //     return $this->sendError($validator->errors());
+        // }
+
+        $trip = Trip::where('driver_id', Auth::user()->id)->get()->last();
         $app_setting = AppSetting::first();
         $data = array();
 
@@ -1888,7 +1889,7 @@ class BookingController extends Controller
         $price_time = number_format((float)$vehicle->price_time, 2, '.', '');
         $interval = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
         // $fare = number_format((float)$base_far + ($price_per_km * $distance) + ($price_time * $interval));
-;
+
 
         $data['sub_total'] = $price_per_km * $distance;
         $data['waiting_time'] = $price_time * $interval;

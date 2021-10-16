@@ -168,6 +168,13 @@ class Controller extends BaseController
         ]);
     }
 
-
+    public function get_supplier() {
+        $data = DB::table('supplier_detailes')->get();
+        return response()->json([
+            "result" => $data,
+            "message" => 'Success',
+            "status" => 1
+        ]);
+    }
 
 }

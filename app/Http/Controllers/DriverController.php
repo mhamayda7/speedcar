@@ -333,8 +333,7 @@ class DriverController extends Controller
 
     public function profile_info()
     {
-        $result = Driver::select('id', 'full_name', 'phone_with_code', 'gender', 'email', 'address', 'date_of_birth','status', 'online_status')->where('id', Auth::user()->id)->first();
-
+        $result = Driver::select('id', 'full_name', 'phone_with_code', 'gender', 'email', 'address', 'date_of_birth','status','', 'online_status')->where('id', Auth::user()->id)->first();
         if (is_object($result)) {
             if ($result->gender == 0) {
                 $result->gender_name = "Update your gender";
@@ -913,7 +912,8 @@ class DriverController extends Controller
         }
     }
 
-    public function driver_trip() {
+    public function driver_trip()
+    {
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
         $driver_id = Auth::user()->id;
