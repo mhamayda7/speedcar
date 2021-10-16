@@ -251,14 +251,15 @@ class BookingController extends Controller
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
         $database = $factory->createDatabase();
 
-        $drivers = $database->getReference('/vehicles/'.$input['vehicle_type'])
+        $drivers = $database->getReference('/drivers/')
                     ->getSnapshot()->getValue();
 
         $min_distance = 0;
         $min_driver_id = 0;
         $booking_searching_radius = TripSetting::value('booking_searching_radius');
         foreach($drivers as $key => $value){
-            // if($value && array_key_exists('gender', $value)){
+            $amount = Driver::where('id',$value['driver_id'])->value('wallet');
+            if($amount > (-1)) {
                 $distance = $this->distance($input['pickup_lat'], $input['pickup_lng'], $value['lat'], $value['lng'], 'K') ;
                 if($value['online_status'] == 1 && $value['booking_status'] == 0){
                     if($min_distance == 0){
@@ -269,7 +270,7 @@ class BookingController extends Controller
                         $min_driver_id = $value['driver_id'];
                     }
                 }
-            // }
+            }
         }
 
         if($min_driver_id == 0){
