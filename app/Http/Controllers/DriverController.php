@@ -25,6 +25,7 @@ use Kreait\Firebase;
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\ServiceAccount;
 use Kreait\Firebase\Database;
+use Illuminate\Support\Str;
 
 
 
@@ -172,6 +173,36 @@ class DriverController extends Controller
         $message = "Hi " . env('APP_NAME') . "  , Your OTP code is:" . $otp;
 
         $driver = Driver::create($input);
+
+        $unique = false;
+        // Store tested results in array to not test them again
+        $tested = [];
+        do {
+            // Generate random string of characters
+            $random = Str::random(5);
+            // Check if it's already testing
+            // If so, don't query the database again
+            if (in_array($random, $tested)) {
+                continue;
+            }
+            // Check if it is unique in the database
+            $count = DB::table('drivers')->where('referral_code', '=', $random)->count();
+            // Store the random character in the tested array
+            // To keep track which ones are already tested
+            $tested[] = $random;
+            // String appears to be unique
+            if ($count == 0) {
+                // Set unique to true to break the loop
+                $unique = true;
+            }
+            // If unique is still false at this point
+            // it will just repeat all the steps until
+            // it has generated a random string of characters
+        } while (!$unique);
+
+        $driver->referral_code = $random;
+        Driver::where('id', $driver->id)->update(['referral_code' => $driver->referral_code]);
+
         $token = $driver->createToken('name')->plainTextToken;
 
         $factory = (new Factory)->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'))
@@ -313,7 +344,7 @@ class DriverController extends Controller
     public function profile()
     {
 
-        $result = Driver::where('id', Auth::user()->id)->select('id', 'full_name', 'phone_with_code', 'wallet', 'overall_ratings')->first();
+        $result = Driver::where('id', Auth::user()->id)->select('id', 'full_name', 'phone_with_code', 'wallet', 'referral_code', 'overall_ratings')->first();
         $booking_complete = Trip::where('driver_id', Auth::user()->id)->where('status', 5)->count();
         // dd( $booking_complete);
         if (is_object($result)) {
@@ -333,7 +364,7 @@ class DriverController extends Controller
 
     public function profile_info()
     {
-        $result = Driver::select('id', 'full_name', 'phone_with_code', 'gender', 'email', 'address', 'date_of_birth','status','', 'online_status')->where('id', Auth::user()->id)->first();
+        $result = Driver::select('id', 'full_name', 'phone_with_code', 'gender', 'email', 'address', 'date_of_birth', 'status', 'referral_code', 'online_status')->where('id', Auth::user()->id)->first();
         if (is_object($result)) {
             if ($result->gender == 0) {
                 $result->gender_name = "Update your gender";
