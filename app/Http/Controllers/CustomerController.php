@@ -471,7 +471,7 @@ class CustomerController extends Controller
         // }
 
         // $result = Customer::select('id', 'first_name', 'last_name', 'phone_with_code', 'gender', 'email', 'status')->where('id', $input['customer_id'])->first();
-        $result = Customer::select('id', 'full_name', 'phone_with_code', 'gender', 'email', 'points', 'wallet' ,'status')->where('id', Auth::user()->id)->first();
+        $result = Customer::select('id', 'full_name', 'phone_with_code', 'gender', 'email', 'points', 'wallet' ,'status', 'referral_code')->where('id', Auth::user()->id)->first();
 
         if (is_object($result)) {
             if ($result->gender == 0) {
