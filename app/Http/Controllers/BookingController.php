@@ -1074,9 +1074,10 @@ class BookingController extends Controller
         ]);
     }
 
-    public function change_statuses(Request $request)
+    public function change_statuses($trip_id, $status)
     {
-        $input = $request->all();
+        $input['trip_id'] = $trip_id;
+        $input['status'] = $status;
         $validator = Validator::make($input, [
             'trip_id' => 'required',
             'status' => 'required'
@@ -1196,6 +1197,23 @@ class BookingController extends Controller
                 'new_status' => $new_status->id,
                 'new_driver_status_name' => $new_status->status_name
             ]);
+        return response()->json([
+            "message" => 'Success',
+            "status" => 1
+        ]);
+    }
+
+    public function recive_mony(Request $request) {
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'amount' => 'required',
+            'status' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors());
+        }
+
+        $this->change_statuses($input['trip_id'],5);
         return response()->json([
             "message" => 'Success',
             "status" => 1
