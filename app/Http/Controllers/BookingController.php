@@ -1214,7 +1214,7 @@ class BookingController extends Controller
         }
         $input['status'] = 5;
         // $this->change_statuses($input['trip_id'],$input['status']);
-        $response = Http::post(env('APP_URL'). '/api/driver/change_statuses', [
+        Http::post(env('APP_URL'). '/api/driver/change_statuses', [
             'status' => '5',
             'trip_id' => $input['trip_id'],
         ]);
