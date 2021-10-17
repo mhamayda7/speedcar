@@ -43,6 +43,7 @@ use App\NotificationMessage;
 use App\PromoCode;
 use Encore\Admin\Show;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 class BookingController extends Controller
 {
@@ -1074,10 +1075,9 @@ class BookingController extends Controller
         ]);
     }
 
-    public function change_statuses($trip_id, $status)
+    public function change_statuses(Request $request)
     {
-        $input['trip_id'] = $trip_id;
-        $input['status'] = $status;
+        $input = $request->all();
         $validator = Validator::make($input, [
             'trip_id' => 'required',
             'status' => 'required'
@@ -1212,8 +1212,12 @@ class BookingController extends Controller
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-
-        $this->change_statuses($input['trip_id'],5);
+        $input['status'] = 5;
+        // $this->change_statuses($input['trip_id'],$input['status']);
+        $response = Http::post(env('APP_URL'). 'api/driver/recive_mony', [
+            'status' => 5,
+            'trip_id' => $input['trip_id'],
+        ]);
         return response()->json([
             "message" => 'Success',
             "status" => 1
