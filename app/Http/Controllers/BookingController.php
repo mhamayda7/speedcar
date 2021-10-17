@@ -735,13 +735,13 @@ class BookingController extends Controller
         $input = $request->all();
         $validator = Validator::make($input, [
             'trip_id' => 'required',
-            'status' => 'required',
+
             'reason_id' => 'required'
         ]);
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-
+        $input['status'] =7;
         $data['trip_id'] = $input['trip_id'];
         $data['reason_id'] = $input['reason_id'];
         $data['cancelled_by'] = 1;
@@ -1098,13 +1098,13 @@ class BookingController extends Controller
 
         Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
 
-        if ($input['status'] == 3) {
+        if ($input['status'] == 4) {
             Trip::where('id', $input['trip_id'])->update(['start_time' => date('Y-m-d H:i:s'), 'actual_pickup_address' => $input['address'], 'actual_pickup_lat' => $input['lat'], 'actual_pickup_lng' => $input['lng']]);
         }
 
 
 
-        if ($input['status'] == 4) {
+        if ($input['status'] == 5) {
             Trip::where('id', $input['trip_id'])->update(['end_time' => date('Y-m-d H:i:s'), 'actual_drop_address' => $input['address'], 'actual_drop_lat' => $input['lat'], 'actual_drop_lng' => $input['lng']]);
             $trip = Trip::where('id', $input['trip_id'])->first();
 
@@ -1162,7 +1162,7 @@ class BookingController extends Controller
                 ]);
         }
 
-        if ($input['status'] != 5) {
+        if ($input['status'] != 6) {
             $current_status = BookingStatus::where('id', $input['status'])->first();
             $new_status = BookingStatus::where('id', $input['status'])->first();
         } else {
@@ -1201,11 +1201,34 @@ class BookingController extends Controller
                 'driver_status_name' => $current_status->status_name,
                 'new_status' => $new_status->id,
                 'new_driver_status_name' => $new_status->status_name
-            ]);
-        return response()->json([
-            "message" => 'Success',
-            "status" => 1
         ]);
+
+        if ($input['status'] == 5) {
+
+            $data_trip = Trip::where('id', $input['trip_id'])->first();
+            $interval = (strtotime($data_trip->end_time) - strtotime($data_trip->start_time)) / 60;
+            $data_trip1 = [];
+            $data_trip1['time'] = $interval;
+            $data_trip1['distance'] = $data_trip->distance;
+            if ($data_trip->payment_method == 1) {
+                $data_trip1['payment_method']= "cash";
+            } else {
+                $data_trip1['payment_method']= "wallet";
+            }
+            $data_trip1['payment_method'] = $this->get_distance($data_trip->trip_id);
+
+            return response()->json([
+                "data" => $data_trip1,
+                "message" => 'Success',
+                "status" => 1
+            ]);
+        } else {
+            return response()->json([
+                "message" => 'Success',
+                "status" => 1
+            ]);
+        }
+
     }
 
     public function recive_mony(Request $request) {
@@ -1217,10 +1240,6 @@ class BookingController extends Controller
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-        $input['status'] = 5;
-        $data = [];
-        $data['status'] = 5;
-        $data['trip_id'] = $input['trip_id'];
         $this->change_statuses($request);
         return response()->json([
             "message" => 'Success',
