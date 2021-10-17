@@ -1075,9 +1075,14 @@ class BookingController extends Controller
         ]);
     }
 
-    public function change_statuses(Request $request)
+    public function change_statuses($trip_id,$status)
     {
-        $input = $request->all();
+        // dd($request);
+        // $input = $request->all();
+        $input = [];
+        $input['trip_id'] = $trip_id;
+        $input['status'] = $status;
+
         $validator = Validator::make($input, [
             'trip_id' => 'required',
             'status' => 'required'
@@ -1213,11 +1218,10 @@ class BookingController extends Controller
             return $this->sendError($validator->errors());
         }
         $input['status'] = 5;
-        // $this->change_statuses($input['trip_id'],$input['status']);
-        Http::post(env('APP_URL'). '/api/driver/change_statuses', [
-            'status' => '5',
-            'trip_id' => $input['trip_id'],
-        ]);
+        $data = [];
+        $data['status'] = 5;
+        $data['trip_id'] = $input['trip_id'];
+        $this->change_statuses($data['trip_id'],$data['status']);
         return response()->json([
             "message" => 'Success',
             "status" => 1
@@ -1478,10 +1482,10 @@ class BookingController extends Controller
             CustomerWalletHistory::create(['country_id'=>$trip->country_id,'customer_id'=>$trip->customer_id, 'type'=>$payment_method->payment_type, 'message'=> 'طلب سيارة وخصم الرصيد من المحفظة', 'amount'=> $total, 'transaction_type'=> $payment_method->payment_type]);
             $new_wallet = $old_wallet + $total;
             Driver::where('id', $trip->driver_id)->update(['wallet'=>$new_wallet]);
-            DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 1, 'transaction_type'=> $payment_method->payment_type, 'message' => 'تم إضافة رصيد لمحفظتك لرحلة رقم' . $trip->trip_id, 'amount' => $driver_earning]);
+            DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 1, 'transaction_type'=> 2, 'message' => 'تم إضافة رصيد لمحفظتك لرحلة رقم' . $trip->trip_id, 'amount' => $driver_earning]);
         } else if ($payment_method->payment_type == 1) {
             CustomerWalletHistory::create(['country_id'=>$trip->country_id,'customer_id'=>$trip->customer_id, 'type'=>$payment_method->payment_type, 'message'=> 'طلب سيارة والدفع كاش ', 'amount'=> $total, 'transaction_type'=> $payment_method->payment_type]);
-            DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 2, 'transaction_type'=> $payment_method->payment_type, 'message' => 'تم خصم رصيد من محفظتك لرحلة '. $trip->trip_id, 'amount' => $admin_commission]);
+            DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 2, 'transaction_type'=> 2, 'message' => 'تم خصم رصيد من محفظتك لرحلة '. $trip->trip_id, 'amount' => $admin_commission]);
         }
             // } else if ($payment_method->payment_type == 3) {
         //     $wallet_payment = PaymentHistory::where('trip_id', $trip->id)->where('mode', 'Wallet')->value('amount');
