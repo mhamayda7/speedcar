@@ -1075,13 +1075,13 @@ class BookingController extends Controller
         ]);
     }
 
-    public function change_statuses($trip_id,$status)
+    public function change_statuses(Request $request)
     {
         // dd($request);
-        // $input = $request->all();
-        $input = [];
-        $input['trip_id'] = $trip_id;
-        $input['status'] = $status;
+        $input = $request->all();
+        // $input = [];
+        // $input['trip_id'] = $trip_id;
+        // $input['status'] = $status;
 
         $validator = Validator::make($input, [
             'trip_id' => 'required',
@@ -1221,7 +1221,7 @@ class BookingController extends Controller
         $data = [];
         $data['status'] = 5;
         $data['trip_id'] = $input['trip_id'];
-        $this->change_statuses($data['trip_id'],$data['status']);
+        $this->change_statuses($request);
         return response()->json([
             "message" => 'Success',
             "status" => 1
