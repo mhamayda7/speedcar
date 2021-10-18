@@ -16,6 +16,7 @@ use App\PaymentMethod;
 use App\DriverEarning;
 use App\DriverWalletHistory;
 use App\BookingStatus;
+use App\CancellationSetting;
 use App\PaymentHistory;
 use App\Driver;
 use App\TripCancellation;
@@ -1092,22 +1093,17 @@ class BookingController extends Controller
         }
 
         Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
-
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
 
-        Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
 
         if ($input['status'] == 4) {
             Trip::where('id', $input['trip_id'])->update(['start_time' => date('Y-m-d H:i:s'), 'actual_pickup_address' => $input['address'], 'actual_pickup_lat' => $input['lat'], 'actual_pickup_lng' => $input['lng']]);
         }
 
-
-
+        $trip = Trip::where('id', $input['trip_id'])->first();
         if ($input['status'] == 5) {
             Trip::where('id', $input['trip_id'])->update(['end_time' => date('Y-m-d H:i:s'), 'actual_drop_address' => $input['address'], 'actual_drop_lat' => $input['lat'], 'actual_drop_lng' => $input['lng']]);
-            $trip = Trip::where('id', $input['trip_id'])->first();
-
             $vehicle = DB::table('daily_fare_management')->where('id', 1)->first();
             $base_far = number_format((float)$vehicle->base_fare, 2, '.', '');
             $distance = $this->get_distance($trip->trip_id);
@@ -1135,7 +1131,6 @@ class BookingController extends Controller
                 }
             }
 
-
             $newPost = $database
                 ->getReference('/customers/' . $trip->customer_id)
                 ->update([
@@ -1148,8 +1143,8 @@ class BookingController extends Controller
                 ->update([
                     'booking_status' => 0
                 ]);
-            $vehicle_type = DriverVehicle::where('id', $trip->vehicle_id)->value('vehicle_type');
 
+            $vehicle_type = DriverVehicle::where('id', $trip->vehicle_id)->value('vehicle_type');
             $newPost = $database
                 ->getReference('/vehicles/' . $vehicle_type . '/' . $trip->driver_id)
                 ->update([
@@ -1162,10 +1157,23 @@ class BookingController extends Controller
                 ]);
         }
 
+        if($input['status'] = 8) {
+            $driver = Driver::where('id', $trip->driver_id)->first();
+            $cancellation_settings = CancellationSetting::where('id', 1)->first();
+            if ($driver->count_cancel > $cancellation_settings->no_of_free_cancellation) {
+                $wallet = $driver->wallet - $cancellation_settings->cancellation_charge;
+                $count_cancel = $driver->count_cancel + 1;
+                Driver::where('id', $trip->driver_id)->update(['wallet' => $wallet, 'count_cancel' => $count_cancel]);
+            } else {
+                $count_cancel = $driver->count_cancel + 1;
+                Driver::where('id', $trip->driver_id)->update(['count_cancel' => $count_cancel]);
+            }
+        }
+
         if ($input['status'] != 6) {
             $current_status = BookingStatus::where('id', $input['status'])->first();
             $new_status = BookingStatus::where('id', $input['status'])->first();
-        } else {
+        } elseif ($input['status'] = 6){
             $current_status = BookingStatus::where('id', $input['status'])->first();
             $new_status = BookingStatus::where('id', $input['status'])->first();
 
@@ -1189,10 +1197,12 @@ class BookingController extends Controller
         $customer_id = Trip::where('id', $input['trip_id'])->value('customer_id');
         $fcm_token = Customer::where('id', $customer_id)->value('fcm_token');
         $image = "image/tripaccept.png";
+
         if ($fcm_token) {
             $this->save_notifcation($customer_id,1,$current_status->status_name,$current_status->customer_status_name,$image);
             $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $fcm_token);
         }
+
         $newPost = $database
             ->getReference('/trips/' . $input['trip_id'])
             ->update([
