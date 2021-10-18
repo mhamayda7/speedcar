@@ -1155,6 +1155,17 @@ class BookingController extends Controller
                     'drop_address' => "",
                     'total' => ""
                 ]);
+
+            Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
+            $current_status = BookingStatus::where('id', $input['status'])->first();
+            $new_status = BookingStatus::where('id', $input['status'])->first();
+            $this->calculate_earnings($input['trip_id']);
+            $distance = Trip::where('id', $input['trip_id'])->sum('distance');
+            $trip_customer = Trip::where('id', $input['trip_id'])->value('customer_id');
+            $customer = Customer::find($trip_customer);
+            $customer->points += $distance;
+            $customer->save();
+            $this->reward_point($input['trip_id']);
         }
 
         if($input['status'] = 8) {
@@ -1179,11 +1190,10 @@ class BookingController extends Controller
 
             $this->calculate_earnings($input['trip_id']);
             //$this->create_reward($input['trip_id']);
-
             $distance = Trip::where('id', $input['trip_id'])->sum('distance');
             $trip_customer = Trip::where('id', $input['trip_id'])->value('customer_id');
             $customer = Customer::find($trip_customer);
-            //            dd($distance);/
+            //dd($distance);/
             $customer->points += $distance;
             $customer->save();
             // $points = Customer::where('id', $trip_customer)->value('points');
@@ -1214,7 +1224,6 @@ class BookingController extends Controller
         ]);
 
         if ($input['status'] == 5) {
-
             $data_trip = Trip::where('id', $input['trip_id'])->first();
             $interval = (strtotime($data_trip->end_time) - strtotime($data_trip->start_time)) / 60;
             $data_trip1 = [];

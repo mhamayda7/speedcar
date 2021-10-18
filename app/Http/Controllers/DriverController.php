@@ -949,15 +949,12 @@ class DriverController extends Controller
         $database = $factory->createDatabase();
         $driver_id = Auth::user()->id;
 
-        $trip = Trip::where('driver_id', $driver_id)->whereNotIn('status', [5, 6, 7])->get()->last();
+        $trip = Trip::where('driver_id', $driver_id)->whereNotIn('status', [7, 8])->get()->last();
         if($trip) {
-            $data = $database->getReference('/trips/' . $trip->id)
-            ->getSnapshot()->getValue();
-
-        return response()->json([
-            "trip" => $data,
-            "status" => 1
-        ]);
+            return response()->json([
+                "trip" => $trip,
+                "status" => 1
+            ]);
         } else {
             return response()->json([
                 "message" => 'عذراً لا يوجد لديك رحلات حالياً',
