@@ -1979,7 +1979,6 @@ class BookingController extends Controller
     {
         $input['customer_id'] = Auth::user()->id;
         $data = Trip::where('trips.customer_id', $input['customer_id'])->sum('distance');
-        $data =  number_format((float)$data, 2, '.', '');
         $wallet = Customer::where('customers.id', $input['customer_id'])->value('wallet');
         $name = Customer::where('customers.id', $input['customer_id'])->value('full_name');
         $phone = Customer::where('customers.id', $input['customer_id'])->value('phone_with_code');
