@@ -1096,7 +1096,6 @@ class BookingController extends Controller
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
 
-
         if ($input['status'] == 4) {
             Trip::where('id', $input['trip_id'])->update(['start_time' => date('Y-m-d H:i:s'), 'actual_pickup_address' => $input['address'], 'actual_pickup_lat' => $input['lat'], 'actual_pickup_lng' => $input['lng']]);
         }
@@ -1157,8 +1156,6 @@ class BookingController extends Controller
                 ]);
 
             Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
-            $current_status = BookingStatus::where('id', $input['status'])->first();
-            $new_status = BookingStatus::where('id', $input['status'])->first();
             $this->calculate_earnings($input['trip_id']);
             $distance = Trip::where('id', $input['trip_id'])->sum('distance');
             $trip_customer = Trip::where('id', $input['trip_id'])->value('customer_id');
