@@ -1080,10 +1080,6 @@ class BookingController extends Controller
     {
         // dd($request);
         $input = $request->all();
-        // $input = [];
-        // $input['trip_id'] = $trip_id;
-        // $input['status'] = $status;
-
         $validator = Validator::make($input, [
             'trip_id' => 'required',
             'status' => 'required'
@@ -1190,8 +1186,7 @@ class BookingController extends Controller
         $fcm_token = Customer::where('id', $customer_id)->value('fcm_token');
         $image = "image/tripaccept.png";
 
-        $current_status = BookingStatus::where('id', $input['status'])->first();
-        $new_status = BookingStatus::where('id', $input['status'])->first();
+        $current_status = BookingStatus::where('id', $input['status'])->get();
 
         if ($fcm_token) {
             $this->save_notifcation($customer_id,1,$current_status->status_name,$current_status->customer_status_name,$image);
