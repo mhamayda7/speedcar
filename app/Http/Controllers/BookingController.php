@@ -1400,6 +1400,7 @@ class BookingController extends Controller
         // elseif ($trip_request->status 3) {
         else{
             $trip = Trip::select('trip_id', 'customer_id', 'driver_id', 'vehicle_id', 'status', 'pickup_address', 'drop_address', 'payment_method')->where('customer_id', $id)->get()->last();
+            dd($trip);
             $driver = Driver::select('full_name', 'profile_picture', 'overall_ratings', 'phone_with_code')->where('id', $trip->driver_id)->get()->last();
             $vehicle = DriverVehicle::where('driver_id', $trip->driver_id)->get(['vehicle_image', 'brand', 'vehicle_name', 'vehicle_number'])->last();
             return response()->json([
