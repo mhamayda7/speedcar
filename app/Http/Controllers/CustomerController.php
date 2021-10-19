@@ -474,7 +474,7 @@ class CustomerController extends Controller
         $result = Customer::select('id', 'full_name', 'phone_with_code', 'gender', 'email', 'points', 'wallet' ,'status', 'referral_code')->where('id', Auth::user()->id)->first();
 
         if (is_object($result)) {
-            $result->distance =  number_format((float)$result->distance, 2, '.', '');
+            $result->distance =  number_format((float)$result->distance, 2, '.', ',');
             if ($result->gender == 0) {
                 $result->gender_name = "Update your gender";
             } else if ($result->gender == 1) {
