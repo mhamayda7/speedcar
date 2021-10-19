@@ -1080,6 +1080,10 @@ class BookingController extends Controller
     {
         // dd($request);
         $input = $request->all();
+        // $input = [];
+        // $input['trip_id'] = $trip_id;
+        // $input['status'] = $status;
+
         $validator = Validator::make($input, [
             'trip_id' => 'required',
             'status' => 'required'
@@ -1153,6 +1157,8 @@ class BookingController extends Controller
                 ]);
 
             Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
+            $current_status = BookingStatus::where('id', $input['status'])->first();
+            $new_status = BookingStatus::where('id', $input['status'])->first();
             $this->calculate_earnings($input['trip_id']);
             $distance = Trip::where('id', $input['trip_id'])->sum('distance');
             $trip_customer = Trip::where('id', $input['trip_id'])->value('customer_id');
@@ -1162,7 +1168,7 @@ class BookingController extends Controller
             $this->reward_point($input['trip_id']);
         }
 
-        if($input['status'] = 8) {
+        if($input['status'] == 8) {
             $driver = Driver::where('id', $trip->driver_id)->first();
             $cancellation_settings = CancellationSetting::where('id', 1)->first();
             if ($driver->count_cancel > $cancellation_settings->no_of_free_cancellation) {
@@ -1173,6 +1179,11 @@ class BookingController extends Controller
                 $count_cancel = $driver->count_cancel + 1;
                 Driver::where('id', $trip->driver_id)->update(['count_cancel' => $count_cancel]);
             }
+        }
+
+        if ($input['status'] != 6) {
+            $current_status = BookingStatus::where('id', $input['status'])->first();
+            $new_status = BookingStatus::where('id', $input['status'])->first();
         } elseif ($input['status'] = 6){
             $this->calculate_earnings($input['trip_id']);
             $distance = Trip::where('id', $input['trip_id'])->sum('distance');
@@ -1185,8 +1196,6 @@ class BookingController extends Controller
         $customer_id = Trip::where('id', $input['trip_id'])->value('customer_id');
         $fcm_token = Customer::where('id', $customer_id)->value('fcm_token');
         $image = "image/tripaccept.png";
-
-        $current_status = BookingStatus::where('id', $input['status'])->get();
 
         if ($fcm_token) {
             $this->save_notifcation($customer_id,1,$current_status->status_name,$current_status->customer_status_name,$image);
