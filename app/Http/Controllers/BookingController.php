@@ -1157,8 +1157,6 @@ class BookingController extends Controller
                 ]);
 
             Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
-            $current_status = BookingStatus::where('id', $input['status'])->first();
-            $new_status = BookingStatus::where('id', $input['status'])->first();
             $this->calculate_earnings($input['trip_id']);
             $distance = Trip::where('id', $input['trip_id'])->sum('distance');
             $trip_customer = Trip::where('id', $input['trip_id'])->value('customer_id');
@@ -1179,34 +1177,21 @@ class BookingController extends Controller
                 $count_cancel = $driver->count_cancel + 1;
                 Driver::where('id', $trip->driver_id)->update(['count_cancel' => $count_cancel]);
             }
-        }
-
-        if ($input['status'] != 6) {
-            $current_status = BookingStatus::where('id', $input['status'])->first();
-            $new_status = BookingStatus::where('id', $input['status'])->first();
         } elseif ($input['status'] = 6){
-            $current_status = BookingStatus::where('id', $input['status'])->first();
-            $new_status = BookingStatus::where('id', $input['status'])->first();
-
             $this->calculate_earnings($input['trip_id']);
-            //$this->create_reward($input['trip_id']);
             $distance = Trip::where('id', $input['trip_id'])->sum('distance');
             $trip_customer = Trip::where('id', $input['trip_id'])->value('customer_id');
             $customer = Customer::find($trip_customer);
-            //dd($distance);/
             $customer->points += $distance;
             $customer->save();
-            // $points = Customer::where('id', $trip_customer)->value('points');
             $this->reward_point($input['trip_id']);
-            //invoice
-            // $payment_method = Trip::where('trip_id', $input['trip_id'])->value('payment_method');
-            // $trip = Trip::where('id', $input['trip_id'])->first();
-            // $distance = $this->get_distance($input['trip_id']);
-            // dd($trip);
         }
         $customer_id = Trip::where('id', $input['trip_id'])->value('customer_id');
         $fcm_token = Customer::where('id', $customer_id)->value('fcm_token');
         $image = "image/tripaccept.png";
+
+        $current_status = BookingStatus::where('id', $input['status'])->first();
+        $new_status = BookingStatus::where('id', $input['status'])->first();
 
         if ($fcm_token) {
             $this->save_notifcation($customer_id,1,$current_status->status_name,$current_status->customer_status_name,$image);
