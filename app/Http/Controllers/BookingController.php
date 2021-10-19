@@ -1397,8 +1397,7 @@ class BookingController extends Controller
         }
         // $trip_request = TripRequest::findOrFail($id);
         // $status = $trip_request->status;
-        // elseif ($trip_request->status 3) {
-        else{
+        elseif ($trip_request->status = 3) {
             $trip = Trip::select('trip_id', 'customer_id', 'driver_id', 'vehicle_id', 'status', 'pickup_address', 'drop_address', 'payment_method')->where('customer_id', $id)->get()->last();
             dd($trip);
             $driver = Driver::select('full_name', 'profile_picture', 'overall_ratings', 'phone_with_code')->where('id', $trip->driver_id)->get()->last();
@@ -1411,14 +1410,12 @@ class BookingController extends Controller
                 "status" => 1
             ]);
         }
-        // else {
-        //     $trip_request->status = 0;
-        //     return response()->json([
-        //         "result" => $trip_request,
-        //         "message" => 'Success',
-        //         "status" => 1
-        //     ]);
-        // }
+        else {
+            return response()->json([
+                "message" => 'Looking for a driver',
+                "status" => 1
+            ]);
+        }
     }
 
     public function calculate_fare($trip_id)
