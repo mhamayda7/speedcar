@@ -721,7 +721,6 @@ class CustomerController extends Controller
                 "status" => 1
             ]);
         }
-
     }
 
     public function save_notifcation($id, $type, $title, $message, $image)
