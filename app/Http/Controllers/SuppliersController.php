@@ -6,6 +6,7 @@ use App\Driver;
 use App\DriverWalletHistory;
 use App\Models\Supplier;
 use App\Models\Suppliers_history;
+use App\NotificationMessage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -89,6 +90,13 @@ class SuppliersController extends Controller
         $supplier->wallet -= $amount;
         $supplier->save();
         $driver->save();
+        if ($driver->fcm_token) {
+            $title ="شحن رصيد";
+            $description ="تم شحن رصيد محفظتك بقيمة " . $amount . " دينار";
+            $image = "";
+            $this->send_fcm($title,$description,$driver->fcm_token);
+            $this->save_notifcation($driver_id,2,$title,$description,$image);
+        }
         $history = new DriverWalletHistory();
         $history->driver_id = $driver_id;
         $history->type = 0;
@@ -111,5 +119,18 @@ class SuppliersController extends Controller
     {
         $transactions = Suppliers_history::latest()->paginate(15);
         return view('supplier.billing',compact('transactions'));
+    }
+
+    public function save_notifcation($id, $type, $title, $message, $image)
+    {
+        $data = [];
+        $data['user_id'] = $id;
+        $data['country_id'] = 1;
+        $data['type'] = $type;
+        $data['title'] = $title;
+        $data['message'] = $message;
+        $data['image'] = $image;
+        $data['status'] = 1;
+        NotificationMessage::create($data);
     }
 }
