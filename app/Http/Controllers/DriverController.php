@@ -951,7 +951,7 @@ class DriverController extends Controller
         $driver_id = Auth::user()->id;
 
         $trip = Trip::where('driver_id', $driver_id)->whereNotIn('status', [7, 8])->get()->last();
-        if($trip != 6) {
+        if($trip->status != 6) {
             return response()->json([
                 "trip" => $trip,
                 "status" => 1
