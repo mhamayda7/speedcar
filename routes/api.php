@@ -31,11 +31,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('customer/get_reward', 'App\Http\Controllers\BookingController@get_reward');
     Route::post('customer/get_invoice', 'App\Http\Controllers\BookingController@get_invoice');
     Route::post('customer/distance', 'App\Http\Controllers\BookingController@customer_distance');
-    Route::post('customer/point', 'App\Http\Controllers\BookingController@point'); //done sanctum
+    Route::post('customer/point', 'App\Http\Controllers\BookingController@point');
     Route::post('customer/point_to_wallet', 'App\Http\Controllers\BookingController@point_to_wallet');
     Route::post('customer/signout', 'App\Http\Controllers\CustomerController@signout');
     Route::post('customer/invite', 'App\Http\Controllers\CustomerController@customer_invite');
     Route::post('customer/get_notification_messages', 'App\Http\Controllers\NotificationController@get_customer_notification_messages');
+    Route::post('customer/rate_driver', 'App\Http\Controllers\CustomerController@rate_driver');
 });
 
 //Customer
@@ -98,6 +99,7 @@ Route::prefix('driver/')->middleware('auth:sanctum')->group(function () {
     Route::post('driver_trip', 'App\Http\Controllers\DriverController@driver_trip');
     Route::post('detailes_invoice', 'App\Http\Controllers\BookingController@driver_invoice');
     Route::post('recive_mony', 'App\Http\Controllers\BookingController@recive_mony');
+    Route::post('rate_customer', 'App\Http\Controllers\DriverController@rate_customer');
 });
 
 Route::post('driver/policy', 'App\Http\Controllers\PrivacyPolicyController@driver_policy');

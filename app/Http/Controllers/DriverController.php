@@ -172,6 +172,7 @@ class DriverController extends Controller
         $input['otp'] = $otp;
         $phone = '+' . $input['phone_with_code'];
         $message = "Hi " . env('APP_NAME') . "  , Your OTP code is:" . $otp;
+        $this->smsSe($phone, $message);
 
         $driver = Driver::create($input);
 
@@ -965,7 +966,8 @@ class DriverController extends Controller
         }
     }
 
-    public function driver_invite(Request $request) {
+    public function driver_invite(Request $request)
+    {
         $input = $request->all();
         $validator = Validator::make($input, [
             'referral_code' => 'required'
@@ -1013,6 +1015,25 @@ class DriverController extends Controller
             ]);
         }
     }
+
+    public function rate_customer($trip_id,$rate)
+    {
+        $trip = Trip::where('id', $trip_id)->get();
+        $customer_rate = Customer::where('id', $trip->customer_id)->value('ratings');
+        if($customer_rate != null) {
+            $new_rate = ($customer_rate + $rate) / 2;
+            $new_rate = number_format((float)$new_rate, 2, '.', '');
+            Customer::where('id', $trip->customer->id)->update(['ratings' => $new_rate]);
+        } else {
+            Customer::where('id', $trip->customer->id)->update(['ratings' => $rate]);
+        }
+
+        return response()->json([
+            "message" => "rate success",
+            "status" => 1
+        ]);
+    }
+
 
     public function sendError($message)
     {

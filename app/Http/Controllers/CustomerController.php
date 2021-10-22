@@ -17,6 +17,7 @@ use App\CustomerWalletHistory;
 use App\InstantOffer;
 use App\PromoCode;
 use App\AppSetting;
+use App\Driver;
 use App\Models\Point;
 use App\Models\User;
 use App\NotificationMessage;
@@ -210,7 +211,7 @@ class CustomerController extends Controller
 
         // $this->sendSms($phone, $message);
         // $this->sendSms($input['phone_with_code'], $message);
-        // $this->smsSe($phone, $message);
+        $this->smsSe($phone, $message);
 
         //$database = $firebase->getDatabase();
 
@@ -972,6 +973,23 @@ class CustomerController extends Controller
         return response()->json([
             "result" => $data,
             "message" => 'Success',
+            "status" => 1
+        ]);
+    }
+
+    public function rate_driver($trip_id,$rate) {
+        $trip = Trip::where('id', $trip_id)->get();
+        $driver_rate = Driver::where('id', $trip->driver_id)->value('overall_ratings');
+        if($driver_rate != 0) {
+            $new_rate = ($driver_rate + $rate) / 2;
+            $new_rate = number_format((float)$new_rate, 2, '.', '');
+            Driver::where('id', $trip->customer->id)->update(['overall_ratings' => $new_rate]);
+        } else {
+            Customer::where('id', $trip->customer->id)->update(['overall_ratings' => $rate]);
+        }
+
+        return response()->json([
+            "message" => "rate success",
             "status" => 1
         ]);
     }

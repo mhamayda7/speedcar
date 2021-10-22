@@ -1486,10 +1486,8 @@ class BookingController extends Controller
         $total = number_format((float)$total, 2, '.', '');
         $admin_commission = ($admin_commission_percent / 100) * $total;
         $admin_commission = number_format((float)$admin_commission, 2, '.', '');
-
         $driver_earning = $total - $admin_commission;
         $driver_earning = number_format((float)$driver_earning, 2, '.', '');
-
 
         DriverEarning::create(['trip_id' => $trip_id, 'driver_id' => $trip->driver_id, 'amount' => $driver_earning]);
         $old_wallet = Driver::where('id', $trip->driver_id)->value('wallet');
@@ -1508,15 +1506,6 @@ class BookingController extends Controller
             CustomerWalletHistory::create(['country_id'=>$trip->country_id,'customer_id'=>$trip->customer_id, 'type'=>$payment_method->payment_type, 'message'=> 'طلب سيارة والدفع كاش ', 'amount'=> $total, 'transaction_type'=> $payment_method->payment_type]);
             DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 2, 'transaction_type'=> 2, 'message' => 'تم خصم رصيد من محفظتك لرحلة '. $trip->trip_id, 'amount' => $admin_commission]);
         }
-            // } else if ($payment_method->payment_type == 3) {
-        //     $wallet_payment = PaymentHistory::where('trip_id', $trip->id)->where('mode', 'Wallet')->value('amount');
-        //     DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 1, 'message' => 'credited to your account for the order ' . $trip->trip_id, 'amount' => $wallet_payment]);
-        //     $secondry_wallet = $old_wallet + $wallet_payment;
-        //     $secondry_wallet = number_format((float)$secondry_wallet, 2, '.', '');
-        //     Driver::where('id', $trip->driver_id)->update(['wallet' => $secondry_wallet]);
-        //     DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 2, 'message' => 'debited from your account for the order ' . $trip->trip_id, 'amount' => $admin_commission]);
-        // }
-
     }
 
     public function direct_booking(Request $request)
