@@ -35,6 +35,7 @@ class DailyFareManagementController extends AdminController
         $grid->column('base_fare', __('Base Fare'));
         $grid->column('price_per_km', __('Price Per Km'));
         $grid->column('price_time', __('Price Time'));
+        $grid->column('price_wait', __('Price Wait'));
         $grid->column('status', __('Status'))->display(function($status){
             $status_name = Status::where('id',$status)->value('name');
             if ($status == 1) {
@@ -80,6 +81,7 @@ class DailyFareManagementController extends AdminController
         $show->field('base_fare', __('Base fare'));
         $show->field('price_per_km', __('Price per km'));
         $show->field('price_time', __('Price Time'));
+        $show->field('price_wait', __('Price Wait'));
         $show->field('status', __('Status'));
         $show->field('created_at', __('Created at'));
         $show->field('updated_at', __('Updated at'));
@@ -103,6 +105,7 @@ class DailyFareManagementController extends AdminController
         $form->decimal('base_fare', __('Base Fare'))->rules('required');
         $form->decimal('price_per_km', __('Price Per Km'))->rules('required');
         $form->decimal('price_time', __('Price Time'))->rules('required');
+        $form->decimal('price_wait', __('Price Wait'))->rules('required');
         $form->select('status', __('Status'))->options($statuses)->rules('required');
         $form->tools(function (Form\Tools $tools) {
             $tools->disableDelete();
