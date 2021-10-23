@@ -309,6 +309,7 @@ class CustomerController extends Controller
         Customer::where('id', $input['customer_id'])->update(['refered_by'=>$input['referral_code']]);
 
     }
+
     /*public function register(Request $request)
     {
         $input = $request->all();
@@ -384,14 +385,12 @@ class CustomerController extends Controller
 
         $credentials = request(['phone_with_code', 'password']);
         $customer = Customer::where('phone_with_code', $credentials['phone_with_code'])->first();
-
         if (!($customer)) {
             return response()->json([
                 "message" => 'Invalid phone number or password',
                 "status" => 0
             ]);
         }
-
         if (Hash::check($credentials['password'], $customer->password)) {
             if ($customer->status == 1) {
                 Customer::where('id', $customer->id)->update(['fcm_token' => $input['fcm_token']]);
