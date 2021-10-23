@@ -979,7 +979,8 @@ class CustomerController extends Controller
 
     public function rate_driver(Request $request) {
         $input = $request->all();
-        $trip = Trip::where('id', $input['trip_id'])->first();
+        $driver_id = Auth::user()->id
+        $trip = Trip::where('driver_id', $driver_id)->get()->latse();
         $driver_rate = Driver::where('id', $trip->driver_id)->value('overall_ratings');
         if($driver_rate != 0) {
             $new_rate = ($driver_rate + $input['rate']) / 2;
