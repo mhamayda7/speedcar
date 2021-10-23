@@ -1197,6 +1197,7 @@ class BookingController extends Controller
 
         if ($fcm_token) {
             $current_status = BookingStatus::where('id', $input['status'])->first();
+            $new_status = BookingStatus::where('id', $input['status'])->first();
             $this->save_notifcation($customer_id,1,$current_status->status_name,$current_status->customer_status_name,$image);
             $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $fcm_token);
         }
