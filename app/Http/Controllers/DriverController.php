@@ -1038,8 +1038,8 @@ class DriverController extends Controller
     public function rate_customer(Request $request)
     {
         $input = $request->all();
-        $driver_id = Auth::user()->id;
-        $trip = Trip::where('driver_id', $driver_id)->get()->last();
+        $customer_id = Auth::user()->id;
+        $trip = Trip::where('customer_id', $customer_id)->get()->last();
         $customer_rate = Customer::where('id', $trip->customer_id)->value('rating');
         if($customer_rate != null) {
             $new_rate = ($customer_rate + $input['rate']) / 2;
