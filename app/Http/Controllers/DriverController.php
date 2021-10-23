@@ -1040,7 +1040,7 @@ class DriverController extends Controller
         $input = $request->all();
         $driver_id = Auth::user()->id;
         $trip = Trip::where('driver_id', $driver_id)->get()->last();
-        $customer_rate = Customer::where('id', $trip->customer_id)->value('ratings');
+        $customer_rate = Customer::where('id', $trip->customer_id)->value('rating');
         if($customer_rate != null) {
             $new_rate = ($customer_rate + $input['rate']) / 2;
             $new_rate = number_format((float)$new_rate, 2, '.', '');
