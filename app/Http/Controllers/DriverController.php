@@ -19,6 +19,7 @@ use App\DriverWithdrawal;
 use App\DriverWalletHistory;
 use App\VehicleCategory;
 use App\CustomerWalletHistory;
+use App\Models\DailyFareManagement;
 use App\Models\Point;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -951,6 +952,7 @@ class DriverController extends Controller
         $driver_id = Auth::user()->id;
         $trip = Trip::where('driver_id', $driver_id)->whereNotIn('status', [7, 8])->get()->last();
         $data = Customer::where('id', $trip->customer_id)->select('full_name', 'phone_with_code', 'profile_picture', 'rating')->get();
+        $trip['price_wait'] = DailyFareManagement::where('id', 1)->value('price_wait');
         if($trip->status < 6 ) {
             return response()->json([
                 "trip" => $trip,
