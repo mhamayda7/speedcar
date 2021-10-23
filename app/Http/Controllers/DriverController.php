@@ -1043,9 +1043,9 @@ class DriverController extends Controller
         if($customer_rate != null) {
             $new_rate = ($customer_rate + $input['rate']) / 2;
             $new_rate = number_format((float)$new_rate, 2, '.', '');
-            Customer::where('id', $trip->customer_id)->update(['ratings' => $new_rate]);
+            Customer::where('id', $trip->customer_id)->update(['rating' => $new_rate]);
         } else {
-            Customer::where('id', $trip->customer_id)->update(['ratings' => $input['rate']]);
+            Customer::where('id', $trip->customer_id)->update(['rating' => $input['rate']]);
         }
         return response()->json([
             "message" => "rate success",
