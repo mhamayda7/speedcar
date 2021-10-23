@@ -199,7 +199,7 @@ class CustomerController extends Controller
         $input['country_id'] = $data;
         $input['currency'] = Currency::where('country_id', $input['country_id'])->value('currency');
         $input['currency_short_code'] = Currency::where('country_id', $input['country_id'])->value('currency_short_code');
-        $input['profile_picture'] = "customers/avatar.jpg";
+        $input['profile_picture'] = "customers/avatar.png";
         $input['phone_with_code'] = $input['country_code'].$input['phone_number'];
         $otp = rand(1000, 9999);
         $input['otp']=$otp;

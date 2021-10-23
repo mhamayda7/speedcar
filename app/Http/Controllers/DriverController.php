@@ -173,7 +173,6 @@ class DriverController extends Controller
         $phone = '+' . $input['phone_with_code'];
         $message = "Hi " . env('APP_NAME') . "  , Your OTP code is:" . $otp;
         $this->smsSe($phone, $message);
-
         $driver = Driver::create($input);
 
         $unique = false;
@@ -952,7 +951,7 @@ class DriverController extends Controller
         $driver_id = Auth::user()->id;
         $trip = Trip::where('driver_id', $driver_id)->whereNotIn('status', [7, 8])->get()->last();
         $data = Customer::where('id', $trip->customer_id)->select('full_name', 'phone_with_code', 'profile_picture', 'rating')->get();
-        if($trip->status != 6) {
+        if($trip->status < 6 ) {
             return response()->json([
                 "trip" => $trip,
                 "customer" => $data,

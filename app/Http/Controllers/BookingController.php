@@ -1109,7 +1109,8 @@ class BookingController extends Controller
             $price_per_km = number_format((float)$vehicle->price_per_km, 2, '.', '');
             $price_time = number_format((float)$vehicle->price_time, 2, '.', '');
             $interval = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
-            $fare = number_format((float) ($base_far + ($price_per_km * $distance) + ($price_time * $interval)), 2, '.', '');
+            $fare = ($base_far + ($price_per_km * $distance) + ($price_time * $interval));
+            $fare = number_format((float)$fare , 2, '.', '');
             Trip::where('id', $input['trip_id'])->update(['sub_total' => $fare]);
 
             if ($trip->promo_code == 0) {
@@ -1283,7 +1284,6 @@ class BookingController extends Controller
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-
         $point = Customer::where('id', $input['customer_id'])->value('points');
         $value = DB::table('app_settings')->value('points');
         $point_back = $point % $value;
@@ -1305,7 +1305,6 @@ class BookingController extends Controller
         $validator = Validator::make($input, [
             'customer_id' => 'required',
         ]);
-
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
@@ -1313,7 +1312,6 @@ class BookingController extends Controller
         $point = Customer::where('id', $input['customer_id'])->value('points');
         $point_back = $point % $value;
         $input['point'] = $point - $point_back;
-
         if ( $point >= $input['point'])
         {
             $to_wallet = $input['point'] / $value;
