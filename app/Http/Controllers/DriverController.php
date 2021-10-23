@@ -1053,6 +1053,30 @@ class DriverController extends Controller
         ]);
     }
 
+    public function get_distance($trip_id)
+    {
+        $trip = Trip::where('id', $trip_id)->first();
+        $url = 'https://maps.googleapis.com/maps/api/directions/json?origin=' . $trip->actual_pickup_lat . ',' . $trip->actual_pickup_lng . '&destination=' . $trip->actual_drop_lat . ',' . $trip->actual_drop_lng . '&key=' . env('MAP_KEY');
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $response = curl_exec($ch);
+        $err = curl_error($ch);  //if you need
+        curl_close($ch);
+        $result = json_decode($response);
+        if (@$result->routes[0]->legs[0]->distance->text) {
+
+            $distance = str_replace(" km", "", $result->routes[0]->legs[0]->distance->text);
+            $distance = str_replace(" m", "", $distance);
+            return $distance;
+        } else {
+            return 0;
+        }
+    }
+
 
     public function sendError($message)
     {
