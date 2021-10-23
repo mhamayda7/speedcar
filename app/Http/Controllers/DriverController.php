@@ -1035,16 +1035,17 @@ class DriverController extends Controller
         }
     }
 
-    public function rate_customer($trip_id,$rate)
+    public function rate_customer(Request $request)
     {
-        $trip = Trip::where('id', $trip_id)->get();
+        $input = $request->all();
+        $trip = Trip::where('id', $input['trip_id'])->get();
         $customer_rate = Customer::where('id', $trip->customer_id)->value('ratings');
         if($customer_rate != null) {
-            $new_rate = ($customer_rate + $rate) / 2;
+            $new_rate = ($customer_rate + $input['rate']) / 2;
             $new_rate = number_format((float)$new_rate, 2, '.', '');
             Customer::where('id', $trip->customer->id)->update(['ratings' => $new_rate]);
         } else {
-            Customer::where('id', $trip->customer->id)->update(['ratings' => $rate]);
+            Customer::where('id', $trip->customer->id)->update(['ratings' => $input['rate']]);
         }
 
         return response()->json([
