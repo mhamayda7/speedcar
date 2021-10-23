@@ -947,16 +947,34 @@ class DriverController extends Controller
 
     public function driver_trip()
     {
-        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
-        $database = $factory->createDatabase();
+
         $driver_id = Auth::user()->id;
         $trip = Trip::where('driver_id', $driver_id)->whereNotIn('status', [7, 8])->get()->last();
-        $data = Customer::where('id', $trip->customer_id)->select('full_name', 'phone_with_code', 'profile_picture', 'rating')->get();
+        $customer = Customer::where('id', $trip->customer_id)->select('full_name', 'phone_with_code', 'profile_picture', 'rating')->get();
         $trip['price_wait'] = DailyFareManagement::where('id', 1)->value('price_wait');
+
+        $inovice = array();
+        $trip->start_time;
+        $trip->end_time;
+        $vehicle = DB::table('daily_fare_management')->where('id', 1)->first();
+        $base_fare = number_format((float)$vehicle->base_fare, 2, '.', '');
+        $distance = $this->get_distance($trip->trip_id);
+        $price_per_km = number_format((float)$vehicle->price_per_km, 2, '.', '');
+        $price_time = number_format((float)$vehicle->price_time, 2, '.', '');
+        $interval = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
+        // $fare = number_format((float)$base_far + ($price_per_km * $distance) + ($price_time * $interval));
+
+        $inovice['sub_total'] = $price_per_km * $distance;
+        $inovice['waiting_time'] = $price_time * $interval;
+        $inovice['base_fare'] = $base_fare;
+        $inovice['discount'] =  $trip->discount;
+        $inovice['total'] =  $trip->total;
+
         if($trip->status < 6 ) {
             return response()->json([
                 "trip" => $trip,
-                "customer" => $data,
+                "customer" => $customer,
+                "invoice" => $inovice,
                 "status" => 1
             ]);
         } else {
