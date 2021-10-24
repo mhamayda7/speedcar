@@ -1388,13 +1388,20 @@ class BookingController extends Controller
             $trip['interval'] = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
             $driver = Driver::select('full_name', 'profile_picture', 'overall_ratings', 'phone_with_code')->where('id', $trip->driver_id)->get()->last();
             $vehicle = DriverVehicle::where('driver_id', $trip->driver_id)->get(['vehicle_image', 'brand', 'vehicle_name', 'vehicle_number'])->last();
-            return response()->json([
-                "result" => $trip,
-                "driver" => $driver,
-                "vehicle" => $vehicle,
-                "message" => 'Success',
-                "status" => 1
-            ]);
+            if ($trip->status != 6) {
+                return response()->json([
+                    "result" => $trip,
+                    "driver" => $driver,
+                    "vehicle" => $vehicle,
+                    "message" => 'Success',
+                    "status" => 1
+                ]);
+            } else {
+                return response()->json([
+                    "message" => 'Your trip is finish',
+                    "status" => 1
+                ]);
+            }
         }
         else {
             return response()->json([
