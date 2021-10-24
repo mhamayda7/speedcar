@@ -37,6 +37,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('customer/invite', 'App\Http\Controllers\CustomerController@customer_invite');
     Route::post('customer/get_notification_messages', 'App\Http\Controllers\NotificationController@get_customer_notification_messages');
     Route::post('customer/rate_driver', 'App\Http\Controllers\CustomerController@rate_driver');
+    Route::post('customer/reset_password', 'App\Http\Controllers\CustomerController@reset_password');
+
 });
 
 //Customer
@@ -61,7 +63,6 @@ Route::get('customer/get_about', 'App\Http\Controllers\AboutController@get_about
 Route::get('customer/get_cancellation_reasons', 'App\Http\Controllers\RideDetailsController@get_cancellation_reasons');
 Route::post('customer/get_promo_codes', 'App\Http\Controllers\RideDetailsController@get_promo_codes');
 Route::post('customer/forgot', 'App\Http\Controllers\CustomerController@forgot');
-Route::post('customer/reset_password', 'App\Http\Controllers\CustomerController@reset_password');
 Route::post('customer/get_categories', 'App\Http\Controllers\CustomerController@get_vehicle_categories');
 Route::post('customer/get_fare', 'App\Http\Controllers\BookingController@get_fare');
 Route::post('customer/payment_method', 'App\Http\Controllers\CustomerController@payment_method');
