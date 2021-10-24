@@ -116,7 +116,7 @@ class CustomerController extends Controller
         ];
         $input['password'] = password_hash($input["password"], PASSWORD_DEFAULT, $options);
 
-        if (Customer::where('id', Auth::user()->id)->update($input['password'])) {
+        if (Customer::where('id', Auth::user()->id)->update(['password'=>$input['password']])) {
             return response()->json([
                 "message" => 'Success',
                 "status" => 1
