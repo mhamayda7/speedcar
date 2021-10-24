@@ -700,7 +700,6 @@ class DriverController extends Controller
 
         $input = $request->all();
         $validator = Validator::make($input, [
-            'id' => 'required',
             'password' => 'required'
         ]);
 
@@ -713,7 +712,7 @@ class DriverController extends Controller
         ];
         $input['password'] = password_hash($input["password"], PASSWORD_DEFAULT, $options);
 
-        if (Driver::where('id', $input['id'])->update($input)) {
+        if (Driver::where('id', Auth::user()->id)->update($input['password'])) {
             return response()->json([
                 "message" => 'Success',
                 "status" => 1
