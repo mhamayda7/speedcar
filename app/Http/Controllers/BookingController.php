@@ -1093,6 +1093,7 @@ class BookingController extends Controller
         }
 
         Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
+        $trip = Trip::where('id', $input['trip_id'])->first();
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
 
@@ -1100,10 +1101,10 @@ class BookingController extends Controller
             Trip::where('id', $input['trip_id'])->update(['start_time' => date('Y-m-d H:i:s'), 'actual_pickup_address' => $input['address'], 'actual_pickup_lat' => $input['lat'], 'actual_pickup_lng' => $input['lng']]);
         }
 
-        $trip = Trip::where('id', $input['trip_id'])->first();
         if ($input['status'] == 5) {
             Trip::where('id', $input['trip_id'])->update(['end_time' => date('Y-m-d H:i:s'), 'actual_drop_address' => $input['address'], 'actual_drop_lat' => $input['lat'], 'actual_drop_lng' => $input['lng']]);
             $vehicle = DB::table('daily_fare_management')->where('id', 1)->first();
+
             $base_far = number_format((float)$vehicle->base_fare, 2, '.', '');
             $distance = $this->get_distance($trip->trip_id);
             $price_per_km = number_format((float)$vehicle->price_per_km, 2, '.', '');
@@ -1111,6 +1112,7 @@ class BookingController extends Controller
             $interval = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
             $fare = ($base_far + ($price_per_km * $distance) + ($price_time * $interval));
             $fare = number_format((float)$fare , 2, '.', '');
+            dd($fare);
             Trip::where('id', $input['trip_id'])->update(['sub_total' => $fare]);
 
             if ($trip->promo_code == 0) {
