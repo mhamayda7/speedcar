@@ -1159,12 +1159,15 @@ class BookingController extends Controller
 
             Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
             $this->calculate_earnings($input['trip_id']);
-            $distance = Trip::where('id', $input['trip_id'])->sum('distance');
-            $trip_customer = Trip::where('id', $input['trip_id'])->value('customer_id');
-            $customer = Customer::find($trip_customer);
-            $customer->points += $distance;
-            $customer->save();
             $this->reward_point($input['trip_id']);
+
+            // $distance = Trip::where('id', $input['trip_id'])->sum('distance');
+            // $trip_customer = Trip::where('id', $input['trip_id'])->value('customer_id');
+            // $customer = Customer::find($trip_customer);
+            // $customer->points += $distance;
+            // Customer::where('id', $trip_customer)->update(['points'=>$customer->points]);
+
+
         }
 
         if($input['status'] == 8) {
@@ -1184,13 +1187,11 @@ class BookingController extends Controller
             $current_status = BookingStatus::where('id', $input['status'])->first();
             $new_status = BookingStatus::where('id', $input['status'])->first();
         } elseif ($input['status'] = 6){
-            $this->calculate_earnings($input['trip_id']);
             $distance = Trip::where('id', $input['trip_id'])->sum('distance');
             $trip_customer = Trip::where('id', $input['trip_id'])->value('customer_id');
             $customer = Customer::find($trip_customer);
             $customer->points += $distance;
             $customer->save();
-            $this->reward_point($input['trip_id']);
         }
         $customer_id = Trip::where('id', $input['trip_id'])->value('customer_id');
         $fcm_token = Customer::where('id', $customer_id)->value('fcm_token');
