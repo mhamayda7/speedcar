@@ -1110,7 +1110,7 @@ class BookingController extends Controller
             Trip::where('id', $input['trip_id'])->update(['distance' => $distance]);
             // $vehicle = DB::table('daily_fare_management')->where('id', 1)->first();
             $vehicle = DailyFareManagement::where('id', 1)->first();
-            dd($vehicle);
+            // dd($vehicle);
             // $base_far = number_format((float)$vehicle->base_fare, 2, '.', '');
 
             // $price_per_km = number_format((float)$vehicle->price_per_km, 2, '.', '');
