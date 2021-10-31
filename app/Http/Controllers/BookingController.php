@@ -1103,15 +1103,17 @@ class BookingController extends Controller
 
         if ($input['status'] == 5) {
             Trip::where('id', $input['trip_id'])->update(['end_time' => date('Y-m-d H:i:s'), 'actual_drop_address' => $input['address'], 'actual_drop_lat' => $input['lat'], 'actual_drop_lng' => $input['lng']]);
+            $distance = $this->get_distance($input['trip_id']);
+            Trip::where('id', $input['trip_id'])->update(['distance' => $distance]);
             $vehicle = DB::table('daily_fare_management')->where('id', 1)->first();
 
             // $base_far = number_format((float)$vehicle->base_fare, 2, '.', '');
-            $distance = $this->get_distance($trip->id);
 
             // $price_per_km = number_format((float)$vehicle->price_per_km, 2, '.', '');
             // $price_time = number_format((float)$vehicle->price_time, 2, '.', '');
             $interval = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
             $fare = ($vehicle->base_fare + ($vehicle->price_per_km * $distance) + ($vehicle->price_time * $interval));
+            $fare = 10;
             Trip::where('id', $input['trip_id'])->update(['sub_total' => $fare]);
 
             if ($trip->promo_code == 0) {
