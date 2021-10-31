@@ -39,6 +39,7 @@ use Kreait\Firebase\Database;
 use DateTime;
 use DateTimeZone;
 use App\CustomerWalletHistory;
+use App\Models\DailyFareManagement;
 use App\Models\Point;
 use App\NotificationMessage;
 use App\PromoCode;
@@ -1102,13 +1103,14 @@ class BookingController extends Controller
         }
 
         if ($input['status'] == 5) {
-            $distance = $this->get_distance($input['trip_id']);
-            dd($distance);
+            // $distance = $this->get_distance($input['trip_id']);
+            // dd($distance);
             Trip::where('id', $input['trip_id'])->update(['end_time' => date('Y-m-d H:i:s'), 'actual_drop_address' => $input['address'], 'actual_drop_lat' => $input['lat'], 'actual_drop_lng' => $input['lng']]);
             $distance = $this->get_distance($input['trip_id']);
             Trip::where('id', $input['trip_id'])->update(['distance' => $distance]);
-            $vehicle = DB::table('daily_fare_management')->where('id', 1)->first();
-
+            // $vehicle = DB::table('daily_fare_management')->where('id', 1)->first();
+            $vehicle = DailyFareManagement::where('id', 1)->first();
+            dd($vehicle);
             // $base_far = number_format((float)$vehicle->base_fare, 2, '.', '');
 
             // $price_per_km = number_format((float)$vehicle->price_per_km, 2, '.', '');
