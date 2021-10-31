@@ -1102,6 +1102,8 @@ class BookingController extends Controller
         }
 
         if ($input['status'] == 5) {
+            $distance = $this->get_distance($input['trip_id']);
+            dd($distance);
             Trip::where('id', $input['trip_id'])->update(['end_time' => date('Y-m-d H:i:s'), 'actual_drop_address' => $input['address'], 'actual_drop_lat' => $input['lat'], 'actual_drop_lng' => $input['lng']]);
             $distance = $this->get_distance($input['trip_id']);
             Trip::where('id', $input['trip_id'])->update(['distance' => $distance]);
