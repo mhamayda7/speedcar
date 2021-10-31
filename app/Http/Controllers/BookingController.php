@@ -1227,7 +1227,7 @@ class BookingController extends Controller
             } else {
                 $data_trip1['payment_method']= "wallet";
             }
-            $data_trip1['payment_method'] = $this->get_distance($data_trip->trip_id);
+            // $data_trip1['payment_method'] = $this->get_distance($data_trip->trip_id);
 
             return response()->json([
                 "data" => $data_trip1,
