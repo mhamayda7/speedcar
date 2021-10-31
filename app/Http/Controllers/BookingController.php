@@ -1116,7 +1116,10 @@ class BookingController extends Controller
             // $price_per_km = number_format((float)$vehicle->price_per_km, 2, '.', '');
             // $price_time = number_format((float)$vehicle->price_time, 2, '.', '');
             $interval = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
-            $fare = ($vehicle->base_fare + ($vehicle->price_per_km * $distance) + ($vehicle->price_time * $interval));
+            $price_time = $interval * $vehicle->price_time;
+            $price_distance = $distance * $vehicle->price_per_km;
+
+            $fare = $vehicle->base_fare + $price_time + $price_distance ;
             // $fare = number_format((float)$fare, 2, '.', '');
             Trip::where('id', $input['trip_id'])->update(['sub_total' => $fare]);
 
