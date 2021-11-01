@@ -1117,8 +1117,8 @@ class BookingController extends Controller
             // $price_time = number_format((float)$vehicle->price_time, 2, '.', '');
             $interval = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
             $interval = number_format((float)$interval, 2, '.', '');
-            $price_time = $interval * $vehicle->price_time;
-            dd($price_time);
+            $price_time = 0.05 * $interval;
+            $price_time = number_format((float)$price_time, 2, '.', '');
             $price_distance = $distance * $vehicle->price_per_km;
 
             $fare = $vehicle->base_fare + $price_time + $price_distance ;
