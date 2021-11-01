@@ -1123,7 +1123,7 @@ class BookingController extends Controller
 
             $totalSecondsDiff = abs($end-$start);
             $time = $totalSecondsDiff / 60 ;
-            dd($time);
+            dd($start);
             $price_time = $time * $vehicle->price_time;
             $price_time = number_format((float)$price_time, 2, '.', '');
             $price_distance = $distance * $vehicle->price_per_km;
