@@ -1179,8 +1179,8 @@ class BookingController extends Controller
                 ]);
 
             Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
-            $this->calculate_earnings($input['trip_id']);
-            $this->reward_point($input['trip_id']);
+            // $this->calculate_earnings($input['trip_id']);
+            // $this->reward_point($input['trip_id']);
 
             // $distance = Trip::where('id', $input['trip_id'])->sum('distance');
             // $trip_customer = Trip::where('id', $input['trip_id'])->value('customer_id');
