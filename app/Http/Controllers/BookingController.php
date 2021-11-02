@@ -1143,7 +1143,7 @@ class BookingController extends Controller
                     $total_fare = $fare - $promo->discount;
                     $promo->discount = number_format((float)$promo->discount, 2, '.', '');
                     $total_fare = number_format((float)$total_fare, 2, '.', '');
-                    Trip::where('id', $input['trip_id'])->update(['total' => $total_fare]);
+                    Trip::where('id', $input['trip_id'])->update(['total' => $total_fare, 'discount'=> $promo->discount]);
                 } else {
                     $discount = ($promo->discount / 100) * $fare;
                     $total_fare = $fare - $discount;
