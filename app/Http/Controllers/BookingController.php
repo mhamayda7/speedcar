@@ -1130,7 +1130,7 @@ class BookingController extends Controller
             // dd($price_time . ' ' . $time . ' ' . $totalSecondsDiff .  ' ' . $start . ' ' . $end);
             $price_distance = $distance * $vehicle->price_per_km;
 
-            $fare = $vehicle->base_fare + $price_time + $price_distance ;
+            $fare = $vehicle->base_fare + $price_distance ;
             // dd($price_time . ' ' . $fare);
             // $fare = number_format((float)$fare, 2, '.', '');
             Trip::where('id', $input['trip_id'])->update(['sub_total' => $fare]);
@@ -1179,8 +1179,8 @@ class BookingController extends Controller
                 ]);
 
             Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
-            // $this->calculate_earnings($input['trip_id']);
-            // $this->reward_point($input['trip_id']);
+            $this->calculate_earnings($input['trip_id']);
+            $this->reward_point($input['trip_id']);
 
             // $distance = Trip::where('id', $input['trip_id'])->sum('distance');
             // $trip_customer = Trip::where('id', $input['trip_id'])->value('customer_id');
