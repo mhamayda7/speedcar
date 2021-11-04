@@ -1081,9 +1081,7 @@ class BookingController extends Controller
     {
         // dd($request);
         $input = $request->all();
-        // $input = [];
-        // $input['trip_id'] = $trip_id;
-        // $input['status'] = $status;
+
 
         $validator = Validator::make($input, [
             'trip_id' => 'required',
@@ -1118,11 +1116,13 @@ class BookingController extends Controller
             // $interval = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
             // $interval = number_format((float)$interval, 2, '.', '');
             // $price_time = 0.05 * $interval;
+            $trip = Trip::where('id', $input['trip_id'])->first();
             $end = strtotime($trip->end_time);
             $start = strtotime($trip->start_time);
 
             $totalSecondsDiff = abs($end-$start);
             $time = ($totalSecondsDiff / 60);
+            dd($time);
             // $time = number_format((float)$time, 2, '.', '');
             $minutes = Trip::where('id', $input['trip_id'])->value('time_minutes');
             if (is_null($minutes)) {
