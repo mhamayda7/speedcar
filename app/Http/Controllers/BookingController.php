@@ -1118,19 +1118,21 @@ class BookingController extends Controller
             // $interval = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
             // $interval = number_format((float)$interval, 2, '.', '');
             // $price_time = 0.05 * $interval;
+            $end = strtotime($trip->end_time);
+            $start = strtotime($trip->start_time);
 
-            $since_start = $trip->start_time->diff($trip->end_time);
-            $minutes = $since_start->days * 24 * 60;
-            $minutes += $since_start->h * 60;
-            $minutes += $since_start->i;
+            $totalSecondsDiff = abs($end-$start);
+            $time = $totalSecondsDiff / 60 ;
+            $time = number_format((float)$time, 2, '.', '');
 
-
-            $price_time = $minutes * $vehicle->price_time;
+            $price_time = $time * $vehicle->price_time;
             $price_time = number_format((float)$price_time, 2, '.', '');
+
             // dd($price_time . ' ' . $time . ' ' . $totalSecondsDiff .  ' ' . $start . ' ' . $end);
             $price_distance = $distance * $vehicle->price_per_km;
 
             $fare = $vehicle->base_fare + $price_distance + $price_time;
+
             // dd($price_time . ' ' . $fare);
             // $fare = number_format((float)$fare, 2, '.', '');
             Trip::where('id', $input['trip_id'])->update(['sub_total' => $fare]);
@@ -1178,7 +1180,6 @@ class BookingController extends Controller
                     'total' => ""
                 ]);
 
-            Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
             $this->calculate_earnings($input['trip_id']);
             $this->reward_point($input['trip_id']);
 
