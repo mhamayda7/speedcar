@@ -1123,7 +1123,7 @@ class BookingController extends Controller
 
             $totalSecondsDiff = abs($end-$start);
             $time = $totalSecondsDiff / 60 ;
-            $time = number_format((float)$time, 2, '.', '');
+            // $time = number_format((float)$time, 2, '.', '');
             $minutes = Trip::where('id', $input['trip_id'])->value('time_minutes');
             if (is_null($minutes)) {
                 Trip::where('id', $input['trip_id'])->update(['time_minutes' => $time]);
