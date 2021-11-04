@@ -1126,7 +1126,9 @@ class BookingController extends Controller
             $time = number_format((float)$time, 2, '.', '');
             Trip::where('id', $input['trip_id'])->update(['time_minutes' => $time]);
 
-            $price_time = $time * $vehicle->price_time;
+            $minutes = Trip::where('id', $input['trip_id'])->value('time_minutes');
+            $price_time = $minutes * $vehicle->price_time;
+
             $price_time = number_format((float)$price_time, 2, '.', '');
 
             // dd($price_time . ' ' . $time . ' ' . $totalSecondsDiff .  ' ' . $start . ' ' . $end);
