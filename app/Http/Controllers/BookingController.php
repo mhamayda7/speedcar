@@ -257,7 +257,7 @@ class BookingController extends Controller
 
         $drivers = $database->getReference('/drivers/')
                     ->getSnapshot()->getValue();
-        dd($drivers);
+        // dd($drivers);
         $min_distance = 0;
         $min_driver_id = 0;
         $booking_searching_radius = TripSetting::value('booking_searching_radius');
