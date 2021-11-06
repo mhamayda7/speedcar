@@ -264,7 +264,7 @@ class BookingController extends Controller
         foreach($drivers as $key => $value){
 
             $amount = Driver::where('id', $value['driver_id'])->value('wallet');
-            dd($amount);
+            // dd($amount);
             // $amount = Driver::where('id', $value->driver_id)->value('wallet');
             if($amount > (-1)) {
                 $distance = $this->distance($input['pickup_lat'], $input['pickup_lng'], $value['lat'], $value['lng'], 'K') ;
