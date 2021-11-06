@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2048773398ce48a12f59bd2c5f5ce21c",
+    "content-hash": "0ab6b25a678194cc36710a2a15bf1d9f",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1846,16 +1846,16 @@
         },
         {
             "name": "kreait/firebase-php",
-            "version": "5.23.0",
+            "version": "5.25.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kreait/firebase-php.git",
-                "reference": "0b3ba9f97adb439501ca99381be9ea7b0d4347e1"
+                "reference": "94cc2699471896ec36ff9abe86af4263d10c45c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kreait/firebase-php/zipball/0b3ba9f97adb439501ca99381be9ea7b0d4347e1",
-                "reference": "0b3ba9f97adb439501ca99381be9ea7b0d4347e1",
+                "url": "https://api.github.com/repos/kreait/firebase-php/zipball/94cc2699471896ec36ff9abe86af4263d10c45c6",
+                "reference": "94cc2699471896ec36ff9abe86af4263d10c45c6",
                 "shasum": ""
             },
             "require": {
@@ -1870,7 +1870,7 @@
                 "guzzlehttp/promises": "^1.4",
                 "guzzlehttp/psr7": "^1.7|^2.0",
                 "kreait/clock": "^1.1",
-                "kreait/firebase-tokens": "^1.16",
+                "kreait/firebase-tokens": "^1.16.1",
                 "mtdowling/jmespath.php": "^2.6.1",
                 "php": "^7.4|^8.0",
                 "psr/cache": "^1.0.1|^2.0|^3.0",
@@ -1886,8 +1886,10 @@
                 "phpstan/extension-installer": "^1.1",
                 "phpstan/phpstan": "^0.12.92",
                 "phpstan/phpstan-phpunit": "^0.12.21",
-                "phpunit/phpunit": "^9.5.6",
-                "symfony/var-dumper": "^5.3.3"
+                "phpunit/phpunit": "^9.5.10",
+                "rector/rector": "^0.11.57",
+                "symfony/var-dumper": "^5.3.3",
+                "symplify/easy-coding-standard": "^9.4"
             },
             "suggest": {
                 "giggsey/libphonenumber-for-php": "^8.9 to validate phone numbers before attempting to send them to Firebase",
@@ -1936,7 +1938,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2021-08-26T11:58:39+00:00"
+            "time": "2021-11-01T16:08:45+00:00"
         },
         {
             "name": "kreait/firebase-tokens",
@@ -2021,28 +2023,28 @@
         },
         {
             "name": "kreait/laravel-firebase",
-            "version": "3.1.0",
+            "version": "3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kreait/laravel-firebase.git",
-                "reference": "c00ec1e3ce30e07ccdd6ea08712d8c75d0998ff5"
+                "reference": "a1e9eace849539753f3821ad64e40212d6e1512c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kreait/laravel-firebase/zipball/c00ec1e3ce30e07ccdd6ea08712d8c75d0998ff5",
-                "reference": "c00ec1e3ce30e07ccdd6ea08712d8c75d0998ff5",
+                "url": "https://api.github.com/repos/kreait/laravel-firebase/zipball/a1e9eace849539753f3821ad64e40212d6e1512c",
+                "reference": "a1e9eace849539753f3821ad64e40212d6e1512c",
                 "shasum": ""
             },
             "require": {
                 "illuminate/contracts": "^6.0|^7.0|^8.0",
                 "illuminate/support": "^6.0|^7.0|^8.0",
-                "kreait/firebase-php": "^5.14.1",
+                "kreait/firebase-php": "^5.24",
                 "php": "^7.2|~8.0.0"
             },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^2.16",
                 "orchestra/testbench": "^4.0|^5.0|^6.0",
-                "roave/better-reflection": "^3.6|^4.6"
+                "roave/better-reflection": "^3.6|^4.6|5.0.x-dev"
             },
             "type": "library",
             "extra": {
@@ -2089,7 +2091,7 @@
             ],
             "support": {
                 "issues": "https://github.com/kreait/laravel-firebase/issues",
-                "source": "https://github.com/kreait/laravel-firebase/tree/3.1.0"
+                "source": "https://github.com/kreait/laravel-firebase/tree/3.2.0"
             },
             "funding": [
                 {
@@ -2113,7 +2115,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2021-02-02T23:32:34+00:00"
+            "time": "2021-10-21T22:47:30+00:00"
         },
         {
             "name": "laravel/framework",
