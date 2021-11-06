@@ -262,7 +262,7 @@ class BookingController extends Controller
         $min_driver_id = 0;
         $booking_searching_radius = TripSetting::value('booking_searching_radius');
         foreach($drivers as $key => $value){
-            dd($value);
+            dd($value['driver_id']);
             $amount = Driver::where('id', $value['driver_id'])->value('wallet');
             // $amount = Driver::where('id', $value->driver_id)->value('wallet');
             if($amount > (-1)) {
