@@ -262,8 +262,9 @@ class BookingController extends Controller
         $min_driver_id = 0;
         $booking_searching_radius = TripSetting::value('booking_searching_radius');
         foreach($drivers as $key => $value){
-            $idd = $value['driver_id'];
-            $amount = Driver::where('id', $idd)->value('wallet');
+
+            $amount = Driver::where('id', $value['driver_id'])->value('wallet');
+            dd($amount);
             // $amount = Driver::where('id', $value->driver_id)->value('wallet');
             if($amount > (-1)) {
                 $distance = $this->distance($input['pickup_lat'], $input['pickup_lng'], $value['lat'], $value['lng'], 'K') ;
