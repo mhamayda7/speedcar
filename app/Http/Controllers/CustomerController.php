@@ -394,6 +394,7 @@ class CustomerController extends Controller
             if ($customer->status == 1) {
                 Customer::where('id', $customer->id)->update(['fcm_token' => $input['fcm_token']]);
                 $token = $customer->createToken('name')->plainTextToken;
+                $customer['fcm_token'] = $input['fcm_token'];
                 return response()->json([
                     "result" => $customer,
                     "token" => $token,
@@ -418,6 +419,9 @@ class CustomerController extends Controller
     {
         Customer::where('id', Auth::user()->id)->update(['fcm_token'=> null]);
         $request->user()->currentAccessToken()->delete();
+        Auth::user()->tokens->each(function($token, $key) {
+            $token->delete();
+        });
         return response()->json([
             "message" => 'Success Sign Out',
             "status" => 1

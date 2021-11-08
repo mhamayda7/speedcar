@@ -303,6 +303,9 @@ class DriverController extends Controller
     {
         Driver::where('id', Auth::user()->id)->update(['fcm_token' => null]);
         $request->user()->currentAccessToken()->delete();
+        Auth::user()->tokens->each(function($token, $key) {
+            $token->delete();
+        });
         return response()->json([
             "message" => 'Success Sign Out',
             "status" => 1
