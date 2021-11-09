@@ -1946,6 +1946,43 @@ class BookingController extends Controller
         ]);
     }
 
+    public function detailes_invoice(Request $request)
+    {
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'trip_id' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors());
+        }
+
+        $trip = Trip::where('id', $input['trip_id'])->get()->first();
+
+
+        $trip->start_time;
+        $trip->end_time;
+
+        $vehicle = DB::table('daily_fare_management')->where('id', 1)->first();
+        $base_fare = number_format((float)$vehicle->base_fare, 2, '.', '');
+        $distance = $trip->distance;
+        $price_per_km = number_format((float)$vehicle->price_per_km, 2, '.', '');
+        $price_time = number_format((float)$vehicle->price_time, 2, '.', '');
+        $interval = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
+        // $fare = number_format((float)$base_far + ($price_per_km * $distance) + ($price_time * $interval));
+
+
+        $data['sub_total'] = $price_per_km * $distance;
+        $data['waiting_time'] = $price_time * $interval;
+        $data['base_fare'] = $base_fare;
+        $data['discount'] =  $trip->discount;
+        $data['total'] =  $trip->total;
+        return response()->json([
+            "invoice" => $data,
+            "message" => 'Success',
+            "status" => 1
+        ]);
+    }
+
     public function get_distance($trip_id)
     {
         $trip = Trip::where('id', $trip_id)->first();
