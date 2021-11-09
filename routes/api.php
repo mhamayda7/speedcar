@@ -101,6 +101,7 @@ Route::prefix('driver/')->middleware('auth:sanctum')->group(function () {
     Route::post('detailes_invoice', 'App\Http\Controllers\BookingController@driver_invoice');
     Route::post('recive_mony', 'App\Http\Controllers\BookingController@recive_mony');
     Route::post('rate_customer', 'App\Http\Controllers\DriverController@rate_customer');
+    Route::post('driver/reset_password', 'App\Http\Controllers\DriverController@reset_password');
 });
 
 Route::post('driver/policy', 'App\Http\Controllers\PrivacyPolicyController@driver_policy');
@@ -108,7 +109,6 @@ Route::post('driver/get_kyc', 'App\Http\Controllers\DriverController@get_bank_ky
 Route::post('driver/update_kyc', 'App\Http\Controllers\DriverController@bank_kyc_update');
 Route::post('driver_tutorials', 'App\Http\Controllers\DriverController@get_tutorials');
 Route::post('driver/forgot_password', 'App\Http\Controllers\DriverController@forgot_password');
-Route::post('driver/reset_password', 'App\Http\Controllers\DriverController@reset_password');
 Route::post('driver/get_vehicles', 'App\Http\Controllers\DriverController@get_vehicles');
 Route::post('driver/dashboard', 'App\Http\Controllers\DriverController@driver_dashboard');
 Route::post('driver/rating_upload', 'App\Http\Controllers\DriverController@driver_ratings');
