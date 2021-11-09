@@ -1169,17 +1169,8 @@ class BookingController extends Controller
                     'drop_address' => "",
                     'total' => ""
                 ]);
-
             $this->calculate_earnings($input['trip_id']);
             $this->reward_point($input['trip_id']);
-
-            // $distance = Trip::where('id', $input['trip_id'])->sum('distance');
-            // $trip_customer = Trip::where('id', $input['trip_id'])->value('customer_id');
-            // $customer = Customer::find($trip_customer);
-            // $customer->points += $distance;
-            // Customer::where('id', $trip_customer)->update(['points'=>$customer->points]);
-
-
         }
 
         if($input['status'] == 8) {
@@ -1237,8 +1228,6 @@ class BookingController extends Controller
             } else {
                 $data_trip1['payment_method']= "wallet";
             }
-            // $data_trip1['payment_method'] = $this->get_distance($data_trip->trip_id);
-
             return response()->json([
                 "data" => $data_trip1,
                 "message" => 'Success',
@@ -1271,7 +1260,6 @@ class BookingController extends Controller
 
     public function reward_point($trip_id)
     {
-
         $trip = Trip::select('customer_id', 'distance')->where('id', $trip_id)->get()->last();
         $point = new Point;
         $point->customer_id = $trip->customer_id;
@@ -1291,15 +1279,14 @@ class BookingController extends Controller
 
     public function point(Request $request)
     {
-
         $input = $request->all();
         $validator = Validator::make($input, [
             'customer_id' => 'required',
         ]);
-
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
+
         $point = Customer::where('id', $input['customer_id'])->value('points');
         $value = DB::table('app_settings')->value('points');
         $point_back = $point % $value;
@@ -1324,6 +1311,7 @@ class BookingController extends Controller
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
+
         $value = DB::table('app_settings')->value('points');
         $point = Customer::where('id', $input['customer_id'])->value('points');
         $point_back = $point % $value;
@@ -1387,7 +1375,6 @@ class BookingController extends Controller
     {
         $id = Auth::user()->id;
         $trip_request = TripRequest::select('status')->where('customer_id', $id)->get()->last();
-        // $status = $trip_request->status;
 
         if (is_null($trip_request)) {
             return response()->json([
@@ -1395,8 +1382,7 @@ class BookingController extends Controller
                 "status" => 1
             ]);
         }
-        // $trip_request = TripRequest::findOrFail($id);
-        // $status = $trip_request->status;
+
         elseif ($trip_request->status == 3) {
             $trip = Trip::select('trip_id', 'customer_id', 'driver_id', 'vehicle_id', 'status', 'pickup_address', 'drop_address', 'payment_method', 'start_time', 'end_time', 'distance', 'total')->where('customer_id', $id)->get()->last();
             $trip['interval'] = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
@@ -1429,8 +1415,6 @@ class BookingController extends Controller
     {
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
-
-
         $trip = Trip::where('id', $trip_id)->first();
         $distance = $this->get_distance($trip_id);
         if ($distance != 0 && is_object($trip)) {
@@ -1447,7 +1431,6 @@ class BookingController extends Controller
             if ($remaining_fare >= 0) {
                 Trip::where('id', $trip_id)->update(['payment_method' => PaymentMethod::where('country_id', $trip->country_id)->where('payment_type', 2)->value('id')]);
                 Customer::where('id', $trip->customer_id)->update(['wallet' => $remaining_fare]);
-
                 $payment_history['trip_id'] = $trip_id;
                 $payment_history['mode'] = "Wallet";
                 $payment_history['amount'] = $fare;
@@ -1457,7 +1440,6 @@ class BookingController extends Controller
             } else {
                 Trip::where('id', $trip_id)->update(['payment_method' => PaymentMethod::where('country_id', $trip->country_id)->where('payment_type', 3)->value('id')]);
                 Customer::where('id', $trip->customer_id)->update(['wallet' => 0]);
-
                 $payment_history['trip_id'] = $trip_id;
                 $payment_history['mode'] = "Wallet";
                 $payment_history['amount'] = $customer_wallet;
@@ -1466,9 +1448,7 @@ class BookingController extends Controller
                 $payment_history['mode'] = "Cash";
                 $payment_history['amount'] = abs($remaining_fare);
                 PaymentHistory::create($payment_history);
-
                 CustomerWalletHistory::create(['country_id' => $trip->country_id, 'customer_id' => $trip->customer_id, 'type' => 2, 'message' => 'Amount debited for booking(#' . $trip->trip_id . ')', 'amount' => $customer_wallet, 'transaction_type' => 3]);
-
                 return abs($remaining_fare);
             }
         } else {
@@ -1476,7 +1456,6 @@ class BookingController extends Controller
             $payment_history['mode'] = "Cash";
             $payment_history['amount'] = $fare;
             PaymentHistory::create($payment_history);
-
             return abs($fare);
         }
     }
@@ -1509,18 +1488,14 @@ class BookingController extends Controller
         $admin_commission = number_format((float)$admin_commission, 2, '.', '');
         $driver_earning = $total - $admin_commission;
         $driver_earning = number_format((float)$driver_earning, 2, '.', '');
-
         DriverEarning::create(['trip_id' => $trip_id, 'driver_id' => $trip->driver_id, 'amount' => $driver_earning]);
         $old_wallet = Driver::where('id', $trip->driver_id)->value('wallet');
-        // $new_wallet = $old_wallet - $admin_commission;
-        // Driver::where('id', $trip->driver_id)->update(['wallet'=>$new_wallet]);
 
         if ($payment_method->payment_type == 2) {
             $old_wallet_customer = Customer::where('id', $trip->customer_id)->value('wallet');
             $new_wallet_customer = $old_wallet_customer - $total;
             Customer::where('id', $trip->customer_id)->update(['wallet'=>$new_wallet_customer]);
-            CustomerWalletHistory::create(['country_id'=>$trip->country_id,'customer_id'=>$trip->customer_id, 'type'=>$payment_method->payment_type, 'message'=> 'طلب سيارة وخصم الرصيد من المحفظة', 'amount'=> $total, 'transaction_type'=> $payment_method->payment_type]);
-
+            CustomerWalletHistory::create(['country_id'=>$trip->country_id,'customer_id'=>$trip->customer_id, 'type'=>$payment_method->payment_type, 'message'=> 'طلب سيارة وخصم الرصيد من المحفظة', 'amount'=> $total, 'transaction_type'=> $payment_method->payment_type]);s
             $new_wallet = $old_wallet + $driver_earning;
             Driver::where('id', $trip->driver_id)->update(['wallet'=>$new_wallet]);
             DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 1, 'transaction_type'=> 2, 'message' => 'تم إضافة رصيد لمحفظتك لرحلة رقم' . $trip->trip_id, 'amount' => $driver_earning]);
