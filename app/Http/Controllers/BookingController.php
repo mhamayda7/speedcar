@@ -1069,7 +1069,7 @@ class BookingController extends Controller
                 $end = strtotime($trip->end_time);
                 $start = strtotime($trip->start_time);
                 $totalSecondsDiff = abs($end-$start);
-                $data[$key]['intereval'] = ($totalSecondsDiff / 60);
+                $trip['intereval'] = ($totalSecondsDiff / 60);
             }
         }
         return response()->json([
