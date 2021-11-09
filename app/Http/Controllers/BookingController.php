@@ -1053,14 +1053,6 @@ class BookingController extends Controller
 
     public function driver_bookings(Request $request)
     {
-        // $input = $request->all();
-        // $validator = Validator::make($input, [
-        //     'driver_id' => 'required'
-        // ]);
-        // if ($validator->fails()) {
-        //     return $this->sendError($validator->errors());
-        // }
-
         $data = DB::table('trips')
             ->leftJoin('customers', 'customers.id', 'trips.customer_id')
             ->leftJoin('drivers', 'drivers.id', 'trips.driver_id')
@@ -1072,7 +1064,14 @@ class BookingController extends Controller
             ->select('trips.*', 'customers.full_name as customer_name', 'drivers.full_name as driver_name', 'customers.profile_picture', 'payment_methods.payment', 'driver_vehicles.brand', 'driver_vehicles.color', 'driver_vehicles.vehicle_name', 'driver_vehicles.vehicle_number', 'booking_statuses.status_name', 'vehicle_categories.vehicle_type')
             ->where('trips.driver_id', Auth::user()->id)->orderBy('id', 'DESC')
             ->get();
-
+        foreach ($data as $key => $trip) {
+            if ($trip->status == 6) {
+                $end = strtotime($trip->end_time);
+                $start = strtotime($trip->start_time);
+                $totalSecondsDiff = abs($end-$start);
+                $data[$key]['intereval'] = ($totalSecondsDiff / 60);
+            }
+        }
         return response()->json([
             "result" => $data,
             "count" => count($data),
