@@ -1108,41 +1108,23 @@ class BookingController extends Controller
             Trip::where('id', $input['trip_id'])->update(['end_time' => date('Y-m-d H:i:s'), 'actual_drop_address' => $input['address'], 'actual_drop_lat' => $input['lat'], 'actual_drop_lng' => $input['lng']]);
             $distance = $this->get_distance($input['trip_id']);
             Trip::where('id', $input['trip_id'])->update(['distance' => $distance]);
-            // $vehicle = DB::table('daily_fare_management')->where('id', 1)->first();
             $vehicle = DailyFareManagement::where('id', 1)->first();
-            // dd($vehicle);
-            // $base_far = number_format((float)$vehicle->base_fare, 2, '.', '');
-
-            // $price_per_km = number_format((float)$vehicle->price_per_km, 2, '.', '');
-            // $price_time = number_format((float)$vehicle->price_time, 2, '.', '');
-            // $interval = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
-            // $interval = number_format((float)$interval, 2, '.', '');
-            // $price_time = 0.05 * $interval;
             $trip = Trip::where('id', $input['trip_id'])->first();
+
             $end = strtotime($trip->end_time);
             $start = strtotime($trip->start_time);
-
             $totalSecondsDiff = abs($end-$start);
             $time = ($totalSecondsDiff / 60);
-            // dd($time);
-            // $time = number_format((float)$time, 2, '.', '');
             $minutes = Trip::where('id', $input['trip_id'])->value('time_minutes');
             if (is_null($minutes)) {
                 Trip::where('id', $input['trip_id'])->update(['time_minutes' => $time]);
             }
-
             $minutes = Trip::where('id', $input['trip_id'])->value('time_minutes');
             $price_time = $minutes * $vehicle->price_time;
-
             $price_time = number_format((float)$price_time, 2, '.', '');
-
-            // dd($price_time . ' ' . $time . ' ' . $totalSecondsDiff .  ' ' . $start . ' ' . $end);
             $price_distance = $distance * $vehicle->price_per_km;
-
             $fare = $vehicle->base_fare + $price_distance + $price_time;
-
-            // dd($price_time . ' ' . $fare);
-            // $fare = number_format((float)$fare, 2, '.', '');
+            $fare = number_format((float)$fare, 2, '.', '');
             Trip::where('id', $input['trip_id'])->update(['sub_total' => $fare]);
 
             if ($trip->promo_code == 0) {

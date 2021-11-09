@@ -221,7 +221,10 @@ class DriverController extends Controller
             'online_status' => 0,
             'booking_status' => 0,
             'accuracy' => 0,
-            'heading' => 0
+            'heading' => 0,
+            'distance' => 0,
+            'startlng' => 0,
+            'startlat' => 0,
         ]);
 
         if (is_object($driver)) {
