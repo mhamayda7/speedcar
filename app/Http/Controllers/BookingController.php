@@ -1970,7 +1970,6 @@ class BookingController extends Controller
         $interval = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
         // $fare = number_format((float)$base_far + ($price_per_km * $distance) + ($price_time * $interval));
 
-
         $data['sub_total'] = $price_per_km * $distance;
         $data['waiting_time'] = $price_time * $interval;
         $data['base_fare'] = $base_fare;
