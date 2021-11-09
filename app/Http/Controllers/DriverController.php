@@ -716,9 +716,9 @@ class DriverController extends Controller
         $options = [
             'cost' => 12,
         ];
-        $input['password'] = password_hash($input["password"], PASSWORD_DEFAULT, $options);
+        $password = password_hash($input["password"], PASSWORD_DEFAULT, $options);
 
-        if (Driver::where('id', Auth::user()->id)->update($input['password'])) {
+        if (Driver::where('id', Auth::user()->id)->update(['password' => $password])) {
             return response()->json([
                 "message" => 'Success',
                 "status" => 1
