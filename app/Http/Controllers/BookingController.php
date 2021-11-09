@@ -1495,7 +1495,7 @@ class BookingController extends Controller
             $old_wallet_customer = Customer::where('id', $trip->customer_id)->value('wallet');
             $new_wallet_customer = $old_wallet_customer - $total;
             Customer::where('id', $trip->customer_id)->update(['wallet'=>$new_wallet_customer]);
-            CustomerWalletHistory::create(['country_id'=>$trip->country_id,'customer_id'=>$trip->customer_id, 'type'=>$payment_method->payment_type, 'message'=> 'طلب سيارة وخصم الرصيد من المحفظة', 'amount'=> $total, 'transaction_type'=> $payment_method->payment_type]);s
+            CustomerWalletHistory::create(['country_id'=>$trip->country_id,'customer_id'=>$trip->customer_id, 'type'=>$payment_method->payment_type, 'message'=> 'طلب سيارة وخصم الرصيد من المحفظة', 'amount'=> $total, 'transaction_type'=> $payment_method->payment_type]);
             $new_wallet = $old_wallet + $driver_earning;
             Driver::where('id', $trip->driver_id)->update(['wallet'=>$new_wallet]);
             DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 1, 'transaction_type'=> 2, 'message' => 'تم إضافة رصيد لمحفظتك لرحلة رقم' . $trip->trip_id, 'amount' => $driver_earning]);
