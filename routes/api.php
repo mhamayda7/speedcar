@@ -99,6 +99,7 @@ Route::prefix('driver/')->middleware('auth:sanctum')->group(function () {
     Route::post('signout', 'App\Http\Controllers\DriverController@signout');
     Route::post('driver_trip', 'App\Http\Controllers\DriverController@driver_trip');
     Route::post('detailes_invoice', 'App\Http\Controllers\BookingController@driver_invoice');
+    Route::post('trip_invoice', 'App\Http\Controllers\BookingController@detailes_invoice');
     Route::post('recive_mony', 'App\Http\Controllers\BookingController@recive_mony');
     Route::post('rate_customer', 'App\Http\Controllers\DriverController@rate_customer');
     Route::post('reset_password', 'App\Http\Controllers\DriverController@reset_password');
