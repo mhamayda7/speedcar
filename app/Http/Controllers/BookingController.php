@@ -1064,13 +1064,13 @@ class BookingController extends Controller
             ->select('trips.*', 'customers.full_name as customer_name', 'drivers.full_name as driver_name', 'customers.profile_picture', 'payment_methods.payment', 'driver_vehicles.brand', 'driver_vehicles.color', 'driver_vehicles.vehicle_name', 'driver_vehicles.vehicle_number', 'booking_statuses.status_name', 'vehicle_categories.vehicle_type')
             ->where('trips.driver_id', Auth::user()->id)->orderBy('id', 'DESC')
             ->get();
-        dd($data);
-        foreach ($data as $key => $trip) {
+        // dd($data);
+        foreach ($data as $trip) {
             if ($trip->status == 6) {
                 $end = strtotime($trip->end_time);
                 $start = strtotime($trip->start_time);
                 $totalSecondsDiff = abs($end-$start);
-                $trip['intereval'] = ($totalSecondsDiff / 60);
+                $trip->intereval = ($totalSecondsDiff / 60);
             }
         }
         return response()->json([
