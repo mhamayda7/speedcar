@@ -1225,7 +1225,7 @@ class BookingController extends Controller
 
         if ($input['status'] == 5) {
             $data_trip = Trip::where('id', $input['trip_id'])->first();
-            $interval = $data_trip->time_minutes;
+            $interval = (strtotime($data_trip->end_time) - strtotime($data_trip->start_time)) / 60;
             $data_trip1 = [];
             $data_trip1['time'] = $interval;
             $data_trip1['distance'] = $data_trip->distance;
