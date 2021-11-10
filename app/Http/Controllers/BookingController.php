@@ -1122,8 +1122,7 @@ class BookingController extends Controller
             $start = strtotime($trip->start_time);
             $totalSecondsDiff = abs($end-$start);
             $time = ($totalSecondsDiff / 60);
-            $minutes = Trip::where('id', $input['trip_id'])->value('time_minutes');
-            if (is_null($minutes)) {
+            if (is_null(Trip::where('id', $input['trip_id'])->value('time_minutes'))) {
                 Trip::where('id', $input['trip_id'])->update(['time_minutes' => $time]);
             }
             $minutes = Trip::where('id', $input['trip_id'])->value('time_minutes');
@@ -1226,7 +1225,7 @@ class BookingController extends Controller
 
         if ($input['status'] == 5) {
             $data_trip = Trip::where('id', $input['trip_id'])->first();
-            $interval = (strtotime($data_trip->end_time) - strtotime($data_trip->start_time)) / 60;
+            $interval = $data_trip->time_minutes;
             $data_trip1 = [];
             $data_trip1['time'] = $interval;
             $data_trip1['distance'] = $data_trip->distance;
