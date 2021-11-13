@@ -1113,7 +1113,7 @@ class BookingController extends Controller
             $distance = $input['distance'];
             // dd($distance);
             Trip::where('id', $input['trip_id'])->update(['end_time' => date('Y-m-d H:i:s'), 'actual_drop_address' => $input['address'], 'actual_drop_lat' => $input['lat'], 'actual_drop_lng' => $input['lng']]);
-            $distance = $this->get_distance($input['trip_id']);
+            // $distance = $this->get_distance($input['trip_id']);
             Trip::where('id', $input['trip_id'])->update(['distance' => $distance]);
             $vehicle = DailyFareManagement::where('id', 1)->first();
             $trip = Trip::where('id', $input['trip_id'])->first();
