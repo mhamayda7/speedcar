@@ -955,6 +955,12 @@ class DriverController extends Controller
 
         $driver_id = Auth::user()->id;
         $trip = Trip::where('driver_id', $driver_id)->whereNotIn('status', [7, 8])->get()->last();
+        if(is_null($trip)) {
+            return response()->json([
+                "message" => 'عذراً لا يوجد لديك رحلات حالياً',
+                "status" => 0
+            ]);
+        }
         $customer = Customer::where('id', $trip->customer_id)->select('full_name', 'phone_with_code', 'profile_picture', 'rating')->get();
         $trip['price_wait'] = DailyFareManagement::where('id', 1)->value('price_wait');
 
