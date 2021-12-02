@@ -1406,6 +1406,7 @@ class BookingController extends Controller
                 ]);
             }
         }
+
         else {
             return response()->json([
                 "message" => 'Looking for a driver',
