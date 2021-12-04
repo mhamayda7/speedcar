@@ -38,11 +38,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('customer/get_notification_messages', 'App\Http\Controllers\NotificationController@get_customer_notification_messages');
     Route::post('customer/rate_driver', 'App\Http\Controllers\CustomerController@rate_driver');
     Route::post('customer/reset_password', 'App\Http\Controllers\CustomerController@reset_password');
-
+    Route::post('customer/saveplace', 'App\Http\Controllers\CustomerController@svaePlaace');
 });
 
 //Customer
-Route::post('customer/saveplace', 'App\Http\Controllers\CustomerController@svaePlaace');
 Route::post('customer/fcm', 'App\Http\Controllers\CustomerController@sendFcm');
 Route::post('customer/check_phone', 'App\Http\Controllers\CustomerController@check_phone');
 Route::post('customer/register', 'App\Http\Controllers\CustomerController@register');
