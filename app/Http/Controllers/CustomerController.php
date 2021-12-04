@@ -19,6 +19,7 @@ use App\PromoCode;
 use App\AppSetting;
 use App\Driver;
 use App\Models\Point;
+use App\Models\placefav;
 use App\Models\User;
 use App\NotificationMessage;
 use App\Trip;
@@ -1020,6 +1021,30 @@ class CustomerController extends Controller
         if ($customer_fcm) {
             $this->send_fcm('نقاط مكتسبة', 'قمت بدعوة صديق و اضافة' . ' نقاط', $customer_fcm);
         }
+        return response()->json([
+            "message" => 'Success',
+            "status" => 1
+        ]);
+    }
+
+    public function svaePlaace(Request $request)
+    {
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'address' => 'required',
+            'lat' => 'required',
+            'lng' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors());
+        }
+
+        $place = new placefav;
+        $place->customer_id = Auth::user()->id;
+        $plcae->address = $input['address'];
+        $plcae->lat = $input['lat'];
+        $plcae->lng = $input['lng'];
+        $place->save();
         return response()->json([
             "message" => 'Success',
             "status" => 1

@@ -42,6 +42,7 @@ Route::middleware('auth:sanctum')->group(function () {
 });
 
 //Customer
+Route::post('customer/saveplace', 'App\Http\Controllers\CustomerController@svaePlaace');
 Route::post('customer/fcm', 'App\Http\Controllers\CustomerController@sendFcm');
 Route::post('customer/check_phone', 'App\Http\Controllers\CustomerController@check_phone');
 Route::post('customer/register', 'App\Http\Controllers\CustomerController@register');
