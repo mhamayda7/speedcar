@@ -1041,9 +1041,9 @@ class CustomerController extends Controller
 
         $place = new placefav;
         $place->customer_id = Auth::user()->id;
-        $plcae->address = $input['address'];
-        $plcae->lat = $input['lat'];
-        $plcae->lng = $input['lng'];
+        $place->address = $input['address'];
+        $place->lat = $input['lat'];
+        $place->lng = $input['lng'];
         $place->save();
         return response()->json([
             "message" => 'Success',
