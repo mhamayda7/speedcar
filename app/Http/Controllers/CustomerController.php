@@ -1027,7 +1027,7 @@ class CustomerController extends Controller
         ]);
     }
 
-    public function svaePlaace(Request $request)
+    public function savePlaace(Request $request)
     {
         $input = $request->all();
         $validator = Validator::make($input, [
