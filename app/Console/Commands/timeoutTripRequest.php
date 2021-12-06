@@ -46,7 +46,7 @@ class timeoutTripRequest extends Command
         foreach ($triprequests as $triprequest) {
             $timeInterval = ($timeNow - strtotime($triprequest->created_at))/60;
             if ($timeInterval > 2) {
-                $triprequest->update(['status'=>4]);
+                $triprequest->update(['status' => 4]);
                 $newPost = $database
                 ->getReference('/triprequest/' . $triprequest->id)
                 ->remove();
