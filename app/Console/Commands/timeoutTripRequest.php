@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Models\TripRequest;
+use App\TripRequest;
 use Illuminate\Console\Command;
 use Kreait\Firebase\Factory;
 
