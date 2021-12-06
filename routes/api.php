@@ -20,6 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('sendsms', 'App\Http\Controllers\Controller@sendS');
 Route::get('suppliers', 'App\Http\Controllers\Controller@get_supplier');
 Route::get('splash', 'App\Http\Controllers\Controller@splash');
+Route::post('test', 'App\Http\Controllers\BookingController@test');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('customer/profile_picture', 'App\Http\Controllers\CustomerController@profile_picture');

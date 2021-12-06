@@ -2030,4 +2030,20 @@ class BookingController extends Controller
         $response['status'] = "0";
         return response()->json($response, 200);
     }
+
+    public function test() {
+        $timeNow = time();
+        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+        $database = $factory->createDatabase();
+        $triprequests = TripRequest::where('status', 2)->get();
+        foreach ($triprequests as $triprequest) {
+            $timeInterval = ($timeNow - strtotime($triprequest->created_at))/60;
+            if ($timeInterval > 2) {
+                $triprequest->update(['status'=>4]);
+                $newPost = $database
+                ->getReference('/triprequest/' . $triprequest->id)
+                ->remove();
+            }
+        }
+    }
 }
