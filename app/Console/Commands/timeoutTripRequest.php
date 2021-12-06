@@ -13,7 +13,7 @@ class timeoutTripRequest extends Command
      *
      * @var string
      */
-    protected $signature = 'command:timeoutTripRequest';
+    protected $signature = 'TripRequest:timeout';
 
     /**
      * The console command description.
