@@ -2036,6 +2036,7 @@ class BookingController extends Controller
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
         $triprequests = TripRequest::where('status', 2)->get();
+        dd($triprequests);
         foreach ($triprequests as $triprequest) {
             $timeInterval = ($timeNow - strtotime($triprequest->created_at))/60;
             if ($timeInterval > 2) {
