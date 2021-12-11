@@ -1401,7 +1401,6 @@ class BookingController extends Controller
                 ]);
             } else {
                 return response()->json([
-                    "result" => 0,
                     "message" => 'Not have any request trip',
                     "status" => 1
                 ]);
@@ -1410,14 +1409,12 @@ class BookingController extends Controller
 
         elseif($trip_request->status == 2) {
             return response()->json([
-                "result" => 0,
                 "message" => 'Looking for a driver',
                 "status" => 1
             ]);
         }
         else {
             return response()->json([
-                "result" => 0,
                 "message" => 'Not have any request trip',
                 "status" => 1
             ]);
