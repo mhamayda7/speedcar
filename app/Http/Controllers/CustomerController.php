@@ -1027,6 +1027,19 @@ class CustomerController extends Controller
         ]);
     }
 
+    public function point()
+    {
+        $customer_id = Auth::user()->id;
+        $wallet = Customer::where('id', $customer_id)->value('wallet');
+        return response()->json([
+            "wallet" => $wallet,
+            "message" => 'Success',
+            "status" => 1
+        ]);
+
+    }
+
+
     public function savePlaace(Request $request)
     {
         $input = $request->all();

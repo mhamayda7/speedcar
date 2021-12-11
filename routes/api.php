@@ -33,6 +33,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('customer/get_invoice', 'App\Http\Controllers\BookingController@get_invoice');
     Route::post('customer/distance', 'App\Http\Controllers\BookingController@customer_distance');
     Route::post('customer/point', 'App\Http\Controllers\BookingController@point');
+    Route::post('customer/wallet', 'App\Http\Controllers\CustomerController@point');
     Route::post('customer/point_to_wallet', 'App\Http\Controllers\BookingController@point_to_wallet');
     Route::post('customer/signout', 'App\Http\Controllers\CustomerController@signout');
     Route::post('customer/invite', 'App\Http\Controllers\CustomerController@customer_invite');
@@ -65,7 +66,7 @@ Route::get('customer/get_cancellation_reasons', 'App\Http\Controllers\RideDetail
 Route::post('customer/get_promo_codes', 'App\Http\Controllers\RideDetailsController@get_promo_codes');
 Route::post('customer/forgot', 'App\Http\Controllers\CustomerController@forgot');
 Route::post('customer/get_categories', 'App\Http\Controllers\CustomerController@get_vehicle_categories');
-// Route::post('customer/get_fare', 'App\Http\Controllers\BookingController@get_fare');
+Route::post('customer/get_fare', 'App\Http\Controllers\BookingController@get_fare');
 Route::post('customer/payment_method', 'App\Http\Controllers\CustomerController@payment_method');
 Route::post('customer/wallet_payment_methods', 'App\Http\Controllers\CustomerController@wallet_payment_methods');
 Route::post('customer/trip_cancel', 'App\Http\Controllers\BookingController@trip_cancel_by_customer');
