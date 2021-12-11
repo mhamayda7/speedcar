@@ -982,6 +982,9 @@ class CustomerController extends Controller
 
     public function rate_driver(Request $request) {
         $input = $request->all();
+        $validator = Validator::make($input, [
+            'rate' => 'required',
+        ]);
         $customer_id = Auth::user()->id;
         $trip = Trip::where('customer_id', $customer_id)->get()->last();
         $driver_rate = Driver::where('id', $trip->driver_id)->value('overall_ratings');
