@@ -1396,14 +1396,14 @@ class BookingController extends Controller
         }
 
         elseif ($trip_request->status == 3) {
-            $trip = Trip::select('trip_id', 'customer_id', 'driver_id', 'vehicle_id', 'status', 'pickup_address', 'drop_address', 'payment_method', 'start_time', 'end_time', 'distance', 'total')->where('customer_id', $id)->get()->last();
+            $trip = Trip::select('id', 'trip_id', 'customer_id', 'driver_id', 'vehicle_id', 'status', 'pickup_address', 'drop_address', 'payment_method', 'start_time', 'end_time', 'distance', 'total')->where('customer_id', $id)->get()->last();
             $trip['interval'] = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
             $trip['interval'] = number_format((float)$trip['interval'], 2, '.', '');
             $driver = Driver::select('full_name', 'profile_picture', 'overall_ratings', 'phone_with_code')->where('id', $trip->driver_id)->get()->last();
             $vehicle = DriverVehicle::where('driver_id', $trip->driver_id)->get(['vehicle_image', 'brand', 'vehicle_name', 'vehicle_number'])->last();
-            // $trip_rate = RateTrip::where('trip_id', $trip->id)->get()->last();
-            $trip_rate = DB::table('rate_trips')->where('trip_id', $trip->id)->get()->last();
-            dd($trip);
+            $trip_rate = RateTrip::where('trip_id', $trip->id)->get()->last();
+            // $trip_rate = DB::table('rate_trips')->where('trip_id', $trip->id)->get()->last();
+            // dd($trip);
             if($trip->status == 6) {
                 if(!isset($trip_rate->customer_is_rate) || $trip_rate->customer_is_rate == 0) {
                     $trip->status = 5;
