@@ -1402,7 +1402,7 @@ class BookingController extends Controller
             $driver = Driver::select('full_name', 'profile_picture', 'overall_ratings', 'phone_with_code')->where('id', $trip->driver_id)->get()->last();
             $vehicle = DriverVehicle::where('driver_id', $trip->driver_id)->get(['vehicle_image', 'brand', 'vehicle_name', 'vehicle_number'])->last();
             $trip_rate = RateTrip::where('trip_id', $trip->id)->get()->last();
-
+            dd($trip_rate);
             if($trip->status == 6) {
                 if(!isset($trip_rate->customer_is_rate) || $trip_rate->customer_is_rate == 0) {
                     $trip->status = 5;
