@@ -1408,7 +1408,7 @@ class BookingController extends Controller
                     $trip->status = 5;
                 }
                 elseif ($trip_rate->customer_is_rate = 1) {
-                    Trip::where('id', $trip->id)->update(['status'=>6]);
+                    $trip->status = 6;
                 }
             }
 
