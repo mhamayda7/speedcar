@@ -1406,11 +1406,12 @@ class BookingController extends Controller
             if($trip->status = 6) {
                 if(!isset($trip_rate->customer_is_rate) || $trip_rate->customer_is_rate = 0) {
                     $trip->status = 5;
-                } elseif ($trip_rate->customer_is_rate = 0) {
+                }
+                elseif ($trip_rate->customer_is_rate = 1) {
                     Trip::where('id', $trip->id)->update(['status'=>6]);
                 }
             }
-            $trip = Trip::select('trip_id', 'customer_id', 'driver_id', 'vehicle_id', 'status', 'pickup_address', 'drop_address', 'payment_method', 'start_time', 'end_time', 'distance', 'total')->where('customer_id', $id)->get()->last();
+
             if ($trip->status < 6) {
                 return response()->json([
                     "result" => $trip,
