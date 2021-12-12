@@ -1407,9 +1407,10 @@ class BookingController extends Controller
                 if(!isset($trip_rate->customer_is_rate) || $trip_rate->customer_is_rate = 0) {
                     $trip->status = 5;
                 }
-                elseif ($trip_rate->customer_is_rate = 1) {
-                    $trip->status = 6;
-                }
+            }
+
+            if ($trip_rate->customer_is_rate = 1) {
+                $trip->status = 6;
             }
 
             if ($trip->status < 6) {
