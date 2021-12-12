@@ -41,6 +41,7 @@ use DateTimeZone;
 use App\CustomerWalletHistory;
 use App\Models\DailyFareManagement;
 use App\Models\Point;
+use App\Models\RateTrip;
 use App\NotificationMessage;
 use App\PromoCode;
 use Encore\Admin\Show;
@@ -1174,6 +1175,14 @@ class BookingController extends Controller
                 ]);
             $this->calculate_earnings($input['trip_id']);
             $this->reward_point($input['trip_id']);
+
+            $trip_rate = new RateTrip;
+            $trip_rate->trip_id = $trip->id;
+            $trip_rate->customer_id = $trip->customer_id;
+            $trip_rate->driver_id = $trip->driver_id;
+            $trip_rate->customer_is_rate = 0;
+            $trip_rate->driver_is_rate = 0;
+            $trip_rate->save();
         }
 
         if($input['status'] == 8) {
@@ -1388,12 +1397,19 @@ class BookingController extends Controller
 
         elseif ($trip_request->status == 3) {
             $trip = Trip::select('trip_id', 'customer_id', 'driver_id', 'vehicle_id', 'status', 'pickup_address', 'drop_address', 'payment_method', 'start_time', 'end_time', 'distance', 'total')->where('customer_id', $id)->get()->last();
-
             $trip['interval'] = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
             $trip['interval'] = number_format((float)$trip['interval'], 2, '.', '');
             $driver = Driver::select('full_name', 'profile_picture', 'overall_ratings', 'phone_with_code')->where('id', $trip->driver_id)->get()->last();
             $vehicle = DriverVehicle::where('driver_id', $trip->driver_id)->get(['vehicle_image', 'brand', 'vehicle_name', 'vehicle_number'])->last();
-            if ($trip->status != 6) {
+            $trip_rate = RateTrip::where('trip_id', $trip->id)->get()->last();
+
+            if($trip->status = 6) {
+                if($trip_rate->customer_is_rate != 1) {
+                    $trip->status = 5;
+                }
+            }
+
+            if ($trip->status < 6) {
                 return response()->json([
                     "result" => $trip,
                     "driver" => $driver,

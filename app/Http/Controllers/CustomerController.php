@@ -20,6 +20,7 @@ use App\AppSetting;
 use App\Driver;
 use App\Models\Point;
 use App\Models\placefav;
+use App\Models\RateTrip;
 use App\Models\User;
 use App\NotificationMessage;
 use App\Trip;
@@ -987,6 +988,7 @@ class CustomerController extends Controller
         ]);
         $customer_id = Auth::user()->id;
         $trip = Trip::where('customer_id', $customer_id)->get()->last();
+        RateTrip::where('trip_id', $trip->id)->update(['customer_is_rate'=>1, 'driver_rate'=>$input['rate']]);
         $driver_rate = Driver::where('id', $trip->driver_id)->value('overall_ratings');
         if($driver_rate != 0) {
             $new_rate = ($driver_rate + $input['rate']) / 2;
