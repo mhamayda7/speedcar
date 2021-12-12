@@ -1410,11 +1410,10 @@ class BookingController extends Controller
                 }
             }
 
-            if ($trip_rate->customer_is_rate == 1) {
-                $trip->status = 6;
-            }
-
             if ($trip->status < 6) {
+                if ($trip_rate->customer_is_rate == 1) {
+                    $trip->status = 6;
+                }
                 return response()->json([
                     "result" => $trip,
                     "driver" => $driver,
