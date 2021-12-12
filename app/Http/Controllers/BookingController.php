@@ -1404,8 +1404,10 @@ class BookingController extends Controller
             $trip_rate = RateTrip::where('trip_id', $trip->id)->get()->last();
 
             if($trip->status = 6) {
-                if(!isset($trip_rate->customer_is_rate)) {
+                if(!isset($trip_rate->customer_is_rate) || $trip_rate->customer_is_rate = 0) {
                     $trip->status = 5;
+                } elseif ($trip_rate->customer_is_rate = 0) {
+                    $trip->status = 6;
                 }
             }
 
