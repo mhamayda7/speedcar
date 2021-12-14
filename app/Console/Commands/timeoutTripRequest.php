@@ -45,7 +45,7 @@ class timeoutTripRequest extends Command
         $triprequests = TripRequest::where('status', 2)->get();
         foreach ($triprequests as $triprequest) {
             $timeInterval = ($timeNow - strtotime($triprequest->created_at))/60;
-            if ($timeInterval > 2) {
+            if ($timeInterval > 1) {
                 $triprequest->update(['status' => 4]);
                 $newPost = $database
                 ->getReference('/triprequest/' . $triprequest->id)
