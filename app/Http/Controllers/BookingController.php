@@ -714,6 +714,15 @@ class BookingController extends Controller
 
         $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $customer->fcm_token);
         $this->save_notifcation($trip_details->customer_id,1,$current_status->status_name,$current_status->customer_status_name,$image);
+
+        $trip_rate = new RateTrip;
+        $trip_rate->trip_id = $trip_id;
+        $trip_rate->customer_id = $trip_details->customer_id;
+        $trip_rate->driver_id = $trip_details->driver_id;
+        $trip_rate->customer_is_rate = 0;
+        $trip_rate->driver_is_rate = 0;
+        $trip_rate->save();
+
         return response()->json([
             "result" => $id,
             "message" => 'Success',
@@ -1175,14 +1184,6 @@ class BookingController extends Controller
                 ]);
             $this->calculate_earnings($input['trip_id']);
             $this->reward_point($input['trip_id']);
-
-            $trip_rate = new RateTrip;
-            $trip_rate->trip_id = $trip->id;
-            $trip_rate->customer_id = $trip->customer_id;
-            $trip_rate->driver_id = $trip->driver_id;
-            $trip_rate->customer_is_rate = 0;
-            $trip_rate->driver_is_rate = 0;
-            $trip_rate->save();
         }
 
         if($input['status'] == 8) {
