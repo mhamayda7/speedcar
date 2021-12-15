@@ -1910,10 +1910,10 @@ class BookingController extends Controller
                 $customer = Customer::where('id', $triprequest->customer_id)->first();
                 if ($customer->fcm_token) {
                     $current_status = TripRequestStatus::where('id', 5)->first();
-                    dd($current_status);
+                    // dd($current_status);
                     $new_status = TripRequestStatus::where('id', 5)->first();
-                    $this->save_notifcation($customer->id,1,$current_status->status_name,$current_status->customer_status_name,$image);
-                    $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $customer->fcm_token);
+                    $this->save_notifcation($customer->id,1,'لم يتم العثور على سائق', 'لا يتوفر حالياً سائقين',$image);
+                    $this->send_fcm('لم يتم العثور على سائق', 'لا يتوفر حالياً سائقين', $customer->fcm_token);
                 }
 
                 $newPost = $database
