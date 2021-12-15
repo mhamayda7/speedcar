@@ -749,7 +749,6 @@ class BookingController extends Controller
         $input = $request->all();
         $validator = Validator::make($input, [
             'trip_id' => 'required',
-
             'reason_id' => 'required'
         ]);
         if ($validator->fails()) {
