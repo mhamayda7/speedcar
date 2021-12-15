@@ -1089,6 +1089,11 @@ class DriverController extends Controller
         }
     }
 
+    //calculate actual distance between Driver and customer pickup addres
+    public function calc_distance($trip_id) {
+        $trip = Trip::where('id', $trip_id)->first();
+        // $data = https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=31.52986,34.454499999&destinations=31.53669,34.44824&key=AIzaSyDtkokltx1sxsd7SfUR0x7_vo5HH9ji760
+    }
 
     public function sendError($message)
     {
