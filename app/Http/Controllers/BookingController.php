@@ -712,9 +712,6 @@ class BookingController extends Controller
         TripRequest::where('id', $input['trip_id'])->update(['status' => 3]);
         $image = "image/tripaccept.png";
 
-        $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $customer->fcm_token);
-        $this->save_notifcation($trip_details->customer_id,1,$current_status->status_name,$current_status->customer_status_name,$image);
-
         $trip_rate = new RateTrip;
         $trip_rate->trip_id = $trip_id;
         $trip_rate->customer_id = $trip_details->customer_id;
@@ -722,6 +719,10 @@ class BookingController extends Controller
         $trip_rate->customer_is_rate = 0;
         $trip_rate->driver_is_rate = 0;
         $trip_rate->save();
+        // $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $customer->fcm_token);
+        $this->save_notifcation($trip_details->customer_id,1,$current_status->status_name,$current_status->customer_status_name,$image);
+
+
 
         return response()->json([
             "result" => $id,

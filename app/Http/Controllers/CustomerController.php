@@ -983,21 +983,34 @@ class CustomerController extends Controller
 
     public function rate_driver(Request $request) {
         $input = $request->all();
-        $validator = Validator::make($input, [
-            'rate' => 'required',
-        ]);
+
+        if(!isset($input['rate'])) {
+            $input['rate']= 0;
+        }
         $customer_id = Auth::user()->id;
         $trip = Trip::where('customer_id', $customer_id)->get()->last();
+        // dd($customer_id);
         RateTrip::where('trip_id', $trip->id)->update(['customer_is_rate'=>1, 'driver_rate'=>$input['rate']]);
-        $driver_rate = Driver::where('id', $trip->driver_id)->value('overall_ratings');
-        if($driver_rate != 0) {
-            $new_rate = ($driver_rate + $input['rate']) / 2;
-            $new_rate = number_format((float)$new_rate, 2, '.', '');
-            Driver::where('id', $trip->driver_id)->update(['overall_ratings' => $new_rate]);
+        $rates = RateTrip::where('driver_id', $trip->driver_id)->get();
+        $i = 0;
+        $total_rate = 0;
+
+        foreach ($rates as $rate) {
+            if($rate['driver_rate'] == 0) {
+
+            } else {
+                $i++ ;
+                $total_rate += $rate['driver_rate'];
+            }
+        }
+        // dd($rate['driver_rate'] == 0);
+        if($rates->count() == 1) {
+            $overall_ratings = 5;
         } else {
-            Driver::where('id', $trip->driver_id)->update(['overall_ratings' => $input['rate']]);
+            $overall_ratings = $total_rate / $i ;
         }
 
+        Driver::where('id', $trip->driver_id)->update(['overall_ratings'=>$overall_ratings, 'no_of_ratings'=>$i]);
         return response()->json([
             "message" => "rate success",
             "status" => 1
