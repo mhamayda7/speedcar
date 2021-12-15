@@ -22,6 +22,7 @@ Route::get('suppliers', 'App\Http\Controllers\Controller@get_supplier');
 Route::get('splash', 'App\Http\Controllers\Controller@splash');
 Route::post('test', 'App\Http\Controllers\BookingController@test');
 Route::post('check_promo', 'App\Http\Controllers\PromoCodeController@check_promo');
+Route::post('cancel_test', 'App\Http\Controllers\BookingController@cancel_test');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('customer/profile_picture', 'App\Http\Controllers\CustomerController@profile_picture');

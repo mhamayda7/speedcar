@@ -42,6 +42,7 @@ use App\CustomerWalletHistory;
 use App\Models\DailyFareManagement;
 use App\Models\Point;
 use App\Models\RateTrip;
+use App\Models\TripRequestStatus;
 use App\NotificationMessage;
 use App\PromoCode;
 use Encore\Admin\Show;
@@ -1894,6 +1895,32 @@ class BookingController extends Controller
             "status" => 1
         ]);
     }
+
+    public function cancel_test() {
+        $timeNow = time();
+        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+        $database = $factory->createDatabase();
+        $triprequests = TripRequest::where('status', 2)->get();
+        $image = "image/tripaccept.png";
+        foreach ($triprequests as $triprequest) {
+            $timeInterval = ($timeNow - strtotime($triprequest->created_at))/60;
+            if ($timeInterval > 1) {
+                $triprequest->update(['status' => 4]);
+                $customer = Customer::where('id', $triprequest->customer_id)->first();
+                if ($customer->fcm_token) {
+                    $current_status = TripRequestStatus::where('id', 5)->first();
+                    $new_status = TripRequestStatus::where('id', 5)->first();
+                    $this->save_notifcation($customer->id,1,$current_status->status_name,$current_status->customer_status_name,$image);
+                    $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $customer->fcm_token);
+                }
+
+                $newPost = $database
+                ->getReference('/triprequest/' . $triprequest->id)
+                ->remove();
+            }
+        }
+    }
+
     public function send_invoice(Request $request)
     {
         $input = $request->all();
