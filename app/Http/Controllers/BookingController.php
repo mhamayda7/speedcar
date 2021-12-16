@@ -224,12 +224,12 @@ class BookingController extends Controller
         $validator = Validator::make($input, [
             'promo' => 'required',
             'pickup_address' => 'required',
-            'pickup_date' => 'required',
+            // 'pickup_date' => 'required',
             'pickup_lat' => 'required',
             'pickup_lng' => 'required',
-            'drop_address' => 'required',
-            'drop_lat' => 'required',
-            'drop_lng' => 'required',
+            // 'drop_address' => 'required',
+            // 'drop_lat' => 'required',
+            // 'drop_lng' => 'required',
         ]);
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
