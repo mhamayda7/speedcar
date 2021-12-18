@@ -1411,6 +1411,12 @@ class BookingController extends Controller
             if($trip->status == 6) {
                 if(!isset($trip_rate->customer_is_rate) || $trip_rate->customer_is_rate == 0) {
                     $trip->status = 5;
+                } else {
+                    return response()->json([
+                        "price" => $price_km,
+                        "message" => 'Not have any request trip',
+                        "status" => 1
+                    ]);
                 }
             }
 
