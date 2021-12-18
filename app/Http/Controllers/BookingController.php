@@ -2110,7 +2110,9 @@ class BookingController extends Controller
             $result = json_decode($response);
 
             if (@$result->rows[0]->elements[0]->duration->value) {
-                return $result->rows[0]->elements[0]->duration->value;
+                $minute = ($result->rows[0]->elements[0]->duration->value / 60);
+                $minute = intval($minute);
+                return $minute;
             } else {
                 return 0;
             }
