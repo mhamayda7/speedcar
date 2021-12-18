@@ -1387,7 +1387,7 @@ class BookingController extends Controller
     {
         $id = Auth::user()->id;
         $trip_request = TripRequest::select('status')->where('customer_id', $id)->get()->last();
-
+        $price_km = DailyFareManagement::where('id', 1)->first();
         if (is_null($trip_request)) {
             return response()->json([
                 "message" => 'Not have any request trip',
@@ -1402,7 +1402,7 @@ class BookingController extends Controller
             $driver = Driver::select('full_name', 'profile_picture', 'overall_ratings', 'phone_with_code')->where('id', $trip->driver_id)->get()->last();
             $vehicle = DriverVehicle::where('driver_id', $trip->driver_id)->get(['vehicle_image', 'brand', 'vehicle_name', 'vehicle_number'])->last();
             $trip_rate = RateTrip::where('trip_id', $trip->id)->get()->last();
-            $price_km = DailyFareManagement::where('id', 1)->first();
+
             // $trip_rate = DB::table('rate_trips')->where('trip_id', $trip->id)->get()->last();
             // dd($trip);
             if ($trip->status == 2) {
@@ -1428,6 +1428,7 @@ class BookingController extends Controller
                 ]);
             } else {
                 return response()->json([
+                    "price" => $price_km,
                     "message" => 'Not have any request trip',
                     "status" => 1
                 ]);
@@ -1436,12 +1437,14 @@ class BookingController extends Controller
 
         elseif($trip_request->status == 2) {
             return response()->json([
+                "price" => $price_km,
                 "message" => 'Looking for a driver',
                 "status" => 1
             ]);
         }
         else {
             return response()->json([
+                "price" => $price_km,
                 "message" => 'Not have any request trip',
                 "status" => 1
             ]);
