@@ -2098,7 +2098,7 @@ class BookingController extends Controller
 
             $driver = $reference->getValue();
             // $url = 'https://maps.googleapis.com/maps/api/directions/json?origin=' . $trip->actual_pickup_lat . ',' . $trip->actual_pickup_lng . '&destination=' . $driver['lat'] . ',' . $driver['lng'] . '&key=' . env('MAP_KEY');
-            $url = 'https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=' . $trip->actual_pickup_lat . ',' . $trip->actual_pickup_lng . '&destinations=' . $driver['lat'] . ',' . $driver['lng'] . '&key=' . env('MAP_KEY');
+            $url = 'https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=' . $trip->pickup_lat . ',' . $trip->pickup_lng . '&destinations=' . $driver['lat'] . ',' . $driver['lng'] . '&key=' . env('MAP_KEY');
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $url);
             curl_setopt($ch, CURLOPT_POST, 0);
