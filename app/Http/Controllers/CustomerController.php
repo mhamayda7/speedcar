@@ -131,6 +131,31 @@ class CustomerController extends Controller
         }
     }
 
+    public function update_fcm(Request $request)
+    {
+
+        $input = $request->all();
+        $validator = Validator::make($input, [
+            'fcm_token' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return $this->sendError($validator->errors());
+        }
+
+        if (Customer::where('id', Auth::user()->id)->update(['fcm_token'=>$input['fcm_token']])) {
+            return response()->json([
+                "message" => 'Success',
+                "status" => 1
+            ]);
+        } else {
+            return response()->json([
+                "message" => 'Sorry something went wrong',
+                "status" => 0
+            ]);
+        }
+    }
+
     public function forget_password(Request $request)
     {
 
@@ -1081,4 +1106,7 @@ class CustomerController extends Controller
             "status" => 1
         ]);
     }
+
+
+
 }

@@ -239,7 +239,7 @@ class BookingController extends Controller
         $input['customer_id']= Auth::user()->id;
         $input['country_id']= 1;
         $input['trip_type']= 1;
-        $input['km'] = $this->distance($input['pickup_lat'], $input['pickup_lng'], $input['drop_lat'], $input['drop_lng'], 'K') ;
+        // $input['km'] = $this->distance($input['pickup_lat'], $input['pickup_lng'], $input['drop_lat'], $input['drop_lng'], 'K') ;
         $input['pickup_date'] = date("Y-m-d H:i:s");
 
         $current_date = $this->get_date($input['country_id']);
@@ -720,10 +720,8 @@ class BookingController extends Controller
         $trip_rate->customer_is_rate = 0;
         $trip_rate->driver_is_rate = 0;
         $trip_rate->save();
-        // $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $customer->fcm_token);
+        $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $customer->fcm_token);
         $this->save_notifcation($trip_details->customer_id,1,$current_status->status_name,$current_status->customer_status_name,$image);
-
-
 
         return response()->json([
             "result" => $id,
@@ -1145,12 +1143,12 @@ class BookingController extends Controller
                 Trip::where('id', $input['trip_id'])->update(['total' => $fare]);
             } else {
                 $promo = DB::table('promo_codes')->where('id', $trip->promo_code)->first();
-                if ($promo->promo_type == 5) {
+                if ($promo->promo_type == 2) {
                     $total_fare = $fare - $promo->discount;
                     $promo->discount = number_format((float)$promo->discount, 2, '.', '');
                     $total_fare = number_format((float)$total_fare, 2, '.', '');
                     Trip::where('id', $input['trip_id'])->update(['total' => $total_fare, 'discount'=> $promo->discount]);
-                } else {
+                } elseif ($promo->promo_type == 1) {
                     $discount = ($promo->discount / 100) * $fare;
                     $total_fare = $fare - $discount;
                     $discount = number_format((float)$discount, 2, '.', '');
@@ -1404,8 +1402,12 @@ class BookingController extends Controller
             $driver = Driver::select('full_name', 'profile_picture', 'overall_ratings', 'phone_with_code')->where('id', $trip->driver_id)->get()->last();
             $vehicle = DriverVehicle::where('driver_id', $trip->driver_id)->get(['vehicle_image', 'brand', 'vehicle_name', 'vehicle_number'])->last();
             $trip_rate = RateTrip::where('trip_id', $trip->id)->get()->last();
+            $price_km = DailyFareManagement::where('id', 1)->first();
             // $trip_rate = DB::table('rate_trips')->where('trip_id', $trip->id)->get()->last();
             // dd($trip);
+            if ($trip->status == 2) {
+                $driver['duration'] = $this->distanc_driver($trip->id);
+            }
             if($trip->status == 6) {
                 if(!isset($trip_rate->customer_is_rate) || $trip_rate->customer_is_rate == 0) {
                     $trip->status = 5;
@@ -1420,6 +1422,7 @@ class BookingController extends Controller
                     "result" => $trip,
                     "driver" => $driver,
                     "vehicle" => $vehicle,
+                    "price" => $price_km,
                     "message" => 'Success',
                     "status" => 1
                 ]);
@@ -2079,6 +2082,36 @@ class BookingController extends Controller
             "status" => 1
         ]);
     }
+
+        //calculate actual distance between Driver and customer pickup addres
+        public function distanc_driver($trip_id) {
+            // $customer = Customer::where('id', Auth::user()->id)->first();
+            $trip = Trip::where('id', $trip_id)->get()->last();
+
+            $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+            $database = $factory->createDatabase();
+            $reference = $database
+            ->getReference('/drivers/' . $trip->driver_id);
+
+            $driver = $reference->getValue();
+            // $url = 'https://maps.googleapis.com/maps/api/directions/json?origin=' . $trip->actual_pickup_lat . ',' . $trip->actual_pickup_lng . '&destination=' . $driver['lat'] . ',' . $driver['lng'] . '&key=' . env('MAP_KEY');
+            $url = 'https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=' . $trip->actual_pickup_lat . ',' . $trip->actual_pickup_lng . '&destinations=' . $driver['lat'] . ',' . $driver['lng'] . '&key=' . env('MAP_KEY');
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_POST, 0);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+            $response = curl_exec($ch);
+            $err = curl_error($ch);  //if you need
+            curl_close($ch);
+            $result = json_decode($response);
+
+            if (@$result->rows[0]->elements[0]->duration->value) {
+                return $result->rows[0]->elements[0]->duration->value;
+            } else {
+                return 0;
+            }
+        }
 
     public function sendError($message)
     {

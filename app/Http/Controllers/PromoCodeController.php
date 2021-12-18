@@ -31,8 +31,10 @@ class PromoCodeController extends Controller
             return $this->sendError($validator->errors());
         }
 
-        if(null !== (PromoCode::where('promo_code', $input['promo'])->first())) {
+        $code = PromoCode::select('id', 'promo_code', 'promo_type', 'discount', 'description', 'status')->where('promo_code', $input['promo'])->first();
+        if(null !== ($code)) {
             return response()->json([
+                "result" => $code,
                 "message" => 'Success',
                 "status" => 1
             ]);
@@ -42,8 +44,6 @@ class PromoCodeController extends Controller
                 "status" => 0
             ]);
         }
-
-
     }
 
 }

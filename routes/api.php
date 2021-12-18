@@ -28,6 +28,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('customer/profile_picture', 'App\Http\Controllers\CustomerController@profile_picture');
     Route::post('customer/profile', 'App\Http\Controllers\CustomerController@profile');
     Route::post('customer/profile_update', 'App\Http\Controllers\CustomerController@profile_update');
+    Route::post('customer/update_fcm', 'App\Http\Controllers\CustomerController@update_fcm');
     Route::post('customer/my_bookings', 'App\Http\Controllers\BookingController@customer_bookings');
     Route::post('customer/ride_confirm', 'App\Http\Controllers\BookingController@ride_confirm');
     Route::post('customer/get_status', 'App\Http\Controllers\BookingController@get_statuses');
@@ -43,6 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('customer/rate_driver', 'App\Http\Controllers\CustomerController@rate_driver');
     Route::post('customer/reset_password', 'App\Http\Controllers\CustomerController@reset_password');
     Route::post('customer/saveplace', 'App\Http\Controllers\CustomerController@savePlaace');
+    Route::post('customer/distanc_driver', 'App\Http\Controllers\CustomerController@distanc_driver');
 });
 
 //Customer
