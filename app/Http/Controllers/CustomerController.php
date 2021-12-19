@@ -741,14 +741,13 @@ class CustomerController extends Controller
                 $this->save_notifcation($customer_id,1,'نقاط مكتسبة', 'قمت بدعوة صديق و اضافة',$image);
             }
             return response()->json([
-                "message" => 'Success',
+                "message" => 'تم إضافة الدعوة بنجاح',
                 "status" => 1
             ]);
         } else {
-
             return response()->json([
-                "message" => 'قمت باضافة كود الدعوة من قبل',
-                "status" => 1
+                "message" => 'الكود خطأ أو قمت بتفعيله سابقاً',
+                "status" => 0
             ]);
         }
     }
