@@ -45,6 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('customer/reset_password', 'App\Http\Controllers\CustomerController@reset_password');
     Route::post('customer/saveplace', 'App\Http\Controllers\CustomerController@savePlaace');
     Route::post('customer/distanc_driver', 'App\Http\Controllers\CustomerController@distanc_driver');
+    Route::post('customer/get_fcm', 'App\Http\Controllers\CustomerController@get_fcm');
 });
 
 //Customer

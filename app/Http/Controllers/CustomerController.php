@@ -827,6 +827,22 @@ class CustomerController extends Controller
         return $token;
     }
 
+    public function get_fcm()
+    {
+        $fcm = Customer::where('id', Auth::user()->id)->value('fcm_token');
+        if ($fcm !== null) {
+            return response()->json([
+                "fcm" => $fcm,
+                "status" => 1
+            ]);
+        } else {
+            return response()->json([
+                "message" => 'failed',
+                "status" => 0
+            ]);
+        }
+    }
+
     public function stripe_payment(Request $request)
     {
         $input = $request->all();
