@@ -1396,7 +1396,7 @@ class BookingController extends Controller
         }
 
         elseif ($trip_request->status == 3) {
-            $trip = Trip::select('id', 'trip_id', 'customer_id', 'driver_id', 'vehicle_id', 'status', 'pickup_address', 'actual_drop_address', 'payment_method', 'start_time', 'end_time', 'distance', 'total')->where('customer_id', $id)->get()->last();
+            $trip = Trip::select('id', 'trip_id', 'customer_id', 'driver_id', 'vehicle_id', 'status', 'pickup_address', 'drop_address', 'actual_drop_address', 'payment_method', 'start_time', 'end_time', 'distance', 'total')->where('customer_id', $id)->get()->last();
             $trip['interval'] = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
             $trip['interval'] = number_format((float)$trip['interval'], 2, '.', '');
             $driver = Driver::select('full_name', 'profile_picture', 'overall_ratings', 'phone_with_code')->where('id', $trip->driver_id)->get()->last();
