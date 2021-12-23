@@ -1393,7 +1393,7 @@ class BookingController extends Controller
     public function get_reward()
     {
         $total_point = Customer::where('id', Auth::user()->id)->value('points');
-        $reward = Point::where('customer_id', Auth::user()->id)->get()->all();
+        $reward = Point::where('customer_id', Auth::user()->id)->orderBy('id', 'desc')->get();;
         return response()->json([
             "total_point" => $total_point,
             "result" => $reward,
