@@ -1049,12 +1049,15 @@ class BookingController extends Controller
             ->where('trips.customer_id', $id)->orderBy('id', 'DESC')
             ->get();
         foreach ($data as $trip) {
+            $datetime1 = new DateTime($trip->end_time);
+            $datetime2 = new DateTime($trip->start_time);
             if ($trip->status == 6) {
-                $end = strtotime($trip->end_time);
-                $start = strtotime($trip->start_time);
-                $totalSecondsDiff = abs($end-$start);
-                $trip->intereval = ($totalSecondsDiff / 60);
+                $interval = $datetime1->diff($datetime2);
+                $trip->intereval = $interval->format('%H:%I');
             }
+            $trip->end_time = $datetime1->format('Y-m-d H:i');
+            $trip->start_time = $datetime2->format('Y-m-d H:i');
+            $trip->ratings = RateTrip::where('trip_id', $trip->id)->value('driver_rate');
         }
         return response()->json([
             "result" => $data,
