@@ -235,63 +235,63 @@ class BookingController extends Controller
             return $this->sendError($validator->errors());
         }
 
-        $input['vehicle_type']= 1;
-        $input['customer_id']= Auth::user()->id;
-        $input['country_id']= 1;
-        $input['trip_type']= 1;
+        $input['vehicle_type'] = 1;
+        $input['customer_id'] = Auth::user()->id;
+        $input['country_id'] = 1;
+        $input['trip_type'] = 1;
         // $input['km'] = $this->distance($input['pickup_lat'], $input['pickup_lng'], $input['drop_lat'], $input['drop_lng'], 'K') ;
         $input['pickup_date'] = date("Y-m-d H:i:s");
 
         $current_date = $this->get_date($input['country_id']);
-        $interval_time = $this->date_difference($input['pickup_date'],$current_date);
+        $interval_time = $this->date_difference($input['pickup_date'], $current_date);
 
-        if($interval_time <= 30){
+        if ($interval_time <= 30) {
             $input['booking_type'] = 1;
             $input['status'] = 1;
-        }else{
+        } else {
             $input['booking_type'] = 2;
             $input['status'] = 2;
         }
 
         $factory = (new Factory())->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'))
-        ->withDatabaseUri(env('FIREBASE_DB'));
+            ->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
 
         $drivers = $database->getReference('/drivers/')
-                    ->getSnapshot()->getValue();
+            ->getSnapshot()->getValue();
         // dd($drivers);
         $min_distance = 0;
         $min_driver_id = 0;
         $booking_searching_radius = TripSetting::value('booking_searching_radius');
-        foreach($drivers as $key => $value){
+        foreach ($drivers as $key => $value) {
             // $amount = Driver::where('id', $value['driver_id'])->value('wallet');
             // if($amount > (-1)) {
-                $distance = $this->distance($input['pickup_lat'], $input['pickup_lng'], $value['lat'], $value['lng'], 'K') ;
-                if($value['online_status'] == 1 && $value['booking_status'] == 0){
-                    if($min_distance == 0){
-                        $min_distance = $distance;
-                        $min_driver_id = $value['driver_id'];
-                    }else if($distance < $min_distance){
-                        $min_distance = $distance;
-                        $min_driver_id = $value['driver_id'];
-                    }
+            $distance = $this->distance($input['pickup_lat'], $input['pickup_lng'], $value['lat'], $value['lng'], 'K');
+            if ($value['online_status'] == 1 && $value['booking_status'] == 0) {
+                if ($min_distance == 0) {
+                    $min_distance = $distance;
+                    $min_driver_id = $value['driver_id'];
+                } else if ($distance < $min_distance) {
+                    $min_distance = $distance;
+                    $min_driver_id = $value['driver_id'];
                 }
+            }
             // }
         }
 
-        if($min_driver_id == 0){
+        if ($min_driver_id == 0) {
             return response()->json([
                 "message" => 'Sorry drivers not available right now',
                 "status" => 0
             ]);
         }
 
-        $url = 'https://maps.googleapis.com/maps/api/staticmap?center='.$input['pickup_lat'].','.$input['pickup_lng'].'&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:L%7C'.$input['pickup_lat'].','.$input['pickup_lng'].'&key='.env('MAP_KEY');
-            $img = 'trip_request_static_map/'.md5(time()).'.png';
-        file_put_contents('uploads/'.$img, file_get_contents($url));
+        $url = 'https://maps.googleapis.com/maps/api/staticmap?center=' . $input['pickup_lat'] . ',' . $input['pickup_lng'] . '&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:L%7C' . $input['pickup_lat'] . ',' . $input['pickup_lng'] . '&key=' . env('MAP_KEY');
+        $img = 'trip_request_static_map/' . md5(time()) . '.png';
+        file_put_contents('uploads/' . $img, file_get_contents($url));
 
-        if($input['trip_type'] == 1){
-            $fares = $this->calculate_daily_fare($input['vehicle_type'],$input['km'],$input['promo'],$input['country_id']);
+        if ($input['trip_type'] == 1) {
+            $fares = $this->calculate_daily_fare($input['vehicle_type'], $input['km'], $input['promo'], $input['country_id']);
         }
 
         $booking_request = $input;
@@ -302,38 +302,49 @@ class BookingController extends Controller
         $booking_request['discount'] = $fares['discount'];
         $booking_request['tax'] = 0;
         $booking_request['static_map'] = $img;
-        $booking_request['payment_method'] = $input['payment_method'];
+
+        $customer = Customer::where('id', Auth::user()->id)->first();
+        if ($input['payment_method'] == 2) {
+            if($customer->wallet < 1) {
+                $this->send_fcm('لا يوجد رصيد كافي', 'عذراً لا يوجد في محفظتك رصيد كافي , سيكون الدفع كاش', $customer->fcm_token);
+                $booking_request['payment_method'] = 1;
+            } else {
+                $booking_request['payment_method'] = 2;
+            }
+        } else {
+            $booking_request['payment_method'] = $input['payment_method'];
+        }
         $id = TripRequest::create($booking_request)->id;
 
         $newPost = $database
-        ->getReference('/customers/'.$input['customer_id'])
-        ->update([
-            'booking_id' => $id,
-            'booking_status' => 1
-        ]);
+            ->getReference('/customers/' . $input['customer_id'])
+            ->update([
+                'booking_id' => $id,
+                'booking_status' => 1
+            ]);
 
         $newPost = $database
-        ->getReference('/vehicles/'.$input['vehicle_type'].'/'.$min_driver_id)
-        ->update([
-            'booking_id' => $id,
-            'booking_status' => 1,
-            'pickup_address' => $input['pickup_address'],
-            'drop_address' => $input['drop_address'],
-            'total' => $fares['total_fare'],
-            'customer_name' => Customer::where('id',$input['customer_id'])->value('full_name'),
-            'static_map' => $img,
-            'trip_type'=>DB::table('trip_types')->where('id',$input['trip_type'])->value('name')
-        ]);
+            ->getReference('/vehicles/' . $input['vehicle_type'] . '/' . $min_driver_id)
+            ->update([
+                'booking_id' => $id,
+                'booking_status' => 1,
+                'pickup_address' => $input['pickup_address'],
+                'drop_address' => $input['drop_address'],
+                'total' => $fares['total_fare'],
+                'customer_name' => Customer::where('id', $input['customer_id'])->value('full_name'),
+                'static_map' => $img,
+                'trip_type' => DB::table('trip_types')->where('id', $input['trip_type'])->value('name')
+            ]);
 
-         $newPost = $database
+        $newPost = $database
 
-        ->getReference('/triprequest/' . $id)
-        ->update([
-            'request_id' => $id,
-            'driver_id' => $min_driver_id,
-            'pikup_lat' => $input['pickup_lat'],
-            'pikup_lng' => $input['pickup_lng'],
-        ]);
+            ->getReference('/triprequest/' . $id)
+            ->update([
+                'request_id' => $id,
+                'driver_id' => $min_driver_id,
+                'pikup_lat' => $input['pickup_lat'],
+                'pikup_lng' => $input['pickup_lng'],
+            ]);
 
         return response()->json([
             "result" => $id,
@@ -345,17 +356,17 @@ class BookingController extends Controller
 
     public function drivers()
     {
-        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
+        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'));
         $database = $factory->createDatabase();
 
         $drivers = $database->getReference('/vehicles/' . 1)
-        ->getSnapshot()->getValue();
+            ->getSnapshot()->getValue();
         $driver_selected = [];
-        $i=1;
+        $i = 1;
 
         foreach ($drivers as $key => $value) {
             // $test = $value['booking_status'];
-            if($value['booking_status'] == 0 && $value['online_status'] == 1){
+            if ($value['booking_status'] == 0 && $value['online_status'] == 1) {
                 $driver_selected[$i] = $value['driver_id'];
             }
             $i++;
@@ -414,7 +425,7 @@ class BookingController extends Controller
 
                     $distance = $this->distance($trip_request->pickup_lat, $trip_request->pickup_lng, $value['lat'], $value['lng'], 'K');
 
-                    if ( $value['online_status'] == 1 && $value['booking_status'] == 0) {
+                    if ($value['online_status'] == 1 && $value['booking_status'] == 0) {
 
                         if ($min_distance == 0) {
                             $min_distance = $distance;
@@ -458,7 +469,7 @@ class BookingController extends Controller
                 'trip_type' => DB::table('trip_types')->where('id', $trip_request->trip_type)->value('name')
             ]);
 
-            $newPost = $database
+        $newPost = $database
 
             ->getReference('/triprequest/' . $trip_request->id)
             ->update([
@@ -626,7 +637,7 @@ class BookingController extends Controller
         //$factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
         //
         // $serviceAccount = ServiceAccount::fromJsonFile(config_path().'/'.env('FIREBASE_FILE'));
-        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
+        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'));
         $database = $factory->createDatabase();
 
 
@@ -721,7 +732,7 @@ class BookingController extends Controller
         $trip_rate->driver_is_rate = 0;
         $trip_rate->save();
         $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $customer->fcm_token);
-        $this->save_notifcation($trip_details->customer_id,1,$current_status->status_name,$current_status->customer_status_name,$image);
+        $this->save_notifcation($trip_details->customer_id, 1, $current_status->status_name, $current_status->customer_status_name, $image);
 
         return response()->json([
             "result" => $id,
@@ -753,7 +764,7 @@ class BookingController extends Controller
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-        $input['status'] =7;
+        $input['status'] = 7;
         $data['trip_id'] = $input['trip_id'];
         $data['reason_id'] = $input['reason_id'];
         $data['cancelled_by'] = 1;
@@ -808,7 +819,8 @@ class BookingController extends Controller
         ]);
     }
 
-    public function request_cancel() {
+    public function request_cancel()
+    {
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
 
@@ -1038,7 +1050,7 @@ class BookingController extends Controller
 
     public function fare()
     {
-        $data = DB::table('daily_fare_management')->select('base_fare','price_per_km','price_time')->where('id', 1)->first();
+        $data = DB::table('daily_fare_management')->select('base_fare', 'price_per_km', 'price_time')->where('id', 1)->first();
         return response()->json([
             "result" => $data,
             "message" => 'Success',
@@ -1106,7 +1118,7 @@ class BookingController extends Controller
             if ($trip->status == 6) {
                 $end = strtotime($trip->end_time);
                 $start = strtotime($trip->start_time);
-                $totalSecondsDiff = abs($end-$start);
+                $totalSecondsDiff = abs($end - $start);
                 $trip->intereval = ($totalSecondsDiff / 60);
             }
         }
@@ -1126,12 +1138,16 @@ class BookingController extends Controller
             'trip_id' => 'required',
             'status' => 'required'
         ]);
+
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
+        $trip = Trip::where('id', $input['trip_id'])->first();
+        if ($trip->status > 6) {
+            $input['status'] = $trip->status;
+        }
 
         Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
-        $trip = Trip::where('id', $input['trip_id'])->first();
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
 
@@ -1150,7 +1166,7 @@ class BookingController extends Controller
 
             $end = strtotime($trip->end_time);
             $start = strtotime($trip->start_time);
-            $totalSecondsDiff = abs($end-$start);
+            $totalSecondsDiff = abs($end - $start);
             $time = ($totalSecondsDiff / 60);
             if (is_null(Trip::where('id', $input['trip_id'])->value('time_minutes'))) {
                 Trip::where('id', $input['trip_id'])->update(['time_minutes' => $time]);
@@ -1171,13 +1187,13 @@ class BookingController extends Controller
                     $total_fare = $fare - $promo->discount;
                     $promo->discount = number_format((float)$promo->discount, 2, '.', '');
                     $total_fare = number_format((float)$total_fare, 2, '.', '');
-                    Trip::where('id', $input['trip_id'])->update(['total' => $total_fare, 'discount'=> $promo->discount]);
+                    Trip::where('id', $input['trip_id'])->update(['total' => $total_fare, 'discount' => $promo->discount]);
                 } elseif ($promo->promo_type == 1) {
                     $discount = ($promo->discount / 100) * $fare;
                     $total_fare = $fare - $discount;
                     $discount = number_format((float)$discount, 2, '.', '');
                     $total_fare = number_format((float)$total_fare, 2, '.', '');
-                    Trip::where('id', $input['trip_id'])->update(['total' => $total_fare, 'discount'=>$discount]);
+                    Trip::where('id', $input['trip_id'])->update(['total' => $total_fare, 'discount' => $discount]);
                 }
             }
 
@@ -1209,7 +1225,7 @@ class BookingController extends Controller
             $this->reward_point($input['trip_id']);
         }
 
-        if($input['status'] == 8) {
+        if ($input['status'] == 8) {
             $driver = Driver::where('id', $trip->driver_id)->first();
             $cancellation_settings = CancellationSetting::where('id', 1)->first();
             if ($driver->count_cancel > $cancellation_settings->no_of_free_cancellation) {
@@ -1225,7 +1241,7 @@ class BookingController extends Controller
         if ($input['status'] != 6) {
             $current_status = BookingStatus::where('id', $input['status'])->first();
             $new_status = BookingStatus::where('id', $input['status'])->first();
-        } elseif ($input['status'] = 6){
+        } elseif ($input['status'] = 6) {
             $distance = Trip::where('id', $input['trip_id'])->sum('distance');
             $trip_customer = Trip::where('id', $input['trip_id'])->value('customer_id');
             $customer = Customer::find($trip_customer);
@@ -1239,7 +1255,7 @@ class BookingController extends Controller
         if ($fcm_token) {
             $current_status = BookingStatus::where('id', $input['status'])->first();
             $new_status = BookingStatus::where('id', $input['status'])->first();
-            $this->save_notifcation($customer_id,1,$current_status->status_name,$current_status->customer_status_name,$image);
+            $this->save_notifcation($customer_id, 1, $current_status->status_name, $current_status->customer_status_name, $image);
             $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $fcm_token);
         }
 
@@ -1251,7 +1267,7 @@ class BookingController extends Controller
                 'driver_status_name' => $current_status->status_name,
                 'new_status' => $new_status->id,
                 'new_driver_status_name' => $new_status->status_name
-        ]);
+            ]);
 
         if ($input['status'] == 5) {
             $data_trip = Trip::where('id', $input['trip_id'])->first();
@@ -1260,9 +1276,9 @@ class BookingController extends Controller
             $data_trip1['time'] = $interval;
             $data_trip1['distance'] = $data_trip->distance;
             if ($data_trip->payment_method == 1) {
-                $data_trip1['payment_method']= "cash";
+                $data_trip1['payment_method'] = "cash";
             } else {
-                $data_trip1['payment_method']= "wallet";
+                $data_trip1['payment_method'] = "wallet";
             }
             return response()->json([
                 "data" => $data_trip1,
@@ -1275,10 +1291,10 @@ class BookingController extends Controller
                 "status" => 1
             ]);
         }
-
     }
 
-    public function recive_mony(Request $request) {
+    public function recive_mony(Request $request)
+    {
         $input = $request->all();
         $validator = Validator::make($input, [
             'amount' => 'required',
@@ -1334,14 +1350,13 @@ class BookingController extends Controller
         $value = DB::table('app_settings')->value('points');
         $point_back = $point % $value;
         $point_to_wallet = $point - $point_back;
-        $to_wallet = $point_to_wallet/$value;
+        $to_wallet = $point_to_wallet / $value;
         return response()->json([
             "point_to_wallet" => $point_to_wallet,
             "to_wallet" => $to_wallet,
             "message" => 'Success',
             "status" => 1
         ]);
-
     }
 
 
@@ -1359,24 +1374,26 @@ class BookingController extends Controller
         $point = Customer::where('id', $input['customer_id'])->value('points');
         $point_back = $point % $value;
         $input['point'] = $point - $point_back;
-        if ( $point >= $input['point'])
-        {
+        if ($point >= $input['point']) {
             $to_wallet = $input['point'] / $value;
             $return_point = $input['point'] % $value;
             $new_point = $point - $input['point'];
             $to_wallet = intval($to_wallet);
             $wallet = Customer::where('id', $input['customer_id'])->value('wallet');
             $new_wallet = $wallet + $to_wallet;
-            Customer::where('id', $input['customer_id'])->update(['points'=>$new_point,'wallet'=>$new_wallet]);
+            Customer::where('id', $input['customer_id'])->update(['points' => $new_point, 'wallet' => $new_wallet]);
 
             $point = new Point;
             $point->customer_id = $input['customer_id'];
             $point->trip_id = 0;
             $point->type = 2;
             $point->point = $input['point'] - $return_point;
-            $point->details = 0;
+            $point->details = 'تحويل نقاط إلى رصيد';
             $point->icon = "rewards/taxi.png";
             $point->save();
+
+            CustomerWalletHistory::create(['country_id' => 1, 'customer_id' => $input['customer_id'], 'type' => 2, 'message' => 'أضافة رصيد من تحويل النقاط', 'amount' => $to_wallet, 'transaction_type' => 1]);
+
             return response()->json([
                 "trip" => $point,
                 "message" => 'Success',
@@ -1424,9 +1441,7 @@ class BookingController extends Controller
                 "message" => 'Not have any request trip',
                 "status" => 1
             ]);
-        }
-
-        elseif ($trip_request->status == 3) {
+        } elseif ($trip_request->status == 3) {
             $trip = Trip::select('id', 'trip_id', 'customer_id', 'driver_id', 'vehicle_id', 'status', 'pickup_address', 'drop_address', 'actual_drop_address', 'payment_method', 'start_time', 'end_time', 'distance', 'total')->where('customer_id', $id)->get()->last();
             $trip['interval'] = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
             $trip['interval'] = number_format((float)$trip['interval'], 2, '.', '');
@@ -1439,8 +1454,8 @@ class BookingController extends Controller
             if ($trip->status == 2) {
                 $driver['duration'] = $this->distanc_driver($trip->id);
             }
-            if($trip->status == 6) {
-                if(!isset($trip_rate->customer_is_rate) || $trip_rate->customer_is_rate == 0) {
+            if ($trip->status == 6) {
+                if (!isset($trip_rate->customer_is_rate) || $trip_rate->customer_is_rate == 0) {
                     $trip->status = 5;
                 } else {
                     return response()->json([
@@ -1470,16 +1485,13 @@ class BookingController extends Controller
                     "status" => 1
                 ]);
             }
-        }
-
-        elseif($trip_request->status == 2) {
+        } elseif ($trip_request->status == 2) {
             return response()->json([
                 "price" => $price_km,
                 "message" => 'Looking for a driver',
                 "status" => 1
             ]);
-        }
-        else {
+        } else {
             return response()->json([
                 "price" => $price_km,
                 "message" => 'Not have any request trip',
@@ -1571,16 +1583,16 @@ class BookingController extends Controller
         if ($payment_method->payment_type == 2) {
             $old_wallet_customer = Customer::where('id', $trip->customer_id)->value('wallet');
             $new_wallet_customer = $old_wallet_customer - $total;
-            Customer::where('id', $trip->customer_id)->update(['wallet'=>$new_wallet_customer]);
-            CustomerWalletHistory::create(['country_id'=>$trip->country_id,'customer_id'=>$trip->customer_id, 'type'=>$payment_method->payment_type, 'message'=> 'طلب سيارة وخصم الرصيد من المحفظة', 'amount'=> $total, 'transaction_type'=> $payment_method->payment_type]);
+            Customer::where('id', $trip->customer_id)->update(['wallet' => $new_wallet_customer]);
+            CustomerWalletHistory::create(['country_id' => $trip->country_id, 'customer_id' => $trip->customer_id, 'type' => 1, 'message' => 'طلب رحلة و الدفع من المحفظة', 'amount' => $total, 'transaction_type' => $payment_method->payment_type]);
             $new_wallet = $old_wallet + $driver_earning;
-            Driver::where('id', $trip->driver_id)->update(['wallet'=>$new_wallet]);
-            DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 1, 'transaction_type'=> 2, 'message' => 'تم إضافة رصيد لمحفظتك لرحلة رقم' . $trip->trip_id, 'amount' => $driver_earning]);
+            Driver::where('id', $trip->driver_id)->update(['wallet' => $new_wallet]);
+            DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 1, 'transaction_type' => 2, 'message' => 'تم إضافة رصيد لمحفظتك لرحلة رقم' . $trip->trip_id, 'amount' => $driver_earning]);
         } else if ($payment_method->payment_type == 1) {
             $new_wallet = $old_wallet - $admin_commission;
-            Driver::where('id', $trip->driver_id)->update(['wallet'=>$new_wallet]);
-            CustomerWalletHistory::create(['country_id'=>$trip->country_id,'customer_id'=>$trip->customer_id, 'type'=>$payment_method->payment_type, 'message'=> 'طلب سيارة والدفع كاش ', 'amount'=> $total, 'transaction_type'=> $payment_method->payment_type]);
-            DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 2, 'transaction_type'=> 2, 'message' => 'تم خصم رصيد من محفظتك لرحلة '. $trip->trip_id, 'amount' => $admin_commission]);
+            Driver::where('id', $trip->driver_id)->update(['wallet' => $new_wallet]);
+            CustomerWalletHistory::create(['country_id' => $trip->country_id, 'customer_id' => $trip->customer_id, 'type' => 1, 'message' => 'طلب رحلة والدفع كاش ', 'amount' => $total, 'transaction_type' => $payment_method->payment_type]);
+            DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 2, 'transaction_type' => 2, 'message' => 'تم خصم رصيد من محفظتك لرحلة ' . $trip->trip_id, 'amount' => $admin_commission]);
         }
     }
 
@@ -1824,7 +1836,7 @@ class BookingController extends Controller
         TripRequest::where('id', $input['trip_id'])->update(['status' => 3]);
         $image = "image/tripaccept.png";
         $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $customer->fcm_token);
-        $this->save_notifcation($trip_details->customer_id,1,$current_status->status_name,$current_status->customer_status_name,$image);
+        $this->save_notifcation($trip_details->customer_id, 1, $current_status->status_name, $current_status->customer_status_name, $image);
 
         return response()->json([
             "result" => $id,
@@ -1939,14 +1951,15 @@ class BookingController extends Controller
         ]);
     }
 
-    public function cancel_test() {
+    public function cancel_test()
+    {
         $timeNow = time();
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
         $triprequests = TripRequest::where('status', 2)->get();
         $image = "image/tripaccept.png";
         foreach ($triprequests as $triprequest) {
-            $timeInterval = ($timeNow - strtotime($triprequest->created_at))/60;
+            $timeInterval = ($timeNow - strtotime($triprequest->created_at)) / 60;
 
             if ($timeInterval > 1) {
                 $triprequest->update(['status' => 4]);
@@ -1955,13 +1968,13 @@ class BookingController extends Controller
                     $current_status = TripRequestStatus::where('id', 5)->first();
                     // dd($current_status);
                     $new_status = TripRequestStatus::where('id', 5)->first();
-                    $this->save_notifcation($customer->id,1,'لم يتم العثور على سائق', 'لا يتوفر حالياً سائقين',$image);
+                    $this->save_notifcation($customer->id, 1, 'لم يتم العثور على سائق', 'لا يتوفر حالياً سائقين', $image);
                     $this->send_fcm('لم يتم العثور على سائق', 'لا يتوفر حالياً سائقين', $customer->fcm_token);
                 }
 
                 $newPost = $database
-                ->getReference('/triprequest/' . $triprequest->id)
-                ->remove();
+                    ->getReference('/triprequest/' . $triprequest->id)
+                    ->remove();
             }
         }
     }
@@ -2111,7 +2124,7 @@ class BookingController extends Controller
         $wallet = Customer::where('customers.id', $input['customer_id'])->value('wallet');
         $name = Customer::where('customers.id', $input['customer_id'])->value('full_name');
         $phone = Customer::where('customers.id', $input['customer_id'])->value('phone_with_code');
-        $point = Customer::where('customers.id',$input['customer_id'])->value('points');
+        $point = Customer::where('customers.id', $input['customer_id'])->value('points');
         return response()->json([
             "full_name" => $name,
             "phone" => $phone,
@@ -2123,35 +2136,36 @@ class BookingController extends Controller
         ]);
     }
 
-        //calculate actual distance between Driver and customer pickup addres
-        public function distanc_driver($trip_id) {
-            // $customer = Customer::where('id', Auth::user()->id)->first();
-            $trip = Trip::where('id', $trip_id)->get()->last();
+    //calculate actual distance between Driver and customer pickup addres
+    public function distanc_driver($trip_id)
+    {
+        // $customer = Customer::where('id', Auth::user()->id)->first();
+        $trip = Trip::where('id', $trip_id)->get()->last();
 
-            $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
-            $database = $factory->createDatabase();
-            $reference = $database
+        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+        $database = $factory->createDatabase();
+        $reference = $database
             ->getReference('/drivers/' . $trip->driver_id);
 
-            $driver = $reference->getValue();
-            // $url = 'https://maps.googleapis.com/maps/api/directions/json?origin=' . $trip->actual_pickup_lat . ',' . $trip->actual_pickup_lng . '&destination=' . $driver['lat'] . ',' . $driver['lng'] . '&key=' . env('MAP_KEY');
-            $url = 'https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=' . $trip->pickup_lat . ',' . $trip->pickup_lng . '&destinations=' . $driver['lat'] . ',' . $driver['lng'] . '&key=' . env('MAP_KEY');
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_POST, 0);
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $driver = $reference->getValue();
+        // $url = 'https://maps.googleapis.com/maps/api/directions/json?origin=' . $trip->actual_pickup_lat . ',' . $trip->actual_pickup_lng . '&destination=' . $driver['lat'] . ',' . $driver['lng'] . '&key=' . env('MAP_KEY');
+        $url = 'https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=' . $trip->pickup_lat . ',' . $trip->pickup_lng . '&destinations=' . $driver['lat'] . ',' . $driver['lng'] . '&key=' . env('MAP_KEY');
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, 0);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 
-            $response = curl_exec($ch);
-            $err = curl_error($ch);  //if you need
-            curl_close($ch);
-            $result = json_decode($response);
+        $response = curl_exec($ch);
+        $err = curl_error($ch);  //if you need
+        curl_close($ch);
+        $result = json_decode($response);
 
-            if (@$result->rows[0]->elements[0]->duration->value) {
-                return $result->rows[0]->elements[0]->duration->value;
-            } else {
-                return 0;
-            }
+        if (@$result->rows[0]->elements[0]->duration->value) {
+            return $result->rows[0]->elements[0]->duration->value;
+        } else {
+            return 0;
         }
+    }
 
     public function sendError($message)
     {
@@ -2162,19 +2176,20 @@ class BookingController extends Controller
         return response()->json($response, 200);
     }
 
-    public function test() {
+    public function test()
+    {
         $timeNow = time();
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
         $triprequests = TripRequest::where('status', 2)->get();
         dd($triprequests);
         foreach ($triprequests as $triprequest) {
-            $timeInterval = ($timeNow - strtotime($triprequest->created_at))/60;
+            $timeInterval = ($timeNow - strtotime($triprequest->created_at)) / 60;
             if ($timeInterval > 2) {
-                $triprequest->update(['status'=>4]);
+                $triprequest->update(['status' => 4]);
                 $newPost = $database
-                ->getReference('/triprequest/' . $triprequest->id)
-                ->remove();
+                    ->getReference('/triprequest/' . $triprequest->id)
+                    ->remove();
             }
         }
     }
