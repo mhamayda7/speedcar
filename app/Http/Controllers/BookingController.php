@@ -1404,7 +1404,7 @@ class BookingController extends Controller
 
     public function get_invoice(Request $request)
     {
-        $invoice = CustomerWalletHistory::where('customer_id', Auth::user()->id)->get()->all();
+        $invoice = CustomerWalletHistory::where('customer_id', Auth::user()->id)->orderBy('id', 'desc')->get();
         $wallet = Customer::where('id', Auth::user()->id)->value('wallet');
         return response()->json([
             "wallet" => $wallet,
