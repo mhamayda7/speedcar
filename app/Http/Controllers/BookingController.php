@@ -826,19 +826,31 @@ class BookingController extends Controller
 
         $triprequest = TripRequest::where('customer_id', Auth::user()->id)->get()->last();
         $image = "image/tripaccept.png";
-        $triprequest->update(['status' => 6]);
-        $customer = Customer::where('id', Auth::user()->id)->first();
-        if ($customer->fcm_token) {
-            $current_status = TripRequestStatus::where('id', 6)->first();
+        if ($triprequest->status == 2) {
+            $triprequest->update(['status' => 6]);
+            $customer = Customer::where('id', Auth::user()->id)->first();
+            if ($customer->fcm_token) {
+                $current_status = TripRequestStatus::where('id', 6)->first();
 
-            $new_status = TripRequestStatus::where('id', 5)->first();
-            $this->save_notifcation($customer->id, 1, 'إلغاء الطلب', 'تم إلغاء طلب الرحلة, ننتظرك في طلب آخر', $image);
-            $this->send_fcm('إلغاء الطلب', 'تم إلغاء طلب الرحلة, ننتظرك في طلب آخر', $customer->fcm_token);
+                $new_status = TripRequestStatus::where('id', 5)->first();
+                $this->save_notifcation($customer->id, 1, 'إلغاء الطلب', 'تم إلغاء طلب الرحلة, ننتظرك في طلب آخر', $image);
+                $this->send_fcm('إلغاء الطلب', 'تم إلغاء طلب الرحلة, ننتظرك في طلب آخر', $customer->fcm_token);
+            }
+            $newPost = $database
+                ->getReference('/triprequest/' . $triprequest->id)
+                ->remove();
+
+            return response()->json([
+                "message" => 'تم إلغاء الطلب بنجاح',
+                "status" => 1
+            ]);
+        } else {
+            return response()->json([
+                "message" => 'لا يوجد طلبات حالياً أو تم قبول طلبك',
+                "status" => 0
+            ]);
         }
 
-        $newPost = $database
-            ->getReference('/triprequest/' . $triprequest->id)
-            ->remove();
     }
 
     public function get_fare(Request $request)
