@@ -808,6 +808,27 @@ class BookingController extends Controller
         ]);
     }
 
+    public function request_cancel() {
+        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+        $database = $factory->createDatabase();
+
+        $triprequest = TripRequest::where('customer_id', Auth::user()->id)->get()->last();
+        $image = "image/tripaccept.png";
+        $triprequest->update(['status' => 6]);
+        $customer = Customer::where('id', Auth::user()->id)->first();
+        if ($customer->fcm_token) {
+            $current_status = TripRequestStatus::where('id', 6)->first();
+
+            $new_status = TripRequestStatus::where('id', 5)->first();
+            $this->save_notifcation($customer->id, 1, 'إلغاء الطلب', 'تم إلغاء طلب الرحلة, ننتظرك في طلب آخر', $image);
+            $this->send_fcm('إلغاء الطلب', 'تم إلغاء طلب الرحلة, ننتظرك في طلب آخر', $customer->fcm_token);
+        }
+
+        $newPost = $database
+            ->getReference('/triprequest/' . $triprequest->id)
+            ->remove();
+    }
+
     public function get_fare(Request $request)
     {
         $input = $request->all();
@@ -1276,20 +1297,27 @@ class BookingController extends Controller
     public function reward_point($trip_id)
     {
         $trip = Trip::select('customer_id', 'distance')->where('id', $trip_id)->get()->last();
-        $point = new Point;
-        $point->customer_id = $trip->customer_id;
-        $point->trip_id = $trip_id;
-        $point->type = 1;
-        $point->point = intval($trip->distance);
-        $point->details = "قطع مسافة " . $trip->distance;
-        $point->icon = "rewards/taxi.png";
-        $point->save();
-
-        return response()->json([
-            "trip" => $point,
-            "message" => 'Success',
-            "status" => 1
-        ]);
+        if (round($trip->distance) != 0) {
+            $point = new Point;
+            $point->customer_id = $trip->customer_id;
+            $point->trip_id = $trip_id;
+            $point->type = 1;
+            $point->point = round($trip->distance);
+            $distance = number_format((float)$trip->distance, 2, '.', '');
+            $point->details = "قطعت مسافة بمقدار " . $distance;
+            $point->icon = "rewards/taxi.png";
+            $point->save();
+            return response()->json([
+                "trip" => $point,
+                "message" => 'Success',
+                "status" => 1
+            ]);
+        } else {
+            return response()->json([
+                "message" => 'لم تقطع الحد الأدنى من المسافة',
+                "status" => 1
+            ]);
+        }
     }
 
     public function point(Request $request)

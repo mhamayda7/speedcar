@@ -31,6 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('customer/update_fcm', 'App\Http\Controllers\CustomerController@update_fcm');
     Route::post('customer/my_bookings', 'App\Http\Controllers\BookingController@customer_bookings');
     Route::post('customer/ride_confirm', 'App\Http\Controllers\BookingController@ride_confirm');
+    Route::post('customer/request_cancel', 'App\Http\Controllers\BookingController@request_cancel');
     Route::post('customer/get_status', 'App\Http\Controllers\BookingController@get_statuses');
     Route::post('customer/get_reward', 'App\Http\Controllers\BookingController@get_reward');
     Route::post('customer/get_invoice', 'App\Http\Controllers\BookingController@get_invoice');
