@@ -830,9 +830,6 @@ class BookingController extends Controller
             $triprequest->update(['status' => 6]);
             $customer = Customer::where('id', Auth::user()->id)->first();
             if ($customer->fcm_token) {
-                $current_status = TripRequestStatus::where('id', 6)->first();
-
-                $new_status = TripRequestStatus::where('id', 5)->first();
                 $this->save_notifcation($customer->id, 1, 'إلغاء الطلب', 'تم إلغاء طلب الرحلة, ننتظرك في طلب آخر', $image);
                 $this->send_fcm('إلغاء الطلب', 'تم إلغاء طلب الرحلة, ننتظرك في طلب آخر', $customer->fcm_token);
             }

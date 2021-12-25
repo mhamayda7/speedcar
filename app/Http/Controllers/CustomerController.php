@@ -46,30 +46,58 @@ class CustomerController extends Controller
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-        $data = array();
-        $customer = Customer::where('phone_with_code', $input['phone_with_code'])->first();
+        $phone = '00970594809641';
+        $otp = rand(1000,9999);
+        $message = "Hi " . env('APP_NAME') . "  , Your OTP code is:" . $otp;
 
-        if (is_object($customer)) {
-            $data['is_available'] = 1;
-            $data['otp'] = "";
+        if ($this->sendSms($phone, $message)) {
             return response()->json([
-                "result" => $data,
+                "otp" => $otp,
                 "message" => 'Success',
                 "status" => 1
             ]);
         } else {
-            $data['is_available'] = 0;
-            $data['otp'] = rand(1000, 9999);
-            $message = "Hi" . env('APP_NAME') . "  , Your OTP code is:" . $data['otp'];
-            //$message = "Hi Esycab"." , Your OTP code is:".$data['otp'];
-            $this->sendSms($input['phone_with_code'], $message);
             return response()->json([
-                "result" => $data,
-                "message" => 'Success',
-                "status" => 1
+                "message" => 'faild',
+                "status" => 0
             ]);
         }
     }
+    // public function check_phone(Request $request)
+    // {
+
+    //     $input = $request->all();
+    //     $validator = Validator::make($input, [
+    //         'phone_with_code' => 'required',
+    //     ]);
+
+    //     if ($validator->fails()) {
+    //         return $this->sendError($validator->errors());
+    //     }
+    //     $data = array();
+    //     $customer = Customer::where('phone_with_code', $input['phone_with_code'])->first();
+
+    //     if (is_object($customer)) {
+    //         $data['is_available'] = 1;
+    //         $data['otp'] = "";
+    //         return response()->json([
+    //             "result" => $data,
+    //             "message" => 'Success',
+    //             "status" => 1
+    //         ]);
+    //     } else {
+    //         $data['is_available'] = 0;
+    //         $data['otp'] = rand(1000, 9999);
+    //         $message = "Hi" . env('APP_NAME') . "  , Your OTP code is:" . $data['otp'];
+    //         //$message = "Hi Esycab"." , Your OTP code is:".$data['otp'];
+    //         $this->sendSms($input['phone_with_code'], $message);
+    //         return response()->json([
+    //             "result" => $data,
+    //             "message" => 'Success',
+    //             "status" => 1
+    //         ]);
+    //     }
+    // }
 
     public function forgot(Request $request)
     {
@@ -227,8 +255,7 @@ class CustomerController extends Controller
         $input['currency_short_code'] = Currency::where('country_id', $input['country_id'])->value('currency_short_code');
         $input['profile_picture'] = "customers/avatar.png";
         $input['phone_with_code'] = $input['country_code'].$input['phone_number'];
-        $otp = rand(1000, 9999);
-        $input['otp']=$otp;
+        $input['otp']= 0;
         $customer = Customer::create($input);
 
         $phone = '+'.$input['phone_with_code'];
@@ -304,7 +331,6 @@ class CustomerController extends Controller
 
             return response()->json([
                 "result" => $customer,
-                "OTP" => $otp,
                 "token" => $token,
                 "message" => 'Registered Successfully',
                 "status" => 1
