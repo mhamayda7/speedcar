@@ -70,13 +70,13 @@ class CustomerController extends Controller
             } else {
                 return response()->json([
                     "message" => 'عذراً لقد تجاوزت الحد المسموح',
-                    "status" => 1
+                    "status" => 0
                 ]);
             }
         } else {
             return response()->json([
                 "message" => 'عذراً لقد تجاوزت الحد المسموح',
-                "status" => 1
+                "status" => 0
             ]);
         }
     }
