@@ -18,6 +18,7 @@ use App\InstantOffer;
 use App\PromoCode;
 use App\AppSetting;
 use App\Driver;
+use App\Models\CheckPhone;
 use App\Models\Point;
 use App\Models\placefav;
 use App\Models\RateTrip;
@@ -40,38 +41,46 @@ class CustomerController extends Controller
 
         $input = $request->all();
         $validator = Validator::make($input, [
-            'phone_with_code' => 'required',
+            'phone_number' => 'required',
             'fcm_token' => 'required',
         ]);
 
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
+        $data = CheckPhone::whereDay('created_at', '=', date('d'))
+                            ->where('fcm_token', $input['fcm_token'])->get();
+        $phone = '970594809641';
+        CheckPhone::create($input);
 
-        $check = new DB::table('check_phone');
-        $data = [];
-        $data['fcm_token'] = $input['fcm_token'];
-        $data['phone_number'] = $input['phone_with_code'];
-        DB::table('check_phone')->creat($data);
-
-        dd($data);
-        // $phone = '970594809641';
-        // $otp = rand(1000,9999);
-        // $message = "Hi " . env('APP_NAME') . "  , Your OTP code is:" . $otp;
-
-        // if ($this->smsSe($phone, $message)) {
-        //     return response()->json([
-        //         "otp" => $otp,
-        //         "message" => 'Success',
-        //         "status" => 1
-        //     ]);
-        // } else {
-        //     return response()->json([
-        //         "message" => 'faild',
-        //         "status" => 0
-        //     ]);
-        // }
+        if(count($data) <= 5) {
+            $data_phone = CheckPhone::whereDay('created_at', '=', date('d'))
+                                ->where('fcm_token', $input['fcm_token'])
+                                ->where('phone_number', $input['phone_number'])->get();
+            if(count($data_phone) <= 3 ) {
+                $otp = rand(1000,9999);
+                $message = "Hi " . env('APP_NAME') . "  , Your OTP code is:" . $otp;
+                if ($this->smsSe($phone, $message)) {
+                    return response()->json([
+                        "otp" => $otp,
+                        "message" => 'Success',
+                        "status" => 1
+                    ]);
+                }
+            } else {
+                return response()->json([
+                    "message" => 'عذراً لقد تجاوزت الحد المسموح',
+                    "status" => 1
+                ]);
+            }
+        } else {
+            return response()->json([
+                "message" => 'عذراً لقد تجاوزت الحد المسموح',
+                "status" => 1
+            ]);
+        }
     }
+
     // public function check_phone(Request $request)
     // {
 
