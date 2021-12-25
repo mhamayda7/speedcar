@@ -46,11 +46,11 @@ class CustomerController extends Controller
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-        $phone = '970568855004';
+        $phone = '970594809641';
         $otp = rand(1000,9999);
         $message = "Hi " . env('APP_NAME') . "  , Your OTP code is:" . $otp;
 
-        if ($this->smsSe($phone, $message)) {
+        if ($this->sendSms($phone, $message)) {
             return response()->json([
                 "otp" => $otp,
                 "message" => 'Success',
