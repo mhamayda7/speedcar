@@ -41,27 +41,36 @@ class CustomerController extends Controller
         $input = $request->all();
         $validator = Validator::make($input, [
             'phone_with_code' => 'required',
+            'fcm_token' => 'required',
         ]);
 
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-        $phone = '970594809641';
-        $otp = rand(1000,9999);
-        $message = "Hi " . env('APP_NAME') . "  , Your OTP code is:" . $otp;
 
-        if ($this->smsSe($phone, $message)) {
-            return response()->json([
-                "otp" => $otp,
-                "message" => 'Success',
-                "status" => 1
-            ]);
-        } else {
-            return response()->json([
-                "message" => 'faild',
-                "status" => 0
-            ]);
-        }
+        $check = new DB::table('check_phone');
+        $data = [];
+        $data['fcm_token'] = $input['fcm_token'];
+        $data['phone_number'] = $input['phone_with_code'];
+        DB::table('check_phone')->creat($data);
+
+        dd($data);
+        // $phone = '970594809641';
+        // $otp = rand(1000,9999);
+        // $message = "Hi " . env('APP_NAME') . "  , Your OTP code is:" . $otp;
+
+        // if ($this->smsSe($phone, $message)) {
+        //     return response()->json([
+        //         "otp" => $otp,
+        //         "message" => 'Success',
+        //         "status" => 1
+        //     ]);
+        // } else {
+        //     return response()->json([
+        //         "message" => 'faild',
+        //         "status" => 0
+        //     ]);
+        // }
     }
     // public function check_phone(Request $request)
     // {
