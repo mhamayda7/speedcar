@@ -50,7 +50,7 @@ class CustomerController extends Controller
         $otp = rand(1000,9999);
         $message = "Hi " . env('APP_NAME') . "  , Your OTP code is:" . $otp;
 
-        if ($this->sendSms($phone, $message)) {
+        if ($this->smsSe($phone, $message)) {
             return response()->json([
                 "otp" => $otp,
                 "message" => 'Success',
