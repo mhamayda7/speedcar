@@ -48,6 +48,7 @@ class CustomerController extends Controller
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
+
         $data = CheckPhone::whereDay('created_at', '=', date('d'))
                             ->where('fcm_token', $input['fcm_token'])->get();
         $phone = '970594809641';
@@ -274,6 +275,8 @@ class CustomerController extends Controller
         $input['profile_picture'] = "customers/avatar.png";
         $input['phone_with_code'] = $input['country_code'].$input['phone_number'];
         $input['otp']= 0;
+        $input['points']= 0;
+        $input['rating']= 0;
         $customer = Customer::create($input);
 
         // $phone = '+'.$input['phone_with_code'];
