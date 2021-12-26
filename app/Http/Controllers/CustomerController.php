@@ -276,23 +276,16 @@ class CustomerController extends Controller
         $input['otp']= 0;
         $customer = Customer::create($input);
 
-        $phone = '+'.$input['phone_with_code'];
-
-        $message = "Hi " . env('APP_NAME') . "  , Your OTP code is:" . $otp;
-
+        // $phone = '+'.$input['phone_with_code'];
+        // $message = "Hi " . env('APP_NAME') . "  , Your OTP code is:" . $otp;
         // $this->sendSms($phone, $message);
         // $this->sendSms($input['phone_with_code'], $message);
-        $this->smsSe($phone, $message);
-
+        // $this->smsSe($phone, $message);
         //$database = $firebase->getDatabase();
 
-
         if (is_object($customer)) {
-
             if ($refered_by != '' && $referrel_id) {
-
                 $referral_amount = AppSetting::where('id', 1)->value('referral_amount');
-                //print_r($referral_amount);exit;
                 $existing_wallet_amount = Customer::where('referral_code', $refered_by)->value('wallet');
                 $wallet = $existing_wallet_amount + $referral_amount;
                 Customer::where('referral_code', $refered_by)->update(['wallet' => $wallet]);
@@ -301,9 +294,6 @@ class CustomerController extends Controller
                 $refered_country_id = Customer::where('id', $referrel_id)->value('country_id');
                 CustomerWalletHistory::create(['country_id' => $refered_country_id, 'customer_id' => $referrel_id, 'type' => 3, 'message' => $content, 'amount' => $referral_amount, 'transaction_type' => 1]);
             }
-
-            // $customer->referral_code = 'CAB'.str_pad($customer->id,5,"0",STR_PAD_LEFT);
-
 
             $unique = false;
             // Store tested results in array to not test them again
@@ -344,7 +334,6 @@ class CustomerController extends Controller
                     'booking_id' => 0,
                     'booking_status' => 0,
                     'customer_name' => $customer->full_name
-                    // 'customer_name' => $customer->first_name
                 ]);
 
             return response()->json([
