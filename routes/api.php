@@ -76,7 +76,7 @@ Route::post('customer/payment_method', 'App\Http\Controllers\CustomerController@
 Route::post('customer/wallet_payment_methods', 'App\Http\Controllers\CustomerController@wallet_payment_methods');
 Route::post('customer/trip_cancel', 'App\Http\Controllers\BookingController@trip_cancel_by_customer');
 Route::get('fare', 'App\Http\Controllers\BookingController@fare');
-Route::post('check_promo', 'App\Http\Controllers\PromoCodeController@check_promo');
+// Route::post('check_promo', 'App\Http\Controllers\PromoCodeController@check_promo');
 Route::post('customer/check_phone', 'App\Http\Controllers\CustomerController@check_phone');
 
 //driver
