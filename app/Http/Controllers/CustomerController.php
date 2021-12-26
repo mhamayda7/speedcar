@@ -41,7 +41,7 @@ class CustomerController extends Controller
 
         $input = $request->all();
         $validator = Validator::make($input, [
-            'phone_number' => 'required',
+            'phone_number' => 'required|numeric|digits_between:9,20|unique:customers,phone_number',
             'fcm_token' => 'required',
         ]);
 
