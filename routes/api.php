@@ -21,7 +21,6 @@ Route::post('sendsms', 'App\Http\Controllers\Controller@sendS');
 Route::get('suppliers', 'App\Http\Controllers\Controller@get_supplier');
 Route::get('splash', 'App\Http\Controllers\Controller@splash');
 Route::post('test', 'App\Http\Controllers\BookingController@test');
-Route::post('check_promo', 'App\Http\Controllers\PromoCodeController@check_promo');
 Route::post('cancel_test', 'App\Http\Controllers\BookingController@cancel_test');
 
 Route::middleware('auth:sanctum')->group(function () {
@@ -47,11 +46,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('customer/saveplace', 'App\Http\Controllers\CustomerController@savePlaace');
     Route::post('customer/distanc_driver', 'App\Http\Controllers\CustomerController@distanc_driver');
     Route::post('customer/get_fcm', 'App\Http\Controllers\CustomerController@get_fcm');
+    Route::post('check_promo', 'App\Http\Controllers\PromoCodeController@check_promo');
 });
 
 //Customer
 Route::post('customer/fcm', 'App\Http\Controllers\CustomerController@sendFcm');
-Route::post('customer/check_phone', 'App\Http\Controllers\CustomerController@check_phone');
 Route::post('customer/register', 'App\Http\Controllers\CustomerController@register');
 Route::post('customer/login', 'App\Http\Controllers\CustomerController@login');
 Route::post('customer/forget_password', 'App\Http\Controllers\CustomerController@forget_password');

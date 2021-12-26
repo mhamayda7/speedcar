@@ -239,7 +239,7 @@ class BookingController extends Controller
         $input['customer_id'] = Auth::user()->id;
         $input['country_id'] = 1;
         $input['trip_type'] = 1;
-        // $input['km'] = $this->distance($input['pickup_lat'], $input['pickup_lng'], $input['drop_lat'], $input['drop_lng'], 'K') ;
+        $input['km'] = $this->distance($input['pickup_lat'], $input['pickup_lng'], $input['drop_lat'], $input['drop_lng'], 'K') ;
         $input['pickup_date'] = date("Y-m-d H:i:s");
 
         $current_date = $this->get_date($input['country_id']);
@@ -286,9 +286,9 @@ class BookingController extends Controller
             ]);
         }
 
-        $url = 'https://maps.googleapis.com/maps/api/staticmap?center=' . $input['pickup_lat'] . ',' . $input['pickup_lng'] . '&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:L%7C' . $input['pickup_lat'] . ',' . $input['pickup_lng'] . '&key=' . env('MAP_KEY');
-        $img = 'trip_request_static_map/' . md5(time()) . '.png';
-        file_put_contents('uploads/' . $img, file_get_contents($url));
+        // $url = 'https://maps.googleapis.com/maps/api/staticmap?center=' . $input['pickup_lat'] . ',' . $input['pickup_lng'] . '&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:L%7C' . $input['pickup_lat'] . ',' . $input['pickup_lng'] . '&key=' . env('MAP_KEY');
+        // $img = 'trip_request_static_map/' . md5(time()) . '.png';
+        // file_put_contents('uploads/' . $img, file_get_contents($url));
 
         if ($input['trip_type'] == 1) {
             $fares = $this->calculate_daily_fare($input['vehicle_type'], $input['km'], $input['promo'], $input['country_id']);
@@ -301,7 +301,7 @@ class BookingController extends Controller
         $booking_request['sub_total'] = $fares['fare'];
         $booking_request['discount'] = $fares['discount'];
         $booking_request['tax'] = 0;
-        $booking_request['static_map'] = $img;
+        // $booking_request['static_map'] = $img;
 
         $customer = Customer::where('id', Auth::user()->id)->first();
         if ($input['payment_method'] == 2) {
@@ -332,7 +332,7 @@ class BookingController extends Controller
                 'drop_address' => $input['drop_address'],
                 'total' => $fares['total_fare'],
                 'customer_name' => Customer::where('id', $input['customer_id'])->value('full_name'),
-                'static_map' => $img,
+                // 'static_map' => $img,
                 'trip_type' => DB::table('trip_types')->where('id', $input['trip_type'])->value('name')
             ]);
 
@@ -595,91 +595,74 @@ class BookingController extends Controller
         $input = $request->all();
         $validator = Validator::make($input, [
             'trip_id' => 'required',
-            // 'driver_id' => 'required'
         ]);
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-        $input['driver_id'] = Auth::user()->id;
-        $trip = TripRequest::where('id', $input['trip_id'])->first()->toArray();
-        $customer_id = TripRequest::where('id', $input['trip_id'])->value('customer_id');
-        $phone_with_code = Customer::where('id', $customer_id)->value('phone_with_code');
+        $driver_id = Auth::user()->id;
+        $trip_requset = TripRequest::where('id', $input['trip_id'])->first();
 
-        $data = $trip;
-        $data['driver_id'] = $input['driver_id'];
-        $data['promo_code'] = $data['promo'];
-        unset($data['promo']);
-        unset($data['id']);
-        $data['pickup_date'] = $trip['pickup_date'];
-        $data['country_id'] = $trip['country_id'];
-        $data['package_id'] = $trip['package_id'];
-        $data['trip_type'] = $trip['trip_type'];
-        $data['status'] = 1;
-        $data['vehicle_type'] = $trip['vehicle_type'];
-        $data['vehicle_id'] = DB::table('driver_vehicles')->where('driver_id', $input['driver_id'])->value('id');
-        $data['otp'] = $otp = rand(1000, 9999);
-        // $message = "Hi ".env('APP_NAME')." , Your OTP code is:  ".$data['otp'];
-        //     $this->sendSms($phone_with_code,$message);
-        $id = Trip::create($data)->id;
+        $data = [];
+        $data['country_id'] = $trip_requset->country_id;
+        $data['customer_id'] = $trip_requset->customer_id;
+        $data['trip_type'] = $trip_requset->trip_type;
+        $data['booking_type'] = $trip_requset->booking_type;
+        $data['package_id'] = $trip_requset->package_id;
+        $data['package_id'] = $trip_requset->package_id;
+        $data['driver_id'] = $driver_id;
+        $data['vehicle_id'] = DriverVehicle::where('driver_id', $driver_id)->value('id');
+        $data['vehicle_type'] = $trip_requset->vehicle_type;
+        $data['payment_method'] = $trip_requset->payment_method;
+        $data['promo_code'] = $trip_requset->promo;
+        $trip = Trip::create($data);
+        Trip::where('id', $trip->id)->update(['trip_id' => $trip->id]);
 
-        if ($data['promo_code']) {
-            $user_promo['user_id'] = $data['customer_id'];
-            $user_promo['promo_id'] = $data['promo_code'];
-            $user_promo['status'] = 1;
-            UserPromoHistory::create($user_promo);
+        if ($trip->promo_code) {
+            $user_promo['customer_id'] = $trip->customer_id;
+            $user_promo['promo_id'] = PromoCode::where('promo_code',$trip->promo_code)->value('id');
+            $user_promo['trip_id'] = $trip->id;
+            $user_promo = UserPromoHistory::create($user_promo);
+            // dd($user_promo);
         }
 
-        $trip_id = str_pad($id, 6, "0", STR_PAD_LEFT);
-        Trip::where('id', $id)->update(['trip_id' => $trip_id]);
-
-
-        //Firebase
-        //$factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
-        //
-        // $serviceAccount = ServiceAccount::fromJsonFile(config_path().'/'.env('FIREBASE_FILE'));
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'));
         $database = $factory->createDatabase();
-
-
-
-        $trip_details = Trip::where('id', $id)->first();
-        $customer = Customer::where('id', $trip_details->customer_id)->first();
-        $driver = Driver::where('id', $trip_details->driver_id)->first();
-        $vehicle = DriverVehicle::where('id', $trip_details->vehicle_id)->first();
+        $customer = Customer::where('id', $trip->customer_id)->first();
+        $driver = Driver::where('id', $trip->driver_id)->first();
+        $vehicle = DriverVehicle::where('id', $trip->vehicle_id)->first();
         $current_status = BookingStatus::where('id', 1)->first();
         $new_status = BookingStatus::where('id', 2)->first();
-        $payment_method = PaymentMethod::where('id', $trip_details->payment_method)->value('Payment');
+        $payment_method = PaymentMethod::where('id', $trip->payment_method)->value('Payment');
 
-        $data['driver_id'] = $input['driver_id'];
-        $data['trip_request_id'] = $input['trip_id'];
+        $data['driver_id'] = $trip->driver_id;
+        $data['trip_request_id'] = $trip->id;
         $data['status'] = 3;
-
         DriverTripRequest::create($data);
 
         //Trip Firebase
         $data = [];
-        $data['id'] = $id;
-        $data['trip_id'] = $trip_id;
-        $data['trip_type'] = $trip_details->trip_type;
-        $data['customer_id'] = $trip_details->customer_id;
+        $data['id'] = $trip->id;
+        $data['trip_id'] = $trip->id;
+        $data['trip_type'] = $trip->trip_type;
+        $data['customer_id'] = $trip->customer_id;
         $data['customer_name'] = $customer->full_name;
         $data['customer_profile_picture'] = $customer->profile_picture;
         $data['customer_phone_number'] = $customer->phone_number;
-        $data['driver_id'] = $trip_details->driver_id;
+        $data['driver_id'] = $trip->driver_id;
         $data['driver_name'] = $driver->full_name;
         $data['driver_profile_picture'] = $driver->profile_picture;
         $data['driver_phone_number'] = $driver->phone_number;
-        $data['pickup_address'] = $trip_details->pickup_address;
-        $data['pickup_lat'] = $trip_details->pickup_lat;
-        $data['pickup_lng'] = $trip_details->pickup_lng;
-        $data['drop_address'] = $trip_details->drop_address;
-        $data['drop_lat'] = $trip_details->drop_lat;
-        $data['drop_lng'] = $trip_details->drop_lng;
+        $data['pickup_address'] = $trip->pickup_address;
+        $data['pickup_lat'] = $trip->pickup_lat;
+        $data['pickup_lng'] = $trip->pickup_lng;
+        $data['drop_address'] = $trip->drop_address;
+        $data['drop_lat'] = $trip->drop_lat;
+        $data['drop_lng'] = $trip->drop_lng;
         $data['payment_method'] = $payment_method;
-        $data['pickup_date'] = $trip_details->pickup_date;
-        $data['total'] = $trip_details->total;
-        $data['collection_amount'] = $trip_details->total;
-        $data['vehicle_id'] = $trip_details->vehicle_id;
+        $data['pickup_date'] = $trip->pickup_date;
+        $data['total'] = $trip->total;
+        $data['collection_amount'] = $trip->total;
+        $data['vehicle_id'] = $trip->vehicle_id;
         $data['vehicle_image'] = $vehicle->vehicle_image;
         $data['vehicle_number'] = $vehicle->vehicle_number;
         $data['vehicle_color'] = $vehicle->color;
@@ -694,26 +677,26 @@ class BookingController extends Controller
         $data['bearing'] = 0;
 
         $newPost = $database
-            ->getReference('/trips/' . $trip_details->id)
+            ->getReference('/trips/' . $trip->id)
             ->update($data);
 
         $newPost = $database
             ->getReference('/customers/' . $trip['customer_id'])
             ->update([
-                'booking_id' => $id,
+                'booking_id' => $trip->id,
                 'booking_status' => 2
             ]);
 
         $newPost = $database
-            ->getReference('/drivers/' . $input['driver_id'])
+            ->getReference('/drivers/' . $trip->driver_id)
             ->update([
                 'booking_status' => 2
             ]);
 
         $newPost = $database
-            ->getReference('/vehicles/' . $trip['vehicle_type'] . '/' . $input['driver_id'])
+            ->getReference('/vehicles/' . $trip['vehicle_type'] . '/' . $trip->driver_id)
             ->update([
-                'booking_id' => $id,
+                'booking_id' => $trip->id,
                 'booking_status' => 2
             ]);
 
@@ -725,17 +708,17 @@ class BookingController extends Controller
         $image = "image/tripaccept.png";
 
         $trip_rate = new RateTrip;
-        $trip_rate->trip_id = $trip_id;
-        $trip_rate->customer_id = $trip_details->customer_id;
-        $trip_rate->driver_id = $trip_details->driver_id;
+        $trip_rate->trip_id = $trip->id;
+        $trip_rate->customer_id = $trip->customer_id;
+        $trip_rate->driver_id = $trip->driver_id;
         $trip_rate->customer_is_rate = 0;
         $trip_rate->driver_is_rate = 0;
         $trip_rate->save();
-        $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $customer->fcm_token);
-        $this->save_notifcation($trip_details->customer_id, 1, $current_status->status_name, $current_status->customer_status_name, $image);
+        // $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $customer->fcm_token);
+        // $this->save_notifcation($trip->customer_id, 1, $current_status->status_name, $current_status->customer_status_name, $image);
 
         return response()->json([
-            "result" => $id,
+            "result" => $trip->id,
             "message" => 'Success',
             "status" => 1
         ]);
@@ -924,8 +907,8 @@ class BookingController extends Controller
             $data['discount'] = 0.00;
         } else {
             $data['discount'] = 0.00;
-            $promo = DB::table('promo_codes')->where('promo_code', $promo)->first();
-            if ($promo->promo_type == 5) {
+            $promo = PromoCode::where('promo_code', $promo)->first();
+            if ($promo->promo_type == 2) {
                 $total_fare = $data['total_fare'] - $promo->discount;
                 if ($total_fare > 0) {
                     $data['discount'] = number_format((float)$promo->discount, 2, '.', '');

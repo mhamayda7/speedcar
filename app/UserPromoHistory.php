@@ -7,6 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 class UserPromoHistory extends Model
 {
      protected $fillable = [
-        'id','user_id','promo_id','status','created_at','updated-at',
+        'id','customer_id','promo_id','trip_id','created_at','updated-at',
     ];
 }
