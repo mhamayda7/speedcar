@@ -1430,6 +1430,7 @@ class BookingController extends Controller
         $price_km = DailyFareManagement::where('id', 1)->first();
         if (is_null($trip_request)) {
             return response()->json([
+                "price" => $price_km,
                 "message" => 'Not have any request trip',
                 "status" => 1
             ]);
