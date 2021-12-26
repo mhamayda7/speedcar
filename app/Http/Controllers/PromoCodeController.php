@@ -33,8 +33,6 @@ class PromoCodeController extends Controller
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-
-
         $promo = PromoCode::where('promo_code', $input['promo'])->first();
         $used_code = UserPromoHistory::where('customer_id', Auth::user()->id)->get();
         if (isset($promo)) {
@@ -62,7 +60,7 @@ class PromoCodeController extends Controller
         } else {
             return response()->json([
                 "message" => 'كود الخصم غير موجود',
-                "status" => 1
+                "status" => 0
             ]);
         }
     }
