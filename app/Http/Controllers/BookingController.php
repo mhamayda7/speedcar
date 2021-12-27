@@ -1187,7 +1187,7 @@ class BookingController extends Controller
             if ($trip->promo_code == 0) {
                 Trip::where('id', $input['trip_id'])->update(['total' => $fare]);
             } else {
-                $promo = DB::table('promo_codes')->where('id', $trip->promo_code)->first();
+                $promo = PromoCode::where('promo_code', $trip->promo_code)->first();
                 if ($promo->promo_type == 2) {
                     $total_fare = $fare - $promo->discount;
                     $promo->discount = number_format((float)$promo->discount, 2, '.', '');
