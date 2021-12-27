@@ -51,7 +51,7 @@ class CustomerController extends Controller
 
         $data = CheckPhone::whereDay('created_at', '=', date('d'))
                             ->where('fcm_token', $input['fcm_token'])->get();
-        $phone = '970594809641';
+        // $phone = '970594809641';
         CheckPhone::create($input);
 
         if(count($data) <= 5) {
@@ -61,6 +61,7 @@ class CustomerController extends Controller
             if(count($data_phone) <= 3 ) {
                 $otp = rand(1000,9999);
                 $message = "Hi " . env('APP_NAME') . "  , Your OTP code is:" . $otp;
+                $this->sendSms($input['phone_with_code'], $message);
                 if (1) {
                     return response()->json([
                         "otp" => $otp,
