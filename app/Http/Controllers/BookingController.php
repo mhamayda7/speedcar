@@ -616,6 +616,7 @@ class BookingController extends Controller
         $data['payment_method'] = $trip_requset->payment_method;
         $data['promo_code'] = $trip_requset->promo;
         $data['pickup_date'] = date('Y-m-d H:i:s');
+        $data['pickup_address'] = $trip_requset->pickup_address;
         $trip = Trip::create($data);
         Trip::where('id', $trip->id)->update(['trip_id' => $trip->id]);
 
