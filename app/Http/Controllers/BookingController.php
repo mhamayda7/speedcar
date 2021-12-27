@@ -302,7 +302,7 @@ class BookingController extends Controller
         $booking_request['discount'] = $fares['discount'];
         $booking_request['tax'] = 0;
         // $booking_request['static_map'] = $img;
-        $booking_request['promo_code'] = $input['promo'];
+        // $booking_request['promo_code'] = $input['promo'];
         $customer = Customer::where('id', Auth::user()->id)->first();
         if ($input['payment_method'] == 2) {
             if($customer->wallet < 1) {
