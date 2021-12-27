@@ -727,8 +727,8 @@ class BookingController extends Controller
         $trip_rate->customer_is_rate = 0;
         $trip_rate->driver_is_rate = 0;
         $trip_rate->save();
-        // $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $customer->fcm_token);
-        // $this->save_notifcation($trip->customer_id, 1, $current_status->status_name, $current_status->customer_status_name, $image);
+        $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $customer->fcm_token);
+        $this->save_notifcation($trip->customer_id, 1, $current_status->status_name, $current_status->customer_status_name, $image);
 
         return response()->json([
             "result" => $trip->id,
