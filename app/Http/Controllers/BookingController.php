@@ -622,6 +622,10 @@ class BookingController extends Controller
         $data['drop_address'] = $trip_requset->drop_address;
         $data['drop_lat'] = $trip_requset->drop_lat;
         $data['drop_lng'] = $trip_requset->drop_lng;
+        $data['total'] = $trip_requset->total;
+        $data['sub_total'] = $trip_requset->sub_total;
+        $data['tax'] = $trip_requset->tax;
+        $data['discount'] = $trip_requset->discount;
         $trip = Trip::create($data);
         Trip::where('id', $trip->id)->update(['trip_id' => $trip->id]);
 
