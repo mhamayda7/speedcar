@@ -286,9 +286,9 @@ class BookingController extends Controller
             ]);
         }
 
-        $url = 'https://maps.googleapis.com/maps/api/staticmap?center=' . $input['pickup_lat'] . ',' . $input['pickup_lng'] . '&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:L%7C' . $input['pickup_lat'] . ',' . $input['pickup_lng'] . '&key=' . env('MAP_KEY');
-        $img = 'trip_request_static_map/' . md5(time()) . '.png';
-        file_put_contents('uploads/' . $img, file_get_contents($url));
+        // $url = 'https://maps.googleapis.com/maps/api/staticmap?center=' . $input['pickup_lat'] . ',' . $input['pickup_lng'] . '&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:L%7C' . $input['pickup_lat'] . ',' . $input['pickup_lng'] . '&key=' . env('MAP_KEY');
+        // $img = 'trip_request_static_map/' . md5(time()) . '.png';
+        // file_put_contents('uploads/' . $img, file_get_contents($url));
 
         if ($input['trip_type'] == 1) {
             $fares = $this->calculate_daily_fare($input['vehicle_type'], $input['km'], $input['promo'], $input['country_id']);
@@ -301,8 +301,9 @@ class BookingController extends Controller
         $booking_request['sub_total'] = $fares['fare'];
         $booking_request['discount'] = $fares['discount'];
         $booking_request['tax'] = 0;
-        $booking_request['static_map'] = $img;
-        $booking_request['promo_code'] = $input['promo'];
+        $booking_request['status'] = 2;
+        // $booking_request['static_map'] = $img;
+        // $booking_request['promo_code'] = $input['promo'];
         $customer = Customer::where('id', Auth::user()->id)->first();
         if ($input['payment_method'] == 2) {
             if($customer->wallet < 1) {
