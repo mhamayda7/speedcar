@@ -23,30 +23,30 @@ Route::get('splash', 'App\Http\Controllers\Controller@splash');
 Route::post('test', 'App\Http\Controllers\BookingController@test');
 Route::post('cancel_test', 'App\Http\Controllers\BookingController@cancel_test');
 
-Route::middleware('auth:sanctum')->prefix('speedV1/')->group(function () {
-    Route::post('customer/profile_picture', 'App\Http\Controllers\CustomerController@profile_picture');
-    Route::post('customer/profile', 'App\Http\Controllers\CustomerController@profile');
-    Route::post('customer/profile_update', 'App\Http\Controllers\CustomerController@profile_update');
-    Route::post('customer/update_fcm', 'App\Http\Controllers\CustomerController@update_fcm');
-    Route::post('customer/my_bookings', 'App\Http\Controllers\BookingController@customer_bookings');
-    Route::post('customer/ride_confirm', 'App\Http\Controllers\BookingController@ride_confirm');
-    Route::post('customer/request_cancel', 'App\Http\Controllers\BookingController@request_cancel');
-    Route::post('customer/get_status', 'App\Http\Controllers\BookingController@get_statuses');
-    Route::post('customer/get_reward', 'App\Http\Controllers\BookingController@get_reward');
-    Route::post('customer/get_invoice', 'App\Http\Controllers\BookingController@get_invoice');
-    Route::post('customer/distance', 'App\Http\Controllers\BookingController@customer_distance');
-    Route::post('customer/point', 'App\Http\Controllers\BookingController@point');
-    Route::post('customer/wallet', 'App\Http\Controllers\CustomerController@point');
-    Route::post('customer/point_to_wallet', 'App\Http\Controllers\BookingController@point_to_wallet');
-    Route::post('customer/signout', 'App\Http\Controllers\CustomerController@signout');
-    Route::post('customer/invite', 'App\Http\Controllers\CustomerController@customer_invite');
-    Route::post('customer/get_notification_messages', 'App\Http\Controllers\NotificationController@get_customer_notification_messages');
-    Route::post('customer/rate_driver', 'App\Http\Controllers\CustomerController@rate_driver');
-    Route::post('customer/reset_password', 'App\Http\Controllers\CustomerController@reset_password');
-    Route::post('customer/saveplace', 'App\Http\Controllers\CustomerController@savePlaace');
-    Route::post('customer/distanc_driver', 'App\Http\Controllers\CustomerController@distanc_driver');
-    Route::post('customer/get_fcm', 'App\Http\Controllers\CustomerController@get_fcm');
-    Route::post('check_promo', 'App\Http\Controllers\PromoCodeController@check_promo');
+Route::middleware('auth:sanctum')->prefix('speedV1')->group(function () {
+    Route::post('/customer/profile_picture', 'App\Http\Controllers\CustomerController@profile_picture');
+    Route::post('/customer/profile', 'App\Http\Controllers\CustomerController@profile');
+    Route::post('/customer/profile_update', 'App\Http\Controllers\CustomerController@profile_update');
+    Route::post('/customer/update_fcm', 'App\Http\Controllers\CustomerController@update_fcm');
+    Route::post('/customer/my_bookings', 'App\Http\Controllers\BookingController@customer_bookings');
+    Route::post('/customer/ride_confirm', 'App\Http\Controllers\BookingController@ride_confirm');
+    Route::post('/customer/request_cancel', 'App\Http\Controllers\BookingController@request_cancel');
+    Route::post('/customer/get_status', 'App\Http\Controllers\BookingController@get_statuses');
+    Route::post('/customer/get_reward', 'App\Http\Controllers\BookingController@get_reward');
+    Route::post('/customer/get_invoice', 'App\Http\Controllers\BookingController@get_invoice');
+    Route::post('/customer/distance', 'App\Http\Controllers\BookingController@customer_distance');
+    Route::post('/customer/point', 'App\Http\Controllers\BookingController@point');
+    Route::post('/customer/wallet', 'App\Http\Controllers\CustomerController@point');
+    Route::post('/customer/point_to_wallet', 'App\Http\Controllers\BookingController@point_to_wallet');
+    Route::post('/customer/signout', 'App\Http\Controllers\CustomerController@signout');
+    Route::post('/customer/invite', 'App\Http\Controllers\CustomerController@customer_invite');
+    Route::post('/customer/get_notification_messages', 'App\Http\Controllers\NotificationController@get_customer_notification_messages');
+    Route::post('/customer/rate_driver', 'App\Http\Controllers\CustomerController@rate_driver');
+    Route::post('/customer/reset_password', 'App\Http\Controllers\CustomerController@reset_password');
+    Route::post('/customer/saveplace', 'App\Http\Controllers\CustomerController@savePlaace');
+    Route::post('/customer/distanc_driver', 'App\Http\Controllers\CustomerController@distanc_driver');
+    Route::post('/customer/get_fcm', 'App\Http\Controllers\CustomerController@get_fcm');
+    Route::post('/check_promo', 'App\Http\Controllers\PromoCodeController@check_promo');
 });
 
 //Customer
