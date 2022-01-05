@@ -50,34 +50,34 @@ Route::middleware('auth:sanctum')->prefix('speedV1')->group(function () {
 });
 
 //Customer
-Route::prefix('speedV1/')->group(function () {
-    Route::post('customer/fcm', 'App\Http\Controllers\CustomerController@sendFcm');
-    Route::post('customer/register', 'App\Http\Controllers\CustomerController@register');
-    Route::post('customer/login', 'App\Http\Controllers\CustomerController@login');
-    Route::post('customer/forget_password', 'App\Http\Controllers\CustomerController@forget_password');
-    Route::post('customer/faq', 'App\Http\Controllers\FaqController@customer_faq');
-    Route::post('customer/policy', 'App\Http\Controllers\PrivacyPolicyController@customer_policy');
-    Route::get('app_setting', 'App\Http\Controllers\AppSettingController@index');
-    Route::post('customer/add_wallet', 'App\Http\Controllers\CustomerController@add_wallet');
-    Route::post('customer/get_wallet', 'App\Http\Controllers\CustomerController@get_wallet');
-    Route::post('customer/get_complaint_sub_category', 'App\Http\Controllers\ComplaintController@get_complaint_sub_categories');
-    Route::post('customer/get_complaint_category', 'App\Http\Controllers\ComplaintController@get_complaint_categories');
-    Route::post('customer/add_complaint', 'App\Http\Controllers\ComplaintController@add_complaint');
-    Route::post('customer/ride_list', 'App\Http\Controllers\RideDetailsController@ride_list');
-    Route::post('customer/ride_details', 'App\Http\Controllers\RideDetailsController@ride_details');
-    Route::post('customer/get_referral_message', 'App\Http\Controllers\ReferralController@get_referral_message');
-    Route::get('customer/get_about', 'App\Http\Controllers\AboutController@get_about');
-    Route::get('customer/get_cancellation_reasons', 'App\Http\Controllers\RideDetailsController@get_cancellation_reasons');
-    Route::post('customer/get_promo_codes', 'App\Http\Controllers\RideDetailsController@get_promo_codes');
-    Route::post('customer/forgot', 'App\Http\Controllers\CustomerController@forgot');
-    Route::post('customer/get_categories', 'App\Http\Controllers\CustomerController@get_vehicle_categories');
-    Route::post('customer/get_fare', 'App\Http\Controllers\BookingController@get_fare');
-    Route::post('customer/payment_method', 'App\Http\Controllers\CustomerController@payment_method');
-    Route::post('customer/wallet_payment_methods', 'App\Http\Controllers\CustomerController@wallet_payment_methods');
-    Route::post('customer/trip_cancel', 'App\Http\Controllers\BookingController@trip_cancel_by_customer');
-    Route::get('fare', 'App\Http\Controllers\BookingController@fare');
+Route::prefix('speedV1')->group(function () {
+    Route::post('/customer/fcm', 'App\Http\Controllers\CustomerController@sendFcm');
+    Route::post('/customer/register', 'App\Http\Controllers\CustomerController@register');
+    Route::post('/customer/login', 'App\Http\Controllers\CustomerController@login');
+    Route::post('/customer/forget_password', 'App\Http\Controllers\CustomerController@forget_password');
+    Route::post('/customer/faq', 'App\Http\Controllers\FaqController@customer_faq');
+    Route::post('/customer/policy', 'App\Http\Controllers\PrivacyPolicyController@customer_policy');
+    Route::get('/app_setting', 'App\Http\Controllers\AppSettingController@index');
+    Route::post('/customer/add_wallet', 'App\Http\Controllers\CustomerController@add_wallet');
+    Route::post('/customer/get_wallet', 'App\Http\Controllers\CustomerController@get_wallet');
+    Route::post('/customer/get_complaint_sub_category', 'App\Http\Controllers\ComplaintController@get_complaint_sub_categories');
+    Route::post('/customer/get_complaint_category', 'App\Http\Controllers\ComplaintController@get_complaint_categories');
+    Route::post('/customer/add_complaint', 'App\Http\Controllers\ComplaintController@add_complaint');
+    Route::post('/customer/ride_list', 'App\Http\Controllers\RideDetailsController@ride_list');
+    Route::post('/customer/ride_details', 'App\Http\Controllers\RideDetailsController@ride_details');
+    Route::post('/customer/get_referral_message', 'App\Http\Controllers\ReferralController@get_referral_message');
+    Route::get('/customer/get_about', 'App\Http\Controllers\AboutController@get_about');
+    Route::get('/customer/get_cancellation_reasons', 'App\Http\Controllers\RideDetailsController@get_cancellation_reasons');
+    Route::post('/customer/get_promo_codes', 'App\Http\Controllers\RideDetailsController@get_promo_codes');
+    Route::post('/customer/forgot', 'App\Http\Controllers\CustomerController@forgot');
+    Route::post('/customer/get_categories', 'App\Http\Controllers\CustomerController@get_vehicle_categories');
+    Route::post('/customer/get_fare', 'App\Http\Controllers\BookingController@get_fare');
+    Route::post('/customer/payment_method', 'App\Http\Controllers\CustomerController@payment_method');
+    Route::post('/customer/wallet_payment_methods', 'App\Http\Controllers\CustomerController@wallet_payment_methods');
+    Route::post('/customer/trip_cancel', 'App\Http\Controllers\BookingController@trip_cancel_by_customer');
+    Route::get('/fare', 'App\Http\Controllers\BookingController@fare');
     // Route::post('check_promo', 'App\Http\Controllers\PromoCodeController@check_promo');
-    Route::post('customer/check_phone', 'App\Http\Controllers\CustomerController@check_phone');
+    Route::post('/customer/check_phone', 'App\Http\Controllers\CustomerController@check_phone');
 });
 
 
