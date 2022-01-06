@@ -23,7 +23,7 @@ Route::get('splash', 'App\Http\Controllers\Controller@splash');
 Route::post('test', 'App\Http\Controllers\BookingController@test');
 Route::post('cancel_test', 'App\Http\Controllers\BookingController@cancel_test');
 
-Route::middleware('auth:sanctum')->prefix('speedv1')->group(function () {
+Route::middleware('auth:sanctum')->prefix('speedV1')->group(function () {
     Route::post('customer/profile_picture', 'App\Http\Controllers\CustomerController@profile_picture');
     Route::post('customer/profile', 'App\Http\Controllers\CustomerController@profile');
     Route::post('customer/profile_update', 'App\Http\Controllers\CustomerController@profile_update');
@@ -50,7 +50,7 @@ Route::middleware('auth:sanctum')->prefix('speedv1')->group(function () {
 });
 
 //Customer
-Route::prefix('speedv1')->group(function () {
+Route::prefix('speedV1')->group(function () {
     Route::post('customer/fcm', 'App\Http\Controllers\CustomerController@sendFcm');
     Route::post('customer/register', 'App\Http\Controllers\CustomerController@register');
     Route::post('customer/login', 'App\Http\Controllers\CustomerController@login');
@@ -82,7 +82,7 @@ Route::prefix('speedv1')->group(function () {
 
 
 //driver
-Route::prefix('speedv1')->group(function () {
+Route::prefix('speedV1')->group(function () {
     Route::post('driver/login', 'App\Http\Controllers\DriverController@login');
     Route::post('driver/register', 'App\Http\Controllers\DriverController@register');
     Route::post('driver/forget_password', 'App\Http\Controllers\DriverController@forget_password');
@@ -96,7 +96,7 @@ Route::prefix('speedv1')->group(function () {
     Route::post('driver/withdrawal_history', 'App\Http\Controllers\DriverController@driver_withdrawal_history');
 });
 
-Route::prefix('speedv1/driver/')->middleware('auth:sanctum')->group(function () {
+Route::prefix('speedV1/driver/')->middleware('auth:sanctum')->group(function () {
     Route::post('profile', 'App\Http\Controllers\DriverController@profile');
     Route::post('profile_info', 'App\Http\Controllers\DriverController@profile_info');
     Route::post('get_notification_messages', 'App\Http\Controllers\NotificationController@get_driver_notification_messages');
