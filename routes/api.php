@@ -82,19 +82,21 @@ Route::prefix('speedV1')->group(function () {
 
 
 //driver
-Route::post('driver/login', 'App\Http\Controllers\DriverController@login');
-Route::post('driver/register', 'App\Http\Controllers\DriverController@register');
-Route::post('driver/forget_password', 'App\Http\Controllers\DriverController@forget_password');
-Route::post('driver/check_phone', 'App\Http\Controllers\DriverController@check_phone');
-Route::post('driver/profile_picture', 'App\Http\Controllers\DriverController@profile_picture');
-Route::post('driver/profile_update', 'App\Http\Controllers\DriverController@profile_update');
-Route::post('driver/faq', 'App\Http\Controllers\FaqController@driver_faq');
-Route::get('driver/ride_list', 'App\Http\Controllers\RideDetailsController@driver_ride_list');
-Route::get('driver/ride_details', 'App\Http\Controllers\RideDetailsController@driver_ride_details');
-Route::post('driver/withdrawal_request', 'App\Http\Controllers\DriverController@driver_withdrawal_request');
-Route::post('driver/withdrawal_history', 'App\Http\Controllers\DriverController@driver_withdrawal_history');
+Route::prefix('speedV1')->group(function () {
+    Route::post('driver/login', 'App\Http\Controllers\DriverController@login');
+    Route::post('driver/register', 'App\Http\Controllers\DriverController@register');
+    Route::post('driver/forget_password', 'App\Http\Controllers\DriverController@forget_password');
+    Route::post('driver/check_phone', 'App\Http\Controllers\DriverController@check_phone');
+    Route::post('driver/profile_picture', 'App\Http\Controllers\DriverController@profile_picture');
+    Route::post('driver/profile_update', 'App\Http\Controllers\DriverController@profile_update');
+    Route::post('driver/faq', 'App\Http\Controllers\FaqController@driver_faq');
+    Route::get('driver/ride_list', 'App\Http\Controllers\RideDetailsController@driver_ride_list');
+    Route::get('driver/ride_details', 'App\Http\Controllers\RideDetailsController@driver_ride_details');
+    Route::post('driver/withdrawal_request', 'App\Http\Controllers\DriverController@driver_withdrawal_request');
+    Route::post('driver/withdrawal_history', 'App\Http\Controllers\DriverController@driver_withdrawal_history');
+});
 
-Route::prefix('driver/')->middleware('auth:sanctum')->group(function () {
+Route::prefix('speedV1/driver/')->middleware('auth:sanctum')->group(function () {
     Route::post('profile', 'App\Http\Controllers\DriverController@profile');
     Route::post('profile_info', 'App\Http\Controllers\DriverController@profile_info');
     Route::post('get_notification_messages', 'App\Http\Controllers\NotificationController@get_driver_notification_messages');

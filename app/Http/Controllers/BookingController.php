@@ -239,7 +239,7 @@ class BookingController extends Controller
         $input['customer_id'] = Auth::user()->id;
         $input['country_id'] = 1;
         $input['trip_type'] = 1;
-        $input['km'] = $this->distance($input['pickup_lat'], $input['pickup_lng'], $input['drop_lat'], $input['drop_lng'], 'K') ;
+        // $input['km'] = $this->distance($input['pickup_lat'], $input['pickup_lng'], $input['drop_lat'], $input['drop_lng'], 'K') ;
         $input['pickup_date'] = date("Y-m-d H:i:s");
 
         $current_date = $this->get_date($input['country_id']);
@@ -264,19 +264,19 @@ class BookingController extends Controller
         $min_driver_id = 0;
         $booking_searching_radius = TripSetting::value('booking_searching_radius');
         foreach ($drivers as $key => $value) {
-            // $amount = Driver::where('id', $value['driver_id'])->value('wallet');
-            // if($amount > (-1)) {
-            $distance = $this->distance($input['pickup_lat'], $input['pickup_lng'], $value['lat'], $value['lng'], 'K');
-            if ($value['online_status'] == 1 && $value['booking_status'] == 0) {
-                if ($min_distance == 0) {
-                    $min_distance = $distance;
-                    $min_driver_id = $value['driver_id'];
-                } else if ($distance < $min_distance) {
-                    $min_distance = $distance;
-                    $min_driver_id = $value['driver_id'];
+            $amount = Driver::where('id', $value['driver_id'])->value('wallet');
+            if ($amount > (-1)) {
+                $distance = $this->distance($input['pickup_lat'], $input['pickup_lng'], $value['lat'], $value['lng'], 'K');
+                if ($value['online_status'] == 1 && $value['booking_status'] == 0) {
+                    if ($min_distance == 0) {
+                        $min_distance = $distance;
+                        $min_driver_id = $value['driver_id'];
+                    } else if ($distance < $min_distance) {
+                        $min_distance = $distance;
+                        $min_driver_id = $value['driver_id'];
+                    }
                 }
             }
-            // }
         }
 
         if ($min_driver_id == 0) {
@@ -290,23 +290,23 @@ class BookingController extends Controller
         // $img = 'trip_request_static_map/' . md5(time()) . '.png';
         // file_put_contents('uploads/' . $img, file_get_contents($url));
 
-        if ($input['trip_type'] == 1) {
-            $fares = $this->calculate_daily_fare($input['vehicle_type'], $input['km'], $input['promo'], $input['country_id']);
-        }
+        // if ($input['trip_type'] == 1) {
+        //     $fares = $this->calculate_daily_fare($input['vehicle_type'], $input['km'], $input['promo'], $input['country_id']);
+        // }
 
         $booking_request = $input;
-        $booking_request['distance'] = $input['km'];
+        // $booking_request['distance'] = $input['km'];
         unset($booking_request['km']);
-        $booking_request['total'] = $fares['total_fare'];
-        $booking_request['sub_total'] = $fares['fare'];
-        $booking_request['discount'] = $fares['discount'];
+        // $booking_request['total'] = $fares['total_fare'];
+        // $booking_request['sub_total'] = $fares['fare'];
+        // $booking_request['discount'] = $fares['discount'];
         $booking_request['tax'] = 0;
         $booking_request['status'] = 2;
         // $booking_request['static_map'] = $img;
         $booking_request['promo_code'] = $input['promo'];
         $customer = Customer::where('id', Auth::user()->id)->first();
         if ($input['payment_method'] == 2) {
-            if($customer->wallet < 1) {
+            if ($customer->wallet < 1) {
                 $this->send_fcm('لا يوجد رصيد كافي', 'عذراً لا يوجد في محفظتك رصيد كافي , سيكون الدفع كاش', $customer->fcm_token);
                 $booking_request['payment_method'] = 1;
             } else {
@@ -330,8 +330,8 @@ class BookingController extends Controller
                 'booking_id' => $id,
                 'booking_status' => 1,
                 'pickup_address' => $input['pickup_address'],
-                'drop_address' => $input['drop_address'],
-                'total' => $fares['total_fare'],
+                // 'drop_address' => $input['drop_address'],
+                // 'total' => $fares['total_fare'],
                 'customer_name' => Customer::where('id', $input['customer_id'])->value('full_name'),
                 // 'static_map' => $img,
                 'trip_type' => DB::table('trip_types')->where('id', $input['trip_type'])->value('name')
@@ -410,35 +410,28 @@ class BookingController extends Controller
 
         $trip_request = TripRequest::where('id', $trip_request_id)->first();
 
-        $drivers = $database->getReference('/vehicles/' . $trip_request->vehicle_type)
-            ->getSnapshot()->getValue();
 
-        $rejected_drivers = DriverTripRequest::where('trip_request_id', $trip_request_id)->where('status', 4)->pluck('driver_id')->toArray();
+        $drivers = $database->getReference('/drivers/')->getSnapshot()->getValue();
+        // dd($drivers);
+        $rejected_drivers = DriverTripRequest::where('trip_request_id', $trip_request_id)->where('status', 0)->pluck('driver_id')->toArray();
 
         $min_distance = 0;
         $min_driver_id = 0;
         $booking_searching_radius = TripSetting::value('booking_searching_radius');
 
         foreach ($drivers as $key => $value) {
-            if ($value && array_key_exists('gender', $value)) {
-                //if($value['gender'] == $input['filter'] || $input['filter'] == 0){
-                if (!in_array($value['driver_id'], $rejected_drivers)) {
-
+            if (!in_array($value['driver_id'], $rejected_drivers)) {
+                if ($value['online_status'] == 1 && $value['booking_status'] == 0) {
                     $distance = $this->distance($trip_request->pickup_lat, $trip_request->pickup_lng, $value['lat'], $value['lng'], 'K');
-
-                    if ($value['online_status'] == 1 && $value['booking_status'] == 0) {
-
-                        if ($min_distance == 0) {
-                            $min_distance = $distance;
-                            $min_driver_id = $value['driver_id'];
-                        } else if ($distance < $min_distance) {
-                            $min_distance = $distance;
-                            $min_driver_id = $value['driver_id'];
-                        }
+                    if ($min_distance == 0) {
+                        $min_distance = $distance;
+                        $min_driver_id = $value['driver_id'];
+                    } else if ($distance < $min_distance) {
+                        $min_distance = $distance;
+                        $min_driver_id = $value['driver_id'];
                     }
                 }
             }
-            //}
         }
 
         if ($min_driver_id == 0) {
@@ -452,23 +445,23 @@ class BookingController extends Controller
             return 0;
         }
 
-        if ($trip_request->trip_type == 2) {
-            $trip_request->drop_address = "Sorry, customer not mentioned";
-        }
+        // if ($trip_request->trip_type == 2) {
+        //     $trip_request->drop_address = "Sorry, customer not mentioned";
+        // }
 
-        $newPost = $database
-            ->getReference('/vehicles/' . $trip_request->vehicle_type . '/' . $min_driver_id)
-            ->update([
-                'booking_id' => $trip_request->id,
-                'booking_status' => 1,
-                'pickup_address' => $trip_request->pickup_address,
-                'drop_address' => $trip_request->drop_address,
-                'total' => $trip_request->total,
-                'static_map' => $trip_request->static_map,
-                // 'customer_name' => Customer::where('id',$trip_request->customer_id)->value('first_name'),
-                'customer_name' => Customer::where('id', $trip_request->customer_id)->value('full_name'),
-                'trip_type' => DB::table('trip_types')->where('id', $trip_request->trip_type)->value('name')
-            ]);
+        // $newPost = $database
+        //     ->getReference('/vehicles/' . $trip_request->vehicle_type . '/' . $min_driver_id)
+        //     ->update([
+        //         'booking_id' => $trip_request->id,
+        //         'booking_status' => 1,
+        //         'pickup_address' => $trip_request->pickup_address,
+        //         'drop_address' => $trip_request->drop_address,
+        //         'total' => $trip_request->total,
+        //         'static_map' => $trip_request->static_map,
+        //         // 'customer_name' => Customer::where('id',$trip_request->customer_id)->value('first_name'),
+        //         'customer_name' => Customer::where('id', $trip_request->customer_id)->value('full_name'),
+        //         'trip_type' => DB::table('trip_types')->where('id', $trip_request->trip_type)->value('name')
+        //     ]);
 
         $newPost = $database
 
@@ -561,18 +554,18 @@ class BookingController extends Controller
                 'booking_status' => 0
             ]);
 
-        $newPost = $database
-            ->getReference('/vehicles/' . $trip->vehicle_type . '/' . $input['driver_id'])
-            ->update([
-                'booking_id' => 0,
-                'booking_status' => 0,
-                'pickup_address' => "",
-                'drop_address' => "",
-                'total' => 0,
-                'customer_name' => "",
-                "static_map" => "",
-                'trip_type' => ""
-            ]);
+        // $newPost = $database
+        //     ->getReference('/vehicles/' . $trip->vehicle_type . '/' . $input['driver_id'])
+        //     ->update([
+        //         'booking_id' => 0,
+        //         'booking_status' => 0,
+        //         'pickup_address' => "",
+        //         'drop_address' => "",
+        //         'total' => 0,
+        //         'customer_name' => "",
+        //         "static_map" => "",
+        //         'trip_type' => ""
+        //     ]);
 
         if ($trip->booking_type == 1) {
             TripRequest::where('id', $input['trip_id'])->update(['status' => 4]);
@@ -580,7 +573,7 @@ class BookingController extends Controller
 
         $data['driver_id'] = $input['driver_id'];
         $data['trip_request_id'] = $input['trip_id'];
-        $data['status'] = 4;
+        $data['status'] = 0;
 
         DriverTripRequest::create($data);
         $this->find_driver($input['trip_id']);
@@ -632,7 +625,7 @@ class BookingController extends Controller
 
         if ($trip->promo_code) {
             $user_promo['customer_id'] = $trip->customer_id;
-            $user_promo['promo_id'] = PromoCode::where('promo_code',$trip->promo_code)->value('id');
+            $user_promo['promo_id'] = PromoCode::where('promo_code', $trip->promo_code)->value('id');
             $user_promo['trip_id'] = $trip->id;
             $user_promo = UserPromoHistory::create($user_promo);
             // dd($user_promo);
@@ -649,7 +642,7 @@ class BookingController extends Controller
 
         $data['driver_id'] = $trip->driver_id;
         $data['trip_request_id'] = $trip->id;
-        $data['status'] = 3;
+        $data['status'] = 1;
         DriverTripRequest::create($data);
 
         //Trip Firebase
@@ -843,7 +836,6 @@ class BookingController extends Controller
                 "status" => 0
             ]);
         }
-
     }
 
     public function get_fare(Request $request)
@@ -2051,7 +2043,7 @@ class BookingController extends Controller
         $interval = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
         // $fare = number_format((float)$base_far + ($price_per_km * $distance) + ($price_time * $interval));
 
-
+        if (isset($trip))
         $data['sub_total'] = $price_per_km * $distance;
         $data['waiting_time'] = $price_time * $interval;
         $data['base_fare'] = $base_fare;
@@ -2185,19 +2177,73 @@ class BookingController extends Controller
 
     public function test()
     {
-        $timeNow = time();
+        // $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+        // $database = $factory->createDatabase();
+        // $value = $database->getReference('/triprequest/')
+        //                     ->getValue();
+        // dd($value);
+        // foreach ($value as $triprequest) {
+        // $this->request();
+        // sleep(19);
+        // $this->request();
+        // sleep(19);
+        // $this->request();
+        // }
+
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
-        $triprequests = TripRequest::where('status', 2)->get();
-        dd($triprequests);
-        foreach ($triprequests as $triprequest) {
-            $timeInterval = ($timeNow - strtotime($triprequest->created_at)) / 60;
-            if ($timeInterval > 2) {
-                $triprequest->update(['status' => 4]);
-                $newPost = $database
-                    ->getReference('/triprequest/' . $triprequest->id)
-                    ->remove();
-            }
+
+        // $trip_request = TripRequest::where('id', $trip_request_id)->first();
+
+        $drivers = $database->getReference('/drivers/')
+            ->orderByChild('online_status')->equalTo(1)
+            // ->orderByChild('booking_status')->equalTo(0)
+            ->getSnapshot()->getValue();
+        dd($drivers);
+    }
+
+    public function request()
+    {
+        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+        $database = $factory->createDatabase();
+        $value = $database->getReference('/triprequest/')
+            ->getValue();
+        // dd($value);
+        foreach ($value as $triprequest) {
+            $this->change_driver($triprequest['request_id'], $triprequest['driver_id']);
         }
+    }
+
+
+    public function change_driver($trip_id, $driver_id)
+    {
+
+        $input['driver_id'] = $driver_id;
+
+        $trip = TripRequest::where('id', $trip_id)->first();
+
+        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+        $database = $factory->createDatabase();
+        $newPost = $database
+            ->getReference('/drivers/' . $input['driver_id'])
+            ->update([
+                'booking_status' => 0
+            ]);
+
+
+        if ($trip->booking_type == 1) {
+            TripRequest::where('id', $trip_id)->update(['status' => 4]);
+        }
+
+        $data['driver_id'] = $input['driver_id'];
+        $data['trip_request_id'] = $trip_id;
+        $data['status'] = 4;
+
+        DriverTripRequest::create($data);
+        $this->find_driver($trip_id);
+        return response()->json([
+            "message" => 'Success',
+            "status" => 1
+        ]);
     }
 }
