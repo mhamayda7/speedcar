@@ -2043,17 +2043,24 @@ class BookingController extends Controller
         $interval = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
         // $fare = number_format((float)$base_far + ($price_per_km * $distance) + ($price_time * $interval));
 
-        if (isset($trip))
-        $data['sub_total'] = $price_per_km * $distance;
-        $data['waiting_time'] = $price_time * $interval;
-        $data['base_fare'] = $base_fare;
-        $data['discount'] =  $trip->discount;
-        $data['total'] =  $trip->total;
-        return response()->json([
-            "invoice" => $data,
-            "message" => 'Success',
-            "status" => 1
-        ]);
+        if (isset($trip)) {
+            $data['sub_total'] = $price_per_km * $distance;
+            $data['waiting_time'] = $price_time * $interval;
+            $data['base_fare'] = $base_fare;
+            $data['discount'] =  $trip->discount;
+            $data['total'] =  $trip->total;
+            return response()->json([
+                "invoice" => $data,
+                "message" => 'Success',
+                "status" => 1
+            ]);
+        } else {
+            return response()->json([
+                "message" => 'لا توجد رحلات',
+                "status" => 1
+            ]);
+        }
+
     }
 
     public function detailes_invoice(Request $request)
