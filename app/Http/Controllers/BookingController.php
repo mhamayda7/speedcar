@@ -281,7 +281,7 @@ class BookingController extends Controller
 
         if ($min_driver_id == 0) {
             return response()->json([
-                "message" => 'Sorry drivers not available right now',
+                "message" => 'نأسف لا يوجد سيارات متاحة الآن',
                 "status" => 0
             ]);
         }

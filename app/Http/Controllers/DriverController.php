@@ -140,6 +140,7 @@ class DriverController extends Controller
         $input['daily'] = 1;
         $input['rental'] = 0;
         $input['outstation'] = 0;
+        $input['online_status'] = 0;
 
         if ($request->hasFile('profile_picture')) {
             $image = $request->file('profile_picture');
@@ -174,6 +175,7 @@ class DriverController extends Controller
         $phone = '+' . $input['phone_with_code'];
         $message = "Hi " . env('APP_NAME') . "  , Your OTP code is:" . $otp;
         $this->smsSe($phone, $message);
+
         $driver = Driver::create($input);
 
         $unique = false;

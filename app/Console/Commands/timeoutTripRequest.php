@@ -57,10 +57,10 @@ class timeoutTripRequest extends Command
                 $newPost = $database
                 ->getReference('/triprequest/' . $triprequest->id)
                 ->remove();
-                // if ($customer->fcm_token) {
-                //     $this->save_notifcation($customer->id,1,'لم يتم العثور على سائق', 'لا يتوفر حالياً سائقين',$image);
-                //     $this->send_fcm('لم يتم العثور على سائق', 'لا يتوفر حالياً سائقين', $customer->fcm_token);
-                // }
+                if ($customer->fcm_token) {
+                    $this->save_notifcation($customer->id,1,'لم يتم العثور على سائق', 'لا يتوفر حالياً سائقين',$image);
+                    $this->send_fcm('لم يتم العثور على سائق', 'لا يتوفر حالياً سائقين', $customer->fcm_token);
+                }
             }
         }
     }
