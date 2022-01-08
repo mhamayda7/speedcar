@@ -975,6 +975,7 @@ class DriverController extends Controller
             $price_per_km = number_format((float)$vehicle->price_per_km, 2, '.', '');
             $price_time = number_format((float)$vehicle->price_time, 2, '.', '');
             $interval = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
+            $trip['arrive_driver'] = $trip['updated_at']->format('Y-m-d H:i');
             // $fare = number_format((float)$base_far + ($price_per_km * $distance) + ($price_time * $interval));
 
             $inovice['sub_total'] = $price_per_km * $distance;
@@ -982,6 +983,7 @@ class DriverController extends Controller
             $inovice['base_fare'] = $base_fare;
             $inovice['discount'] =  $trip->discount;
             $inovice['total'] =  $trip->total;
+
 
             if($trip->status < 6 ) {
                 return response()->json([
