@@ -141,6 +141,8 @@ class DriverController extends Controller
         $input['rental'] = 0;
         $input['outstation'] = 0;
         $input['online_status'] = 0;
+        $input['overall_ratings'] = 5;
+        $input['no_of_ratings'] = 1;
 
         if ($request->hasFile('profile_picture')) {
             $image = $request->file('profile_picture');
@@ -153,21 +155,21 @@ class DriverController extends Controller
             $image = $request->file('id_proof');
             $proofImage =  time() . '_' . $image->getClientOriginalName();
             $request->id_proof->move(public_path('/uploads/image'), $proofImage);
-            $input['id_proof'] = $proofImage;
+            $input['id_proof'] = 'image/' . $proofImage;
         }
 
         if ($request->hasFile('vehicle_image')) {
             $image = $request->file('vehicle_image');
             $vehicle_image =  time() . '_' . $image->getClientOriginalName();
             $request->vehicle_image->move(public_path('/uploads/captain_vehicle_image'), $vehicle_image);
-            $input['vehicle_image'] = $vehicle_image;
+            $input['vehicle_image'] = 'captain_vehicle_image/' . $vehicle_image;
         }
 
         if ($request->hasFile('vehicle_licence')) {
             $image = $request->file('vehicle_licence');
             $vehicle_licence = time() . '_' . $image->getClientOriginalName();
             $request->vehicle_licence->move(public_path('/uploads/captain_vehicle_licence'), $vehicle_licence);
-            $input['vehicle_licence'] = $vehicle_licence;
+            $input['vehicle_licence'] = 'captain_vehicle_licence/' . $vehicle_licence;
         }
 
         $otp = rand(1000, 9999);

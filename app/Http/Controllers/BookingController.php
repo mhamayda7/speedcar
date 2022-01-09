@@ -433,6 +433,17 @@ class BookingController extends Controller
                 }
             }
         }
+        if($min_driver_id == 0) {
+            $min_driver_id = '0';
+        }
+        // $old_driver_id = $database
+        //         ->getReference('/triprequest/' . $trip_request->id)
+        //         ->getSnapshot()->getValue();
+        // dd($min_driver_id);
+        // // $old_driver_id['driver_id']
+        // if (in_array($min_driver_id, $rejected_drivers)) {
+        //     $min_driver_id = 0;
+        // }
 
         if ($min_driver_id == 0) {
             $newPost = $database
@@ -2185,29 +2196,27 @@ class BookingController extends Controller
 
     public function test()
     {
-        // $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
-        // $database = $factory->createDatabase();
-        // $value = $database->getReference('/triprequest/')
-        //                     ->getValue();
-        // dd($value);
-        // foreach ($value as $triprequest) {
-        // $this->request();
-        // sleep(19);
-        // $this->request();
-        // sleep(19);
-        // $this->request();
-        // }
-
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
-
-        // $trip_request = TripRequest::where('id', $trip_request_id)->first();
-
         $drivers = $database->getReference('/drivers/')
-            ->orderByChild('online_status')->equalTo(1)
-            // ->orderByChild('booking_status')->equalTo(0)
             ->getSnapshot()->getValue();
-        dd($drivers);
+
+        foreach($drivers as $driver) {
+            if($driver['online_status'] == 1) {
+                $vehicle = DriverVehicle::where('driver_id', $driver['driver_id'])->first();
+                if($driver['lat'] == $vehicle->lat && $driver['lng'] == $vehicle->lng) {
+                    $newPost = $database->getReference('/drivers/' . $driver['driver_id'])
+                            ->update([
+                                'online_status' => 0,
+                            ]);
+                } else {
+                    DriverVehicle::where('driver_id', $driver['driver_id'])->update([
+                        'lat' => $driver['lat'],
+                        'lng' => $driver['lng']
+                    ]);
+                }
+            }
+        }
     }
 
     public function request()
