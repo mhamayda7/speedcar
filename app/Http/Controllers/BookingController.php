@@ -321,7 +321,7 @@ class BookingController extends Controller
             ->getReference('/customers/' . $input['customer_id'])
             ->update([
                 'booking_id' => $id,
-                'booking_status' => 1
+                'booking_status' => 0
             ]);
 
         $newPost = $database
@@ -409,15 +409,10 @@ class BookingController extends Controller
         $database = $factory->createDatabase();
 
         $trip_request = TripRequest::where('id', $trip_request_id)->first();
-
-
         $drivers = $database->getReference('/drivers/')->getSnapshot()->getValue();
-        // dd($drivers);
         $rejected_drivers = DriverTripRequest::where('trip_request_id', $trip_request_id)->where('status', 0)->pluck('driver_id')->toArray();
-
         $min_distance = 0;
         $min_driver_id = 0;
-        $booking_searching_radius = TripSetting::value('booking_searching_radius');
 
         foreach ($drivers as $key => $value) {
             if (!in_array($value['driver_id'], $rejected_drivers)) {
@@ -433,19 +428,17 @@ class BookingController extends Controller
                 }
             }
         }
-        if($min_driver_id == 0) {
-            $min_driver_id = 99999999999;
+
+        if($min_driver_id != 0 ) {
+            $newPost = $database
+                ->getReference('/drivers/' . $min_driver_id)
+                ->update([
+                    'booking_status' => 1
+                ]);
         }
-        // $old_driver_id = $database
-        //         ->getReference('/triprequest/' . $trip_request->id)
-        //         ->getSnapshot()->getValue();
-        // dd($min_driver_id);
-        // // $old_driver_id['driver_id']
-        // if (in_array($min_driver_id, $rejected_drivers)) {
-        //     $min_driver_id = 0;
-        // }
 
         if ($min_driver_id == 0) {
+            $min_driver_id = 99999999999;
             $newPost = $database
                 ->getReference('/customers/' . $trip_request->customer_id)
                 ->update([
@@ -455,24 +448,6 @@ class BookingController extends Controller
 
             return 0;
         }
-
-        // if ($trip_request->trip_type == 2) {
-        //     $trip_request->drop_address = "Sorry, customer not mentioned";
-        // }
-
-        // $newPost = $database
-        //     ->getReference('/vehicles/' . $trip_request->vehicle_type . '/' . $min_driver_id)
-        //     ->update([
-        //         'booking_id' => $trip_request->id,
-        //         'booking_status' => 1,
-        //         'pickup_address' => $trip_request->pickup_address,
-        //         'drop_address' => $trip_request->drop_address,
-        //         'total' => $trip_request->total,
-        //         'static_map' => $trip_request->static_map,
-        //         // 'customer_name' => Customer::where('id',$trip_request->customer_id)->value('first_name'),
-        //         'customer_name' => Customer::where('id', $trip_request->customer_id)->value('full_name'),
-        //         'trip_type' => DB::table('trip_types')->where('id', $trip_request->trip_type)->value('name')
-        //     ]);
 
         $newPost = $database
 
