@@ -286,6 +286,14 @@ class BookingController extends Controller
             ]);
         }
 
+        if($min_driver_id != 0 ) {
+            $newPost = $database
+                ->getReference('/drivers/' . $min_driver_id)
+                ->update([
+                    'booking_status' => 1
+                ]);
+        }
+
         // $url = 'https://maps.googleapis.com/maps/api/staticmap?center=' . $input['pickup_lat'] . ',' . $input['pickup_lng'] . '&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:L%7C' . $input['pickup_lat'] . ',' . $input['pickup_lng'] . '&key=' . env('MAP_KEY');
         // $img = 'trip_request_static_map/' . md5(time()) . '.png';
         // file_put_contents('uploads/' . $img, file_get_contents($url));
@@ -416,14 +424,17 @@ class BookingController extends Controller
 
         foreach ($drivers as $key => $value) {
             if (!in_array($value['driver_id'], $rejected_drivers)) {
-                if ($value['online_status'] == 1 && $value['booking_status'] == 0) {
-                    $distance = $this->distance($trip_request->pickup_lat, $trip_request->pickup_lng, $value['lat'], $value['lng'], 'K');
-                    if ($min_distance == 0) {
-                        $min_distance = $distance;
-                        $min_driver_id = $value['driver_id'];
-                    } else if ($distance < $min_distance) {
-                        $min_distance = $distance;
-                        $min_driver_id = $value['driver_id'];
+                $amount = Driver::where('id', $value['driver_id'])->value('wallet');
+                if($amount > (-1)) {
+                    if ($value['online_status'] == 1 && $value['booking_status'] == 0) {
+                        $distance = $this->distance($trip_request->pickup_lat, $trip_request->pickup_lng, $value['lat'], $value['lng'], 'K');
+                        if ($min_distance == 0) {
+                            $min_distance = $distance;
+                            $min_driver_id = $value['driver_id'];
+                        } else if ($distance < $min_distance) {
+                            $min_distance = $distance;
+                            $min_driver_id = $value['driver_id'];
+                        }
                     }
                 }
             }
