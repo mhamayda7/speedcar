@@ -719,9 +719,7 @@ class BookingController extends Controller
 
         $newPost = $database
             ->getReference('/triprequest/' . $input['trip_id'])
-            ->update([
-                'driver_id' => 9999999999,
-            ]);
+            ->remove();
 
         TripRequest::where('id', $input['trip_id'])->update(['status' => 3]);
         $image = "image/tripaccept.png";
@@ -837,7 +835,9 @@ class BookingController extends Controller
             }
             $newPost = $database
                 ->getReference('/triprequest/' . $triprequest->id)
-                ->remove();
+                ->update([
+                    'driver_id' => 99999999999,
+                ]);
 
             return response()->json([
                 "message" => 'تم إلغاء الطلب بنجاح',
