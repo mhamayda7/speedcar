@@ -786,9 +786,19 @@ class BookingController extends Controller
                 $this->save_notifcation($customer->id, 1, 'إلغاء الطلب', 'تم إلغاء طلب الرحلة, ننتظرك في طلب آخر', $image);
                 $this->send_fcm('إلغاء الطلب', 'تم إلغاء طلب الرحلة, ننتظرك في طلب آخر', $customer->fcm_token);
             }
-            $newPost = $database
+            $driverID = $database->getReference('/triprequest/' . $triprequest->id)
+                ->getSnapshot()->getValue();
+
+            $driver = $database
                 ->getReference('/triprequest/' . $triprequest->id)
                 ->remove();
+
+
+            $newPost = $database
+                ->getReference('/drivers/' . $driverID['driver_id'])
+                ->update([
+                    'booking_status' => 0
+                ]);
 
             return response()->json([
                 "message" => 'تم إلغاء الطلب بنجاح',
