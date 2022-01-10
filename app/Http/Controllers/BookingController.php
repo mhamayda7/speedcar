@@ -444,7 +444,7 @@ class BookingController extends Controller
             $newPost = $database
                 ->getReference('/drivers/' . $min_driver_id)
                 ->update([
-                    'booking_status' => 1
+                    'booking_status' => 0
                 ]);
         }
 
@@ -456,8 +456,6 @@ class BookingController extends Controller
                     'booking_id' => 0,
                     'booking_status' => 0
                 ]);
-
-            return 0;
         }
 
         $newPost = $database
@@ -507,7 +505,6 @@ class BookingController extends Controller
         $input = $request->all();
         $validator = Validator::make($input, [
             'trip_id' => 'required',
-            // 'driver_id' => 'required'
         ]);
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
@@ -520,49 +517,11 @@ class BookingController extends Controller
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
 
-        // dd($drivers_id);
-        // $i = 1;
-        // foreach ($drivers_id as $driver_del) {
-        //     $n = "$i";
-        //     // dd($n);
-
-        //     if ($driver_del[$n]->toArray() == strval(Auth::user()->id) )
-        //     {
-        //         $driver_del[$i] = null;
-        //     }
-        //     $i = intval($i);
-        //     $i++;
-        // }
-        // dd($drivers_id);
-
-
-        /*$newPost = $database
-        ->getReference('customers/'.$trip->customer_id)
-        ->update([
-            'booking_id' => 0,
-            'booking_status' => 0
-        ]);*/
-
-        // remove($toBeDeleted);
-
         $newPost = $database
             ->getReference('/drivers/' . $input['driver_id'])
             ->update([
-                'booking_status' => 0
+                'booking_status' => 1
             ]);
-
-        // $newPost = $database
-        //     ->getReference('/vehicles/' . $trip->vehicle_type . '/' . $input['driver_id'])
-        //     ->update([
-        //         'booking_id' => 0,
-        //         'booking_status' => 0,
-        //         'pickup_address' => "",
-        //         'drop_address' => "",
-        //         'total' => 0,
-        //         'customer_name' => "",
-        //         "static_map" => "",
-        //         'trip_type' => ""
-        //     ]);
 
         if ($trip->booking_type == 1) {
             TripRequest::where('id', $input['trip_id'])->update(['status' => 4]);
