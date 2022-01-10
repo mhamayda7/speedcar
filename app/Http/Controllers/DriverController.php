@@ -980,7 +980,7 @@ class DriverController extends Controller
             $trip['arrive_driver'] = $trip['updated_at']->format('H:i');
             $time = strtotime($trip['updated_at']);
             // $trip['cancel_time'] = date("H:i",strtotime('+3 minutes',$time));
-            $trip['cancel_time'] = "4 دقائق";
+            $trip['cancel_time'] = 4;
 
             $inovice['sub_total'] = $price_per_km * $distance;
             $inovice['waiting_time'] = $price_time * $interval;
