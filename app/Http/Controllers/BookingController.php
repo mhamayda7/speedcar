@@ -434,7 +434,7 @@ class BookingController extends Controller
             }
         }
         if($min_driver_id == 0) {
-            $min_driver_id = '0';
+            $min_driver_id = 99999999999;
         }
         // $old_driver_id = $database
         //         ->getReference('/triprequest/' . $trip_request->id)
