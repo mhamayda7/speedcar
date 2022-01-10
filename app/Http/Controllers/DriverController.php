@@ -357,7 +357,7 @@ class DriverController extends Controller
     {
 
         $result = Driver::where('id', Auth::user()->id)->select('id', 'full_name', 'phone_with_code', 'wallet', 'referral_code', 'overall_ratings')->first();
-        $booking_complete = Trip::where('driver_id', Auth::user()->id)->where('status', 5)->count();
+        $booking_complete = Trip::where('driver_id', Auth::user()->id)->where('status', 6)->count();
         // dd( $booking_complete);
         if (is_object($result)) {
             return response()->json([
