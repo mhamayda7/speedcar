@@ -449,7 +449,10 @@ class BookingController extends Controller
         }
 
         if ($min_driver_id == 0) {
-            $min_driver_id = 99999999999;
+
+            $custmoer_fcm = Customer::where('id', $trip_request->customer_id)->value('fcm_token');
+            $this->send_fcm('نأسف جميع الكباتن مشغولين', 'جميع الكباتن مشغولين في رحلات أخرى', $custmoer_fcm);
+
             $newPost = $database
                 ->getReference('/customers/' . $trip_request->customer_id)
                 ->update([
