@@ -520,7 +520,7 @@ class BookingController extends Controller
         $newPost = $database
             ->getReference('/drivers/' . $input['driver_id'])
             ->update([
-                'booking_status' => 1
+                'booking_status' => 0
             ]);
 
         if ($trip->booking_type == 1) {
