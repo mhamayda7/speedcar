@@ -1207,6 +1207,13 @@ class BookingController extends Controller
                 $count_cancel = $driver->count_cancel + 1;
                 Driver::where('id', $trip->driver_id)->update(['count_cancel' => $count_cancel]);
             }
+
+            $newPost = $database
+            ->getReference('/drivers/' . $trip->driver_id)
+            ->update([
+                'booking_status' => 0
+            ]);
+
         }
 
         if ($input['status'] != 6) {
