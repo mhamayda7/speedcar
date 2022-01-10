@@ -780,9 +780,7 @@ class BookingController extends Controller
             }
             $newPost = $database
                 ->getReference('/triprequest/' . $triprequest->id)
-                ->update([
-                    'driver_id' => 99999999999,
-                ]);
+                ->remove();
 
             return response()->json([
                 "message" => 'تم إلغاء الطلب بنجاح',
