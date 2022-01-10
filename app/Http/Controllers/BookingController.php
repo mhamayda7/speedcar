@@ -719,7 +719,9 @@ class BookingController extends Controller
 
         $newPost = $database
             ->getReference('/triprequest/' . $input['trip_id'])
-            ->remove();
+            ->update([
+                'driver_id' => 9999999999,
+            ]);
 
         TripRequest::where('id', $input['trip_id'])->update(['status' => 3]);
         $image = "image/tripaccept.png";
