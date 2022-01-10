@@ -456,9 +456,12 @@ class BookingController extends Controller
                     'booking_id' => 0,
                     'booking_status' => 0
                 ]);
-        }
 
-        $newPost = $database
+            $newPost = $database
+                ->getReference('/triprequest/' . $trip_request->id)
+                ->remove();
+        } else {
+            $newPost = $database
 
             ->getReference('/triprequest/' . $trip_request->id)
             ->update([
@@ -466,6 +469,7 @@ class BookingController extends Controller
             ]);
 
         return $trip_request->id;
+        }
     }
 
     public function get_date($country_id)
