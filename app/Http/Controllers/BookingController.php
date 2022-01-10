@@ -789,7 +789,6 @@ class BookingController extends Controller
             $driverID = $database->getReference('/triprequest/' . $triprequest->id)
                 ->getSnapshot()->getValue();
 
-            dd($driverID);
             $driver = $database
                 ->getReference('/triprequest/' . $triprequest->id)
                 ->remove();
