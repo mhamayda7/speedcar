@@ -1068,21 +1068,19 @@ class DriverController extends Controller
         $trip = Trip::where('driver_id', $driver_id)->get()->last();
         // dd($customer_id);
         RateTrip::where('trip_id', $trip->id)->update(['driver_is_rate'=>1, 'customer_rate'=>$input['rate']]);
-        $rates = RateTrip::where('driver_id', $trip->customer_id)->get();
+        $rates = RateTrip::where('customer_id', $trip->customer_id)->get();
         $i = 0;
         $total_rate = 0;
 
         foreach ($rates as $rate) {
-            if($rate['driver_rate'] == 0) {
-
-            } else {
+            if($rate['customer_rate'] != 0) {
                 $i++ ;
-                $total_rate += $rate['driver_rate'];
+                $total_rate += $rate['customer_rate'];
             }
         }
         // dd($rate['driver_rate'] == 0);
         if($rates->count() == 1) {
-            $overall_ratings = 5;
+            $rating = 5;
         } else {
             if($i == 0) {
                 $overall_ratings = $total_rate ;
@@ -1090,8 +1088,7 @@ class DriverController extends Controller
                 $overall_ratings = $total_rate / $i ;
             }
         }
-
-        Customer::where('id', $trip->customer_id)->update(['rating'=>$overall_ratings]);
+        Customer::where('id', $trip->customer_id)->update(['rating' => $overall_ratings]);
         return response()->json([
             "message" => "rate success",
             "status" => 1
