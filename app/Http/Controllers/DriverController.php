@@ -21,6 +21,7 @@ use App\VehicleCategory;
 use App\CustomerWalletHistory;
 use App\Models\DailyFareManagement;
 use App\Models\Point;
+use App\Models\RateTrip;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Kreait\Firebase;
@@ -1059,16 +1060,34 @@ class DriverController extends Controller
     public function rate_customer(Request $request)
     {
         $input = $request->all();
+
+        if(!isset($input['rate'])) {
+            $input['rate']= 0;
+        }
         $driver_id = Auth::user()->id;
         $trip = Trip::where('driver_id', $driver_id)->get()->last();
-        $customer_rate = Customer::where('id', $trip->customer_id)->value('rating');
-        if($customer_rate != null) {
-            $new_rate = ($customer_rate + $input['rate']) / 2;
-            $new_rate = number_format((float)$new_rate, 2, '.', '');
-            Customer::where('id', $trip->customer_id)->update(['rating' => $new_rate]);
-        } else {
-            Customer::where('id', $trip->customer_id)->update(['rating' => $input['rate']]);
+        // dd($customer_id);
+        RateTrip::where('trip_id', $trip->id)->update(['driver_is_rate'=>1, 'customer_rate'=>$input['rate']]);
+        $rates = RateTrip::where('driver_id', $trip->customer_id)->get();
+        $i = 0;
+        $total_rate = 0;
+
+        foreach ($rates as $rate) {
+            if($rate['driver_rate'] == 0) {
+
+            } else {
+                $i++ ;
+                $total_rate += $rate['driver_rate'];
+            }
         }
+        // dd($rate['driver_rate'] == 0);
+        if($rates->count() == 1) {
+            $overall_ratings = 5;
+        } else {
+            $overall_ratings = $total_rate / $i ;
+        }
+
+        Customer::where('id', $trip->customer_id)->update(['rating'=>$overall_ratings]);
         return response()->json([
             "message" => "rate success",
             "status" => 1
