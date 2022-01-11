@@ -1092,6 +1092,7 @@ class BookingController extends Controller
                 if ($trip->status == 6) {
                     $interval = $datetime1->diff($datetime2);
                     $trip->intereval = $interval->format('%H:%I');
+                    $trip->time_minutes = $trip->intereval;
                 }
             }
             $trip->end_time = $datetime1->format('Y-m-d H:i');
