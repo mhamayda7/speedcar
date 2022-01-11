@@ -18,8 +18,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::post('sendsms', 'App\Http\Controllers\Controller@sendS');
-Route::get('suppliers', 'App\Http\Controllers\Controller@get_supplier');
-Route::get('splash', 'App\Http\Controllers\Controller@splash');
+Route::get('speedV1/suppliers', 'App\Http\Controllers\Controller@get_supplier');
+Route::get('speedV1/splash', 'App\Http\Controllers\Controller@splash');
 Route::post('test', 'App\Http\Controllers\BookingController@test');
 Route::post('cancel_test', 'App\Http\Controllers\BookingController@cancel_test');
 
