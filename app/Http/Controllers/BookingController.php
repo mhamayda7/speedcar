@@ -1094,8 +1094,8 @@ class BookingController extends Controller
                     $trip->intereval = $interval->format('%H:%I');
                 }
             }
-            // $trip->end_time = $datetime1->format('Y-m-d H:i');
-            // $trip->start_time = $datetime2->format('Y-m-d H:i');
+            $trip->end_time = $datetime1->format('Y-m-d H:i');
+            $trip->start_time = $datetime2->format('Y-m-d H:i');
             $trip->ratings = RateTrip::where('trip_id', $trip->id)->value('customer_rate');
         }
         return response()->json([
