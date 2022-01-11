@@ -1083,7 +1083,11 @@ class CustomerController extends Controller
         if($rates->count() == 1) {
             $overall_ratings = 5;
         } else {
-            $overall_ratings = $total_rate / $i ;
+            if($i == 0) {
+                $overall_ratings = $total_rate ;
+            } else {
+                $overall_ratings = $total_rate / $i ;
+            }
         }
 
         Driver::where('id', $trip->driver_id)->update(['overall_ratings'=>$overall_ratings, 'no_of_ratings'=>$i]);
