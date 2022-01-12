@@ -1036,7 +1036,7 @@ class DriverController extends Controller
         } else {
 
             return response()->json([
-                "message" => 'قمت باضافة كود الدعوة من قبل',
+                "message" => 'الكود خطأ أو قمت بتفعيله سابقاً',
                 "status" => 0
             ]);
         }
