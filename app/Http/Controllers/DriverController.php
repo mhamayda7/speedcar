@@ -1034,7 +1034,6 @@ class DriverController extends Controller
                 "status" => 1
             ]);
         } else {
-
             return response()->json([
                 "message" => 'الكود خطأ أو قمت بتفعيله سابقاً',
                 "status" => 0
