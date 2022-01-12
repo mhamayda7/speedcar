@@ -1072,16 +1072,13 @@ class CustomerController extends Controller
         $total_rate = 0;
 
         foreach ($rates as $rate) {
-            if($rate['driver_rate'] == 0) {
-
-            } else {
+            if($rate['driver_rate'] != 0) {
                 $i++ ;
                 $total_rate += $rate['driver_rate'];
             }
         }
-        // dd($rate['driver_rate'] == 0);
         if($rates->count() == 1) {
-            $overall_ratings = 5;
+            $overall_ratings = $total_rate;
         } else {
             if($i == 0) {
                 $overall_ratings = $total_rate ;

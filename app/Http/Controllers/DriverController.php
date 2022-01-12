@@ -1081,15 +1081,15 @@ class DriverController extends Controller
         }
         // dd($rate['driver_rate'] == 0);
         if($rates->count() == 1) {
-            $rating = 5;
+            $rating = $total_rate;
         } else {
             if($i == 0) {
-                $overall_ratings = $total_rate ;
+                $rating = $total_rate ;
             } else {
-                $overall_ratings = $total_rate / $i ;
+                $rating = $total_rate / $i ;
             }
         }
-        Customer::where('id', $trip->customer_id)->update(['rating' => $overall_ratings]);
+        Customer::where('id', $trip->customer_id)->update(['rating' => $rating]);
         return response()->json([
             "message" => "rate success",
             "status" => 1
