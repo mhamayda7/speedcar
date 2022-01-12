@@ -1110,6 +1110,7 @@ class BookingController extends Controller
     {
         // dd($request);
         $input = $request->all();
+
         $validator = Validator::make($input, [
             'trip_id' => 'required',
             'status' => 'required'
@@ -1119,6 +1120,7 @@ class BookingController extends Controller
             return $this->sendError($validator->errors());
         }
         $trip = Trip::where('id', $input['trip_id'])->first();
+
         if ($trip->status > 6) {
             $input['status'] = $trip->status;
         }
@@ -1126,6 +1128,19 @@ class BookingController extends Controller
         Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
+
+        if ($input['status'] == 3) {
+            $driver = $database->getReference('/drivers/' . $trip->driver_id)
+            ->getSnapshot()->getValue();
+            // dd($driver);
+            $distance = $this->distance($driver['lat'], $driver['lng'], $trip->pickup_lat, $trip->pickup_lng, 'K');
+            if (($distance * 1000) >= 300) {
+                return response()->json([
+                    "message" => 'عذراً ما زلت بعيداً عن مكان العميل',
+                    "status" => 0
+                ]);
+            }
+        }
 
         if ($input['status'] == 4) {
             Trip::where('id', $input['trip_id'])->update(['start_time' => date('Y-m-d H:i:s'), 'actual_pickup_address' => $input['address'], 'actual_pickup_lat' => $input['lat'], 'actual_pickup_lng' => $input['lng']]);
@@ -1238,12 +1253,12 @@ class BookingController extends Controller
         $fcm_token = Customer::where('id', $customer_id)->value('fcm_token');
         $image = "image/tripaccept.png";
 
-        if ($fcm_token) {
-            $current_status = BookingStatus::where('id', $input['status'])->first();
-            $new_status = BookingStatus::where('id', $input['status'])->first();
-            $this->save_notifcation($customer_id, 1, $current_status->status_name, $current_status->customer_status_name, $image);
-            $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $fcm_token);
-        }
+        // if ($fcm_token) {
+        //     $current_status = BookingStatus::where('id', $input['status'])->first();
+        //     $new_status = BookingStatus::where('id', $input['status'])->first();
+        //     $this->save_notifcation($customer_id, 1, $current_status->status_name, $current_status->customer_status_name, $image);
+        //     $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $fcm_token);
+        // }
 
         $newPost = $database
             ->getReference('/trips/' . $input['trip_id'])
@@ -2009,25 +2024,12 @@ class BookingController extends Controller
 
     public function driver_invoice(Request $request)
     {
-        // $input = $request->all();
-        // $validator = Validator::make($input, [
-        //     'trip_id' => 'required',
-        // ]);
-        // if ($validator->fails()) {
-        //     return $this->sendError($validator->errors());
-        // }
-
         $trip = Trip::where('driver_id', Auth::user()->id)->get()->last();
-
-        // $fare = number_format((float)$base_far + ($price_per_km * $distance) + ($price_time * $interval));
-
         if (isset($trip)) {
             $app_setting = AppSetting::first();
             $data = array();
-
             $trip->start_time;
             $trip->end_time;
-
             $vehicle = DB::table('daily_fare_management')->where('id', 1)->first();
             $base_fare = number_format((float)$vehicle->base_fare, 2, '.', '');
             $distance = $this->get_distance($trip->trip_id);
@@ -2064,7 +2066,6 @@ class BookingController extends Controller
         }
 
         $trip = Trip::where('id', $input['trip_id'])->get()->first();
-        dd($trip);
         if ($trip) {
 
             $trip->start_time;
