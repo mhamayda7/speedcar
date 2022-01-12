@@ -2064,7 +2064,7 @@ class BookingController extends Controller
         }
 
         $trip = Trip::where('id', $input['trip_id'])->get()->first();
-
+        dd($trip);
         if ($trip) {
 
             $trip->start_time;
