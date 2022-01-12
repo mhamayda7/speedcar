@@ -750,7 +750,7 @@ class CustomerController extends Controller
             return $this->sendError($validator->errors());
         }
         $refferd = Customer::where('id', Auth::user()->id)->first();
-        if ($refferd->refered_by == null && $refferd->referral_code != $input['referral_code']) {
+        if ($refferd->refered_by == null) {
             $customer_point = Customer::where('referral_code', $input['referral_code'])->value('points');
             $customer_id = Customer::where('referral_code', $input['referral_code'])->value('id');
             $referral_bonus = DB::table('referral_settings')->where('id',1)->value('referral_bonus');

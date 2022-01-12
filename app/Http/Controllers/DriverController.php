@@ -1018,7 +1018,7 @@ class DriverController extends Controller
             return $this->sendError($validator->errors());
         }
         $refferd = Driver::where('id', Auth::user()->id)->first();
-        if ($refferd->refered_by == null  && $refferd->referral_code != $input['referral_code']) {
+        if ($refferd->refered_by == null) {
             $driver= Driver::where('referral_code', $input['referral_code'])->first();
             $wallet_add = $driver->wallet + 1;
             Driver::where('referral_code', $input['referral_code'])->update(['points' => $wallet_add ]);
