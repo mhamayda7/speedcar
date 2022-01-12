@@ -97,6 +97,7 @@ Route::prefix('speedV1')->group(function () {
 });
 
 Route::prefix('speedV1/driver/')->middleware('auth:sanctum')->group(function () {
+    Route::post('invite', 'App\Http\Controllers\DriverController@driver_invite');
     Route::post('profile', 'App\Http\Controllers\DriverController@profile');
     Route::post('profile_info', 'App\Http\Controllers\DriverController@profile_info');
     Route::post('get_notification_messages', 'App\Http\Controllers\NotificationController@get_driver_notification_messages');

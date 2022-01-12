@@ -1017,33 +1017,17 @@ class DriverController extends Controller
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-        $refferd = Driver::where('id', Auth::user()->id)->value('refered_by');
-
-        if ($refferd == null) {
-            $customer_point = Customer::where('referral_code', $input['referral_code'])->value('points');
-            $customer_id = Customer::where('referral_code', $input['referral_code'])->value('id');
-            $referral_bonus = DB::table('referral_settings')->where('id',1)->value('referral_bonus');
-            // dd($referral_settings);
-            $points_add = $referral_bonus + $customer_point;
-            Customer::where('referral_code', $input['referral_code'])->update(['points' => $points_add ]);
-            Customer::where('id', Auth::user()->id)->update(['refered_by' => $input['referral_code'] ]);
-
-
-            $point = new Point;
-            $point->customer_id = $customer_id;
-            $point->trip_id = 0;
-            $point->type = 1;
-            $point->point = intval($points_add);
-            $point->details = "دعوة صديق";
-            $point->icon = "rewards/taxi.png";
-            $point->save();
-
-            $customer_fcm = Customer::where('referral_code', $input['referral_code'])->value('fcm_token');
+        $refferd = Driver::where('id', Auth::user()->id)->first();
+        if ($refferd->refered_by == null  && $refferd->referral_code != $input['referral_code']) {
+            $driver= Driver::where('referral_code', $input['referral_code'])->first();
+            $wallet_add = $driver->wallet + 1;
+            Driver::where('referral_code', $input['referral_code'])->update(['points' => $wallet_add ]);
+            Driver::where('id', Auth::user()->id)->update(['refered_by' => $input['referral_code'] ]);
             $image = "image/tripaccept.png";
 
-            if ($customer_fcm) {
-                $this->send_fcm('نقاط مكتسبة', 'قمت بدعوة صديق و اضافة'. $points_add . ' نقاط', $customer_fcm);
-                $this->save_notifcation($customer_id,1,'نقاط مكتسبة', 'قمت بدعوة صديق و اضافة',$image);
+            if ($driver->fcm_token) {
+                $this->send_fcm(' نقاط مكتسبة', 'قمت بدعوة صديق واضافة 1 دينار لمحفظتك', $driver->fcm_token);
+                $this->save_notifcation($driver->fcm_token,1,'نقاط مكتسبة', ' نقاط مكتسبة', 'قمت بدعوة صديق واضافة 1 دينار لمحفظتك',$image);
             }
             return response()->json([
                 "message" => 'Success',

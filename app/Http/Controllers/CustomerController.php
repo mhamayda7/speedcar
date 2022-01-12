@@ -758,8 +758,6 @@ class CustomerController extends Controller
             $points_add = $referral_bonus + $customer_point;
             Customer::where('referral_code', $input['referral_code'])->update(['points' => $points_add ]);
             Customer::where('id', Auth::user()->id)->update(['refered_by' => $input['referral_code'] ]);
-
-
             $point = new Point;
             $point->customer_id = $customer_id;
             $point->trip_id = 0;
