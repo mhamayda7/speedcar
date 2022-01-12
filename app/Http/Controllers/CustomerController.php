@@ -750,37 +750,48 @@ class CustomerController extends Controller
             return $this->sendError($validator->errors());
         }
         $refferd = Customer::where('id', Auth::user()->id)->first();
-        if ($refferd->refered_by == null) {
-            $customer_point = Customer::where('referral_code', $input['referral_code'])->value('points');
-            $customer_id = Customer::where('referral_code', $input['referral_code'])->value('id');
-            $referral_bonus = DB::table('referral_settings')->where('id',1)->value('referral_bonus');
-            // dd($referral_settings);
-            $points_add = $referral_bonus + $customer_point;
-            Customer::where('referral_code', $input['referral_code'])->update(['points' => $points_add ]);
-            Customer::where('id', Auth::user()->id)->update(['refered_by' => $input['referral_code'] ]);
-            $point = new Point;
-            $point->customer_id = $customer_id;
-            $point->trip_id = 0;
-            $point->type = 1;
-            $point->point = intval($points_add);
-            $point->details = "دعوة صديق";
-            $point->icon = "rewards/taxi.png";
-            $point->save();
-
-            $customer_fcm = Customer::where('referral_code', $input['referral_code'])->value('fcm_token');
-            $image = "image/tripaccept.png";
-
-            if ($customer_fcm) {
-                $this->send_fcm('نقاط مكتسبة', 'قمت بدعوة صديق و اضافة'. $points_add . ' نقاط', $customer_fcm);
-                $this->save_notifcation($customer_id,1,'نقاط مكتسبة', 'قمت بدعوة صديق و اضافة',$image);
-            }
+        if ($refferd->referral_code == $input['referral_code']) {
             return response()->json([
-                "message" => 'تم إضافة الدعوة بنجاح',
-                "status" => 1
+                "message" => 'خطأ ، أنت تحاول ادخال الكود الخاص بك',
+                "status" => 0
             ]);
+        }
+        if ($refferd->refered_by == null) {
+            $customer = Customer::where('referral_code', $input['referral_code'])->first();
+            if($customer) {
+                $referral_bonus = DB::table('referral_settings')->where('id',1)->value('referral_bonus');
+                $points_add = $referral_bonus + $customer->points;
+                $customer->update([
+                    'points' => $points_add,
+                ]);
+                Customer::where('id', Auth::user()->id)->update(['refered_by'=>$input['referral_code']]);
+                $point = new Point;
+                $point->customer_id = $customer->id;
+                $point->trip_id = 0;
+                $point->type = 1;
+                $point->point = intval($referral_bonus);
+                $point->details = "دعوة صديق";
+                $point->icon = "rewards/taxi.png";
+                $point->save();
+
+                $image = "image/tripaccept.png";
+                // if ($customer->fcm_token) {
+                //     $this->send_fcm('نقاط مكتسبة', 'قمت بدعوة صديق و اضافة'. $points_add . ' نقاط', $customer->fcm_token);
+                //     $this->save_notifcation($customer->fcm_token,1,'نقاط مكتسبة', 'قمت بدعوة صديق و اضافة',$image);
+                // }
+                return response()->json([
+                    "message" => 'تم إضافة الدعوة بنجاح',
+                    "status" => 1
+                ]);
+            } else {
+                return response()->json([
+                    "message" => 'يرجى التأكد من الكود المدخل',
+                    "status" => 0
+                ]);
+            }
         } else {
             return response()->json([
-                "message" => 'الكود خطأ أو قمت بتفعيله سابقاً',
+                "message" => 'قمت بتفعيل كود الدعوة مسبقاً',
                 "status" => 0
             ]);
         }

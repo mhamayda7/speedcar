@@ -1018,24 +1018,37 @@ class DriverController extends Controller
             return $this->sendError($validator->errors());
         }
         $refferd = Driver::where('id', Auth::user()->id)->first();
-        if ($refferd->refered_by == null) {
-            $driver= Driver::where('referral_code', $input['referral_code'])->first();
-            $wallet_add = $driver->wallet + 1;
-            Driver::where('referral_code', $input['referral_code'])->update(['points' => $wallet_add ]);
-            Driver::where('id', Auth::user()->id)->update(['refered_by' => $input['referral_code'] ]);
-            $image = "image/tripaccept.png";
-
-            if ($driver->fcm_token) {
-                $this->send_fcm(' نقاط مكتسبة', 'قمت بدعوة صديق واضافة 1 دينار لمحفظتك', $driver->fcm_token);
-                $this->save_notifcation($driver->fcm_token,1,'نقاط مكتسبة', ' نقاط مكتسبة', 'قمت بدعوة صديق واضافة 1 دينار لمحفظتك',$image);
-            }
+        if ($refferd->referral_code == $input['referral_code']) {
             return response()->json([
-                "message" => 'Success',
-                "status" => 1
+                "message" => 'خطأ ، أنت تحاول ادخال الكود الخاص بك',
+                "status" => 0
             ]);
+        }
+        if ($refferd->refered_by == null) {
+            $driver = Driver::where('referral_code', $input['referral_code'])->first();
+            if($driver) {
+                $add_wallet = $driver->wallet + 1;
+                Driver::where('referral_code', $input['referral_code'])->update(['wallet' => $add_wallet]);
+                Driver::where('id', Auth::user()->id)->update(['refered_by'=>$input['referral_code']]);
+
+                $image = "image/tripaccept.png";
+                // if ($driver->fcm_token) {
+                //     $this->send_fcm('رصيد مكتسب', 'تمت إضافة رصيد 1 دينار لمحفظتك',$driver->fcm_token);
+                //     $this->save_notifcation($driver->fcm_token,1,'رصيد مكتسب', 'تمت إضافة رصيد 1 دينار لمحفظتك',$image);
+                // }
+                return response()->json([
+                    "message" => 'تم إضافة الدعوة بنجاح',
+                    "status" => 1
+                ]);
+            } else {
+                return response()->json([
+                    "message" => 'يرجى التأكد من الكود المدخل',
+                    "status" => 0
+                ]);
+            }
         } else {
             return response()->json([
-                "message" => 'الكود خطأ أو قمت بتفعيله سابقاً',
+                "message" => 'قمت بتفعيل كود الدعوة مسبقاً',
                 "status" => 0
             ]);
         }
