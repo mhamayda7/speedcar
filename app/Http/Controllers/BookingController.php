@@ -1253,12 +1253,12 @@ class BookingController extends Controller
         $fcm_token = Customer::where('id', $customer_id)->value('fcm_token');
         $image = "image/tripaccept.png";
 
-        // if ($fcm_token) {
-        //     $current_status = BookingStatus::where('id', $input['status'])->first();
-        //     $new_status = BookingStatus::where('id', $input['status'])->first();
-        //     $this->save_notifcation($customer_id, 1, $current_status->status_name, $current_status->customer_status_name, $image);
-        //     $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $fcm_token);
-        // }
+        if ($fcm_token) {
+            $current_status = BookingStatus::where('id', $input['status'])->first();
+            $new_status = BookingStatus::where('id', $input['status'])->first();
+            $this->save_notifcation($customer_id, 1, $current_status->status_name, $current_status->customer_status_name, $image);
+            $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $fcm_token);
+        }
 
         $newPost = $database
             ->getReference('/trips/' . $input['trip_id'])
