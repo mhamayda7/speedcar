@@ -1031,7 +1031,7 @@ class DriverController extends Controller
                 Driver::where('referral_code', $input['referral_code'])->update(['wallet' => $add_wallet]);
                 Driver::where('id', Auth::user()->id)->update(['refered_by'=>$input['referral_code']]);
 
-                DriverWalletHistory::creating([
+                DriverWalletHistory::create([
                     'driver_id' => $driver->id,
                     'type' => 1,
                     'message' => 'قمت بدعوة صديق و اضافة رصيد 1 دينار لمحفظتك',
