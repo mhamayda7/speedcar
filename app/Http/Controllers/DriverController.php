@@ -1031,12 +1031,12 @@ class DriverController extends Controller
                 Driver::where('referral_code', $input['referral_code'])->update(['wallet' => $add_wallet]);
                 Driver::where('id', Auth::user()->id)->update(['refered_by'=>$input['referral_code']]);
 
-                DriverWalletHistory::create([
-                    'driver_id' => $driver->id,
-                    'type' => 1,
-                    'message' => 'قمت بدعوة صديق و اضافة رصيد 1 دينار لمحفظتك',
-                    'amount' => 1,
-                ]);
+                $invoice = new DriverWalletHistory();
+                $invoice->driver_id = $driver->id;
+                $invoice->type = 1;
+                $invoice->amount = 1;
+                $invoice->message = 'قمت بدعوة صديق و اضافة رصيد 1 دينار لمحفظتك';
+                $invoice->save();
 
                 $image = "image/tripaccept.png";
                 if ($driver->fcm_token) {
