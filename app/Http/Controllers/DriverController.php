@@ -476,7 +476,7 @@ class DriverController extends Controller
 
     public function get_invoice(Request $request)
     {
-        $invoice = DriverWalletHistory::where('driver_id', Auth::user()->id)->get()->all();
+        $invoice = DriverWalletHistory::where('driver_id', Auth::user()->id)->orderBy('id', 'desc')->get()->all();
         $wallet = Driver::where('id', Auth::user()->id)->value('wallet');
         return response()->json([
             "wallet" => $wallet,
