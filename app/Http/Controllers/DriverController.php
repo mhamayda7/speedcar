@@ -1031,11 +1031,18 @@ class DriverController extends Controller
                 Driver::where('referral_code', $input['referral_code'])->update(['wallet' => $add_wallet]);
                 Driver::where('id', Auth::user()->id)->update(['refered_by'=>$input['referral_code']]);
 
+                DriverWalletHistory::creating([
+                    'driver_id' => $driver->id,
+                    'type' => 1,
+                    'message' => 'قمت بدعوة صديق و اضافة رصيد 1 دينار لمحفظتك',
+                    'amount' => 1,
+                ]);
+
                 $image = "image/tripaccept.png";
-                // if ($driver->fcm_token) {
-                //     $this->send_fcm('رصيد مكتسب', 'تمت إضافة رصيد 1 دينار لمحفظتك',$driver->fcm_token);
-                //     $this->save_notifcation($driver->fcm_token,1,'رصيد مكتسب', 'تمت إضافة رصيد 1 دينار لمحفظتك',$image);
-                // }
+                if ($driver->fcm_token) {
+                    $this->send_fcm('رصيد مكتسب', 'تمت إضافة رصيد 1 دينار لمحفظتك',$driver->fcm_token);
+                    $this->save_notifcation($driver->fcm_token,1,'رصيد مكتسب', 'تمت إضافة رصيد 1 دينار لمحفظتك',$image);
+                }
                 return response()->json([
                     "message" => 'تم إضافة الدعوة بنجاح',
                     "status" => 1
