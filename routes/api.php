@@ -20,6 +20,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::post('sendsms', 'App\Http\Controllers\Controller@sendS');
 Route::get('speedV1/suppliers', 'App\Http\Controllers\Controller@get_supplier');
 Route::get('speedV1/splash', 'App\Http\Controllers\Controller@splash');
+Route::get('speedV1/whatsapp', 'App\Http\Controllers\AppSettingController@whatsapp');
 Route::post('test', 'App\Http\Controllers\BookingController@test');
 Route::post('cancel_test', 'App\Http\Controllers\BookingController@cancel_test');
 
