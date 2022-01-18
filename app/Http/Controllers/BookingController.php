@@ -2132,7 +2132,7 @@ class BookingController extends Controller
         $phone = Customer::where('customers.id', $input['customer_id'])->value('phone_with_code');
         $point = Customer::where('customers.id', $input['customer_id'])->value('points');
 
-        $data->distanc = number_format((float)$data->distanc, 2, '.', '');
+        $data->distance = number_format((float)$data->distance, 2, '.', '');
 
         return response()->json([
             "full_name" => $name,
