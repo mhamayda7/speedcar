@@ -654,20 +654,20 @@ class BookingController extends Controller
             ->getReference('/customers/' . $trip['customer_id'])
             ->update([
                 'booking_id' => $trip->id,
-                'booking_status' => 2
+                'booking_status' => 1
             ]);
 
         $newPost = $database
             ->getReference('/drivers/' . $trip->driver_id)
             ->update([
-                'booking_status' => 2
+                'booking_status' => 1
             ]);
 
         $newPost = $database
             ->getReference('/vehicles/' . $trip['vehicle_type'] . '/' . $trip->driver_id)
             ->update([
                 'booking_id' => $trip->id,
-                'booking_status' => 2
+                'booking_status' => 1
             ]);
 
         $newPost = $database
@@ -1091,7 +1091,7 @@ class BookingController extends Controller
                 $datetime2 = new DateTime($trip->start_time);
                 if ($trip->status == 6) {
                     $interval = $datetime1->diff($datetime2);
-                    $trip->intereval = $interval->format('%H:%I');
+                    $trip->intereval = $interval->format('%I');
                 }
                 $trip->end_time = $datetime1->format('Y-m-d H:i');
                 $trip->start_time = $datetime2->format('Y-m-d H:i');

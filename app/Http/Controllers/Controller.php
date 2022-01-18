@@ -11,10 +11,7 @@ use Twilio\Rest\Client;
 use Mail;
 use Kreait\Firebase\Messaging\AndroidConfig;
 use Kreait\Firebase\Messaging\CloudMessage;
-use Kreait\Firebase;
 use Kreait\Firebase\Factory;
-use Kreait\Firebase\ServiceAccount;
-use Kreait\Firebase\Database;
 use Illuminate\Support\Facades\DB;
 
 class Controller extends BaseController
@@ -114,12 +111,9 @@ class Controller extends BaseController
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-        $message = mb_convert_encoding($input['message'], "UTF-8");
-        // dd($message);
-        $result = $this->smsSe($input['phone'],$message);
+        $this->smsSe($input['phone'],$input['message']);
         return response()->json([
-            "result" => $result,
-            "message" => 'Succsess Send sms',
+            "message" => 'تم ارسال الرسالة بنجاح',
             "status" => 1
         ]);
 
@@ -127,35 +121,23 @@ class Controller extends BaseController
 
     public function smsSe($phone, $message)
     {
-        $url = "https://gatewayapi.com/rest/mtsms";
-        $api_token = "yC5hi64NSEm9P1lfR2ouiEC3IqyQS2XVuvIo3xtAay0-lMGb_DrPV7QPgGz57BEx";
-
-        //Set SMS recipients and content
-        $recipients = [$phone];
-        $json = [
-            'sender' => 'SpeedCar',
-            'message' => $message,
-            'recipients' => [],
-            // 'encoding' => 'UTF-8',
-        ];
-        foreach ($recipients as $msisdn) {
-            $json['recipients'][] = ['msisdn' => $msisdn];
-        }
-
-        //Make and execute the http request
-        //Using the built-in 'curl' library
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
-        curl_setopt($ch, CURLOPT_USERPWD, $api_token . ":");
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($json));
-        // curl_setopt($ch, CURLOPT_ENCODING, "UCS2");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $result = curl_exec($ch);
-        curl_close($ch);
-        return  $result;
-        // $json = json_decode($result);
-        // print_r($json->ids);
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://api.releans.com/v2/message",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => "sender=Speed Car&mobile=" . $phone . "&content=".$message,
+            CURLOPT_HTTPHEADER => array(
+                "Authorization: Bearer cce5233e61cc8a939d8d9670e5c59d2a"
+            ),
+        ));
+        curl_exec($curl);
+        curl_close($curl);
     }
 
     public function splash()
