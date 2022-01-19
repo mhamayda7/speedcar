@@ -1471,9 +1471,9 @@ class BookingController extends Controller
             if ($trip->status < 6) {
                 if ($trip_rate->customer_is_rate == 1) {
                     $trip->status = 6;
-                    $trip->distance = number_format((float)$trip->distance, 2, '.', '');
                 }
                 $driver['overall_ratings'] = number_format((float)$driver['overall_ratings'], 1, '.', '');
+                $trip->distance = number_format((float)$trip->distance, 2, '.', '');
                 return response()->json([
                     "result" => $trip,
                     "driver" => $driver,
