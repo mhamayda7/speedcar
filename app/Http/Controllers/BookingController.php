@@ -1471,6 +1471,7 @@ class BookingController extends Controller
             if ($trip->status < 6) {
                 if ($trip_rate->customer_is_rate == 1) {
                     $trip->status = 6;
+                    $trip->distance = number_format((float)$trip->distance, 2, '.', '');
                 }
                 $driver['overall_ratings'] = number_format((float)$driver['overall_ratings'], 1, '.', '');
                 return response()->json([
@@ -2131,7 +2132,7 @@ class BookingController extends Controller
         $name = Customer::where('customers.id', $input['customer_id'])->value('full_name');
         $phone = Customer::where('customers.id', $input['customer_id'])->value('phone_with_code');
         $point = Customer::where('customers.id', $input['customer_id'])->value('points');
-        $data = number_format((float)$data, 2, '.', '');
+        // $data = number_format((float)$data, 2, '.', '');
         return response()->json([
             "full_name" => $name,
             "phone" => $phone,
