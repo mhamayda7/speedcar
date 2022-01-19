@@ -968,9 +968,8 @@ class DriverController extends Controller
             ]);
         } else {
             $customer = Customer::where('id', $trip->customer_id)->select('full_name', 'phone_with_code', 'profile_picture', 'rating')->get();
-            $customer->rating = number_format((float)$customer->rating, 2, '.', '');
+            $customer['rating'] = number_format((float)$customer['rating'], 2, '.', '');
             $trip['price_wait'] = DailyFareManagement::where('id', 1)->value('price_wait');
-
             $inovice = array();
             $trip->start_time;
             $trip->end_time;
