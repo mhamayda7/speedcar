@@ -445,6 +445,10 @@ class BookingController extends Controller
         }
 
         if ($min_driver_id != 0) {
+            $fcm = Driver::where('id', $min_driver_id)->value('fcm_token');
+            if ($fcm) {
+                $this->send_fcm('لديك طلب جديد', 'لديك طلب رحلة جديد', $fcm);
+            }
             $newPost = $database
                 ->getReference('/drivers/' . $min_driver_id)
                 ->update([
@@ -1223,6 +1227,12 @@ class BookingController extends Controller
             $this->calculate_earnings($input['trip_id']);
             $this->reward_point($input['trip_id']);
         }
+
+        if ($input['status'] == 7) {
+            $fcm = Driver::where('id', $trip->driver_id)->value('fcm_token');
+            $this->send_fcm('تم إلغاء الرحلة من قبل العميل','تم إلغاء الرحلة من قبل العميل', $fcm);
+        }
+
 
         if ($input['status'] == 8) {
             $driver = Driver::where('id', $trip->driver_id)->first();
