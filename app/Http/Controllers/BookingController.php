@@ -286,7 +286,11 @@ class BookingController extends Controller
             ]);
         }
 
-        if($min_driver_id != 0 ) {
+        if ($min_driver_id != 0) {
+            $fcm = Driver::where('id', $min_driver_id)->value('fcm_token');
+            if ($fcm) {
+                $this->send_fcm('لديك طلب جديد', 'لديك طلب رحلة جديد', $fcm);
+            }
             $newPost = $database
                 ->getReference('/drivers/' . $min_driver_id)
                 ->update([
@@ -425,7 +429,7 @@ class BookingController extends Controller
         foreach ($drivers as $key => $value) {
             if (!in_array($value['driver_id'], $rejected_drivers)) {
                 $amount = Driver::where('id', $value['driver_id'])->value('wallet');
-                if($amount > (-1)) {
+                if ($amount > (-1)) {
                     if ($value['online_status'] == 1 && $value['booking_status'] == 0) {
                         $distance = $this->distance($trip_request->pickup_lat, $trip_request->pickup_lng, $value['lat'], $value['lng'], 'K');
                         if ($min_distance == 0) {
@@ -440,7 +444,7 @@ class BookingController extends Controller
             }
         }
 
-        if($min_driver_id != 0 ) {
+        if ($min_driver_id != 0) {
             $newPost = $database
                 ->getReference('/drivers/' . $min_driver_id)
                 ->update([
@@ -450,7 +454,7 @@ class BookingController extends Controller
 
         if ($min_driver_id == 0) {
 
-            $trip_request->update(['status'=>5]);
+            $trip_request->update(['status' => 5]);
             $custmoer_fcm = Customer::where('id', $trip_request->customer_id)->value('fcm_token');
             $this->send_fcm('نأسف جميع الكباتن مشغولين', 'جميع الكباتن مشغولين في رحلات أخرى', $custmoer_fcm);
 
@@ -467,12 +471,12 @@ class BookingController extends Controller
         } else {
             $newPost = $database
 
-            ->getReference('/triprequest/' . $trip_request->id)
-            ->update([
-                'driver_id' => $min_driver_id,
-            ]);
+                ->getReference('/triprequest/' . $trip_request->id)
+                ->update([
+                    'driver_id' => $min_driver_id,
+                ]);
 
-        return $trip_request->id;
+            return $trip_request->id;
         }
     }
 
@@ -1132,7 +1136,7 @@ class BookingController extends Controller
 
         if ($input['status'] == 3) {
             $driver = $database->getReference('/drivers/' . $trip->driver_id)
-            ->getSnapshot()->getValue();
+                ->getSnapshot()->getValue();
             // dd($driver);
             $distance = $this->distance($driver['lat'], $driver['lng'], $trip->pickup_lat, $trip->pickup_lng, 'K');
             if (($distance * 1000) >= 300) {
@@ -1233,11 +1237,10 @@ class BookingController extends Controller
             }
 
             $newPost = $database
-            ->getReference('/drivers/' . $trip->driver_id)
-            ->update([
-                'booking_status' => 0
-            ]);
-
+                ->getReference('/drivers/' . $trip->driver_id)
+                ->update([
+                    'booking_status' => 0
+                ]);
         }
 
         if ($input['status'] != 6) {
@@ -2054,7 +2057,6 @@ class BookingController extends Controller
                 "status" => 1
             ]);
         }
-
     }
 
     public function detailes_invoice(Request $request)
@@ -2098,7 +2100,6 @@ class BookingController extends Controller
                 "status" => 0
             ]);
         }
-
     }
 
     public function get_distance($trip_id)
@@ -2192,14 +2193,14 @@ class BookingController extends Controller
         $drivers = $database->getReference('/drivers/')
             ->getSnapshot()->getValue();
 
-        foreach($drivers as $driver) {
-            if($driver['online_status'] == 1) {
+        foreach ($drivers as $driver) {
+            if ($driver['online_status'] == 1) {
                 $vehicle = DriverVehicle::where('driver_id', $driver['driver_id'])->first();
-                if($driver['lat'] == $vehicle->lat && $driver['lng'] == $vehicle->lng) {
+                if ($driver['lat'] == $vehicle->lat && $driver['lng'] == $vehicle->lng) {
                     $newPost = $database->getReference('/drivers/' . $driver['driver_id'])
-                            ->update([
-                                'online_status' => 0,
-                            ]);
+                        ->update([
+                            'online_status' => 0,
+                        ]);
                 } else {
                     DriverVehicle::where('driver_id', $driver['driver_id'])->update([
                         'lat' => $driver['lat'],
