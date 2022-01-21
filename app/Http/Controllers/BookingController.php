@@ -2109,10 +2109,11 @@ class BookingController extends Controller
             $data['base_fare'] = $base_fare;
             $data['discount'] =  $trip->discount;
             $data['total'] =  $trip->total;
-            if(is_null($trip->amount_require)) {
-                $trip->amount_require = 0;
+            if($trip->payment_method == 1) {
+                $data['amount_require'] =  $trip->total;
+            } else {
+                $data['amount_require'] =  $trip->amount_require;
             }
-            $data['amount_require'] =  $trip->amount_require;
             return response()->json([
                 "invoice" => $data,
                 "message" => 'Success',
