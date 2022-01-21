@@ -2066,6 +2066,7 @@ class BookingController extends Controller
             $data['discount'] =  $trip->discount;
             $data['discount'] = number_format((float)$data['discount'], 2, '.', '');
             $data['total'] =  $trip->total;
+
             if($trip->payment_method == 1) {
                 $data['amount_require'] =  $trip->total;
             } else {
@@ -2109,9 +2110,12 @@ class BookingController extends Controller
             // $fare = number_format((float)$base_far + ($price_per_km * $distance) + ($price_time * $interval));
 
             $data['sub_total'] = $price_per_km * $distance;
+            $data['sub_total'] = number_format((float)$data['sub_total'], 2, '.', '');
             $data['waiting_time'] = $price_time * $interval;
+            $data['waiting_time']= number_format((float)$data['waiting_time'], 2, '.', '');
             $data['base_fare'] = $base_fare;
             $data['discount'] =  $trip->discount;
+            $data['discount'] = number_format((float)$data['discount'], 2, '.', '');
             $data['total'] =  $trip->total;
             if($trip->payment_method == 1) {
                 $data['amount_require'] =  $trip->total;
