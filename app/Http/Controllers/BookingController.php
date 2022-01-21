@@ -287,10 +287,10 @@ class BookingController extends Controller
         }
 
         if ($min_driver_id != 0) {
-            // $fcm = Driver::where('id', $min_driver_id)->value('fcm_token');
-            // if ($fcm) {
-            //     $this->send_fcm('لديك طلب جديد', 'لديك طلب رحلة جديد', $fcm);
-            // }
+            $fcm = Driver::where('id', $min_driver_id)->value('fcm_token');
+            if ($fcm) {
+                $this->send_fcm('لديك طلب جديد', 'لديك طلب رحلة جديد', $fcm);
+            }
             $newPost = $database
                 ->getReference('/drivers/' . $min_driver_id)
                 ->update([
