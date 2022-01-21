@@ -2072,6 +2072,7 @@ class BookingController extends Controller
             } else {
                 $data['amount_require'] =  $trip->amount_require;
             }
+            dd($data['amount_require']);
             return response()->json([
                 "invoice" => $data,
                 "message" => 'Success',
