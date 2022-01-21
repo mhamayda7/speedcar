@@ -968,9 +968,7 @@ class DriverController extends Controller
             ]);
         } else {
             $customer = Customer::where('id', $trip->customer_id)->select('full_name', 'phone_with_code', 'profile_picture', 'rating')->get();
-
             $customer[0]->rating = number_format((float)$customer[0]->rating, 2, '.', '');
-            // dd($customer[0]->rating);
             $trip['price_wait'] = DailyFareManagement::where('id', 1)->value('price_wait');
             $inovice = array();
             $trip->start_time;
@@ -983,11 +981,15 @@ class DriverController extends Controller
             $interval = (strtotime($trip->end_time) - strtotime($trip->start_time)) / 60;
             $trip['arrive_driver'] = $trip['updated_at']->format('H:i');
             $time = strtotime($trip['updated_at']);
-            // $trip['cancel_time'] = date("H:i",strtotime('+3 minutes',$time));
             $trip['cancel_time'] = 4;
+
+            if($trip->payment_method == 1) {
+                $trip->amount_require =  $trip->total;
+            }
 
             $inovice['sub_total'] = $price_per_km * $distance;
             $inovice['waiting_time'] = $price_time * $interval;
+            $inovice['waiting_time'] = number_format((float)$inovice['waiting_time'], 2, '.', '');
             $inovice['base_fare'] = $base_fare;
             $inovice['discount'] =  $trip->discount;
             $inovice['total'] =  $trip->total;
