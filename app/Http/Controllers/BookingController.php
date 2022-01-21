@@ -317,16 +317,16 @@ class BookingController extends Controller
         // $booking_request['static_map'] = $img;
         $booking_request['promo_code'] = $input['promo'];
         $customer = Customer::where('id', Auth::user()->id)->first();
-        if ($input['payment_method'] == 2) {
-            if ($customer->wallet < 1) {
-                $this->send_fcm('لا يوجد رصيد كافي', 'عذراً لا يوجد في محفظتك رصيد كافي , سيكون الدفع كاش', $customer->fcm_token);
-                $booking_request['payment_method'] = 1;
-            } else {
-                $booking_request['payment_method'] = 2;
-            }
-        } else {
-            $booking_request['payment_method'] = $input['payment_method'];
-        }
+        // if ($input['payment_method'] == 2) {
+        //     if ($customer->wallet < 1) {
+        //         $this->send_fcm('لا يوجد رصيد كافي', 'عذراً لا يوجد في محفظتك رصيد كافي , سيكون الدفع كاش', $customer->fcm_token);
+        //         $booking_request['payment_method'] = 1;
+        //     } else {
+        //         $booking_request['payment_method'] = 2;
+        //     }
+        // } else {
+        $booking_request['payment_method'] = $input['payment_method'];
+        // }
         $id = TripRequest::create($booking_request)->id;
 
         $newPost = $database
@@ -1230,7 +1230,7 @@ class BookingController extends Controller
 
         if ($input['status'] == 7) {
             $fcm = Driver::where('id', $trip->driver_id)->value('fcm_token');
-            $this->send_fcm('تم إلغاء الرحلة من قبل العميل','تم إلغاء الرحلة من قبل العميل', $fcm);
+            $this->send_fcm('تم إلغاء الرحلة من قبل العميل', 'تم إلغاء الرحلة من قبل العميل', $fcm);
         }
 
 
@@ -1600,8 +1600,15 @@ class BookingController extends Controller
 
         if ($payment_method->payment_type == 2) {
             $old_wallet_customer = Customer::where('id', $trip->customer_id)->value('wallet');
-            $new_wallet_customer = $old_wallet_customer - $total;
-            Customer::where('id', $trip->customer_id)->update(['wallet' => $new_wallet_customer]);
+            if ($old_wallet_customer < $total) {
+                Customer::where('id', $trip->customer_id)->update(['wallet' => 0]);
+                $amount_require = $total - $old_wallet_customer;
+                Trip::where('id', $trip_id)->update(['amount_require' => $amount_require]);
+            } else {
+                $new_wallet_customer = $old_wallet_customer - $total;
+                Customer::where('id', $trip->customer_id)->update(['wallet' => $new_wallet_customer]);
+                Trip::where('id', $trip_id)->update(['amount_require' => 0]);
+            }
             CustomerWalletHistory::create(['country_id' => $trip->country_id, 'customer_id' => $trip->customer_id, 'type' => 1, 'message' => 'طلب رحلة و الدفع من المحفظة', 'amount' => $total, 'transaction_type' => $payment_method->payment_type]);
             $new_wallet = $old_wallet + $driver_earning;
             Driver::where('id', $trip->driver_id)->update(['wallet' => $new_wallet]);
@@ -2056,6 +2063,10 @@ class BookingController extends Controller
             $data['base_fare'] = $base_fare;
             $data['discount'] =  $trip->discount;
             $data['total'] =  $trip->total;
+            if(is_null($trip->amount_require)) {
+                $trip->amount_require = 0;
+            }
+            $data['amount_require'] =  $trip->amount_require;
             return response()->json([
                 "invoice" => $data,
                 "message" => 'Success',
