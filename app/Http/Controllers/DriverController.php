@@ -988,10 +988,12 @@ class DriverController extends Controller
             }
 
             $inovice['sub_total'] = $price_per_km * $distance;
+            $inovice['sub_total'] = number_format((float)$inovice['sub_total'], 2, '.', '');
             $inovice['waiting_time'] = $price_time * $interval;
             $inovice['waiting_time'] = number_format((float)$inovice['waiting_time'], 2, '.', '');
             $inovice['base_fare'] = $base_fare;
             $inovice['discount'] =  $trip->discount;
+            $inovice['discount'] = number_format((float)$inovice['discount'], 2, '.', '');
             $inovice['total'] =  $trip->total;
 
 
