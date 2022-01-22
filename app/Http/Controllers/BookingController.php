@@ -316,7 +316,6 @@ class BookingController extends Controller
         $booking_request['status'] = 2;
         // $booking_request['static_map'] = $img;
         $booking_request['promo_code'] = $input['promo'];
-        $customer = Customer::where('id', Auth::user()->id)->first();
         // if ($input['payment_method'] == 2) {
         //     if ($customer->wallet < 1) {
         //         $this->send_fcm('لا يوجد رصيد كافي', 'عذراً لا يوجد في محفظتك رصيد كافي , سيكون الدفع كاش', $customer->fcm_token);
@@ -1104,7 +1103,7 @@ class BookingController extends Controller
                 $trip->end_time = $datetime1->format('Y-m-d H:i');
                 $trip->start_time = $datetime2->format('Y-m-d H:i');
             }
-
+            
             $trip->ratings = RateTrip::where('trip_id', $trip->id)->value('driver_rate');
         }
         return response()->json([
