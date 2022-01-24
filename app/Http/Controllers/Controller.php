@@ -138,6 +138,7 @@ class Controller extends BaseController
         ));
         curl_exec($curl);
         curl_close($curl);
+        return 1;
     }
 
     public function splash()
