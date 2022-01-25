@@ -24,7 +24,7 @@ class HomeController extends Controller
             $current_year = date("Y");
             $data['customers'] = Customer::where('status','!=',0)->count();
             $data['total_orders'] = Trip::count();
-            $data['completed_orders'] = Trip::where('status','=',5)->count();
+            $data['completed_orders'] = Trip::where('status','=',6)->count();
             $data['drivers'] = Driver::where('status','!=',0)->count();
 
             $customers = Customer::select('id', 'created_at')
@@ -71,9 +71,9 @@ class HomeController extends Controller
         });
 
     }
-    
+
     public function tracking(){
-        
+
         return Admin::content(function (Content $content) {
 
             $content->header('Live Tracking');
