@@ -26,6 +26,7 @@ use App\Models\User;
 use App\NotificationMessage;
 use App\Trip;
 use Cartalyst\Stripe\Stripe;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Kreait\Firebase;
@@ -50,16 +51,16 @@ class CustomerController extends Controller
         }
 
         $data = CheckPhone::whereDay('created_at', '=', date('d'))
-                            ->where('fcm_token', $input['fcm_token'])->get();
+            ->where('fcm_token', $input['fcm_token'])->get();
         $phone = '962' . $input['phone_number'];
         CheckPhone::create($input);
 
-        if(count($data) <= 5) {
+        if (count($data) <= 5) {
             $data_phone = CheckPhone::whereDay('created_at', '=', date('d'))
-                                ->where('fcm_token', $input['fcm_token'])
-                                ->where('phone_number', $input['phone_number'])->get();
-            if(count($data_phone) <= 3 ) {
-                $otp = rand(1000,9999);
+                ->where('fcm_token', $input['fcm_token'])
+                ->where('phone_number', $input['phone_number'])->get();
+            if (count($data_phone) <= 3) {
+                $otp = rand(1000, 9999);
                 $message = "Hi " . env('APP_NAME') . "  , Your OTP code is:" . $otp;
                 if ($this->smsSe($phone, $message)) {
                     return response()->json([
@@ -165,7 +166,7 @@ class CustomerController extends Controller
         ];
         $input['password'] = password_hash($input["password"], PASSWORD_DEFAULT, $options);
 
-        if (Customer::where('id', Auth::user()->id)->update(['password'=>$input['password']])) {
+        if (Customer::where('id', Auth::user()->id)->update(['password' => $input['password']])) {
             return response()->json([
                 "message" => 'Success',
                 "status" => 1
@@ -190,7 +191,7 @@ class CustomerController extends Controller
             return $this->sendError($validator->errors());
         }
 
-        if (Customer::where('id', Auth::user()->id)->update(['fcm_token'=>$input['fcm_token']])) {
+        if (Customer::where('id', Auth::user()->id)->update(['fcm_token' => $input['fcm_token']])) {
             return response()->json([
                 "message" => 'Success',
                 "status" => 1
@@ -214,14 +215,14 @@ class CustomerController extends Controller
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
         }
-        $newPassword = rand(100000,999999);
+        $newPassword = rand(100000, 999999);
         $options = [
             'cost' => 12,
         ];
         $cryptNewPassword = password_hash($newPassword, PASSWORD_DEFAULT, $options);
 
-        if (Customer::where('phone_with_code', $input['phone_with_code'])->update(['password'=>$cryptNewPassword])) {
-            $message ="Your new password is: " . $newPassword;
+        if (Customer::where('phone_with_code', $input['phone_with_code'])->update(['password' => $cryptNewPassword])) {
+            $message = "Your new password is: " . $newPassword;
             $this->smsSe($input['phone_with_code'], $message);
             return response()->json([
                 "message" => 'Success',
@@ -273,10 +274,10 @@ class CustomerController extends Controller
         $input['currency'] = Currency::where('country_id', $input['country_id'])->value('currency');
         $input['currency_short_code'] = Currency::where('country_id', $input['country_id'])->value('currency_short_code');
         $input['profile_picture'] = "customers/avatar.png";
-        $input['phone_with_code'] = $input['country_code'].$input['phone_number'];
-        $input['otp']= 0;
-        $input['points']= 0;
-        $input['rating']= 0;
+        $input['phone_with_code'] = $input['country_code'] . $input['phone_number'];
+        $input['otp'] = 0;
+        $input['points'] = 0;
+        $input['rating'] = 0;
         $customer = Customer::create($input);
 
         // $phone = '+'.$input['phone_with_code'];
@@ -328,8 +329,8 @@ class CustomerController extends Controller
             Customer::where('id', $customer->id)->update(['referral_code' => $customer->referral_code]);
             $token = $customer->createToken('name')->plainTextToken;
 
-            $factory = (new Factory())->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'))
-                                ->withDatabaseUri(env('FIREBASE_DB'));
+            $factory = (new Factory())->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'))
+                ->withDatabaseUri(env('FIREBASE_DB'));
             $database = $factory->createDatabase();
             $newPost = $database
                 ->getReference('/customers/' . $customer->id)
@@ -368,8 +369,7 @@ class CustomerController extends Controller
             return $this->sendError($validator->errors());
         }
         Customer::where('referral_code', $input['referral_code'])->update;
-        Customer::where('id', $input['customer_id'])->update(['refered_by'=>$input['referral_code']]);
-
+        Customer::where('id', $input['customer_id'])->update(['refered_by' => $input['referral_code']]);
     }
 
     /*public function register(Request $request)
@@ -480,9 +480,9 @@ class CustomerController extends Controller
 
     public function signout(Request $request)
     {
-        Customer::where('id', Auth::user()->id)->update(['fcm_token'=> null]);
+        Customer::where('id', Auth::user()->id)->update(['fcm_token' => null]);
         $request->user()->currentAccessToken()->delete();
-        Auth::user()->tokens->each(function($token, $key) {
+        Auth::user()->tokens->each(function ($token, $key) {
             $token->delete();
         });
         return response()->json([
@@ -537,7 +537,7 @@ class CustomerController extends Controller
         // }
 
         // $result = Customer::select('id', 'first_name', 'last_name', 'phone_with_code', 'gender', 'email', 'status')->where('id', $input['customer_id'])->first();
-        $result = Customer::select('id', 'full_name', 'phone_with_code', 'gender', 'email', 'points', 'wallet' ,'status', 'referral_code')->where('id', Auth::user()->id)->first();
+        $result = Customer::select('id', 'full_name', 'phone_with_code', 'gender', 'email', 'points', 'wallet', 'status', 'referral_code')->where('id', Auth::user()->id)->first();
 
         if (is_object($result)) {
             $result->distance =  number_format((float)$result->distance, 2, '.', '');
@@ -571,7 +571,7 @@ class CustomerController extends Controller
         // if ($validator->fails()) {
         //     return $this->sendError($validator->errors());
         // }
-        $input['id']= Auth::user()->id;
+        $input['id'] = Auth::user()->id;
 
         if ($request->password) {
             $options = [
@@ -758,13 +758,13 @@ class CustomerController extends Controller
         }
         if ($refferd->refered_by == null) {
             $customer = Customer::where('referral_code', $input['referral_code'])->first();
-            if($customer) {
-                $referral_bonus = DB::table('referral_settings')->where('id',1)->value('referral_bonus');
+            if ($customer) {
+                $referral_bonus = DB::table('referral_settings')->where('id', 1)->value('referral_bonus');
                 $points_add = $referral_bonus + $customer->points;
                 $customer->update([
                     'points' => $points_add,
                 ]);
-                Customer::where('id', Auth::user()->id)->update(['refered_by'=>$input['referral_code']]);
+                Customer::where('id', Auth::user()->id)->update(['refered_by' => $input['referral_code']]);
                 $point = new Point;
                 $point->customer_id = $customer->id;
                 $point->trip_id = 0;
@@ -1066,37 +1066,38 @@ class CustomerController extends Controller
         ]);
     }
 
-    public function rate_driver(Request $request) {
+    public function rate_driver(Request $request)
+    {
         $input = $request->all();
 
-        if(!isset($input['rate'])) {
-            $input['rate']= 0;
+        if (!isset($input['rate'])) {
+            $input['rate'] = 0;
         }
         $customer_id = Auth::user()->id;
         $trip = Trip::where('customer_id', $customer_id)->get()->last();
         // dd($customer_id);
-        RateTrip::where('trip_id', $trip->id)->update(['customer_is_rate'=>1, 'driver_rate'=>$input['rate']]);
+        RateTrip::where('trip_id', $trip->id)->update(['customer_is_rate' => 1, 'driver_rate' => $input['rate']]);
         $rates = RateTrip::where('driver_id', $trip->driver_id)->get();
         $i = 0;
         $total_rate = 0;
 
         foreach ($rates as $rate) {
-            if($rate['driver_rate'] != 0) {
-                $i++ ;
+            if ($rate['driver_rate'] != 0) {
+                $i++;
                 $total_rate += $rate['driver_rate'];
             }
         }
-        if($rates->count() == 1) {
+        if ($rates->count() == 1) {
             $overall_ratings = $total_rate;
         } else {
-            if($i == 0) {
-                $overall_ratings = $total_rate ;
+            if ($i == 0) {
+                $overall_ratings = $total_rate;
             } else {
-                $overall_ratings = $total_rate / $i ;
+                $overall_ratings = $total_rate / $i;
             }
         }
 
-        Driver::where('id', $trip->driver_id)->update(['overall_ratings'=>$overall_ratings, 'no_of_ratings'=>$i]);
+        Driver::where('id', $trip->driver_id)->update(['overall_ratings' => $overall_ratings, 'no_of_ratings' => $i]);
         return response()->json([
             "message" => "rate success",
             "status" => 1
@@ -1123,7 +1124,10 @@ class CustomerController extends Controller
         }
         $customer_fcm = Customer::where('id', $input['customer_id'])->value('fcm_token');
         if ($customer_fcm) {
-            $this->send_fcm('نقاط مكتسبة', 'قمت بدعوة صديق و اضافة' . ' نقاط', $customer_fcm);
+            try {
+                $this->send_fcm('نقاط مكتسبة', 'قمت بدعوة صديق و اضافة' . ' نقاط', $customer_fcm);
+            } catch (Exception $e) {
+            }
         }
         return response()->json([
             "message" => 'Success',
@@ -1140,7 +1144,6 @@ class CustomerController extends Controller
             "message" => 'Success',
             "status" => 1
         ]);
-
     }
 
 
@@ -1167,7 +1170,4 @@ class CustomerController extends Controller
             "status" => 1
         ]);
     }
-
-
-
 }

@@ -46,6 +46,7 @@ use App\Models\TripRequestStatus;
 use App\NotificationMessage;
 use App\PromoCode;
 use Encore\Admin\Show;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 
@@ -289,7 +290,10 @@ class BookingController extends Controller
         if ($min_driver_id != 0) {
             $fcm = Driver::where('id', $min_driver_id)->value('fcm_token');
             if ($fcm) {
-                $this->send_fcm('لديك طلب جديد', 'لديك طلب رحلة جديد', $fcm);
+                try {
+                    $this->send_fcm('لديك طلب جديد', 'لديك طلب رحلة جديد', $fcm);
+                } catch (Exception $e) {
+                }
             }
             $newPost = $database
                 ->getReference('/drivers/' . $min_driver_id)
@@ -446,7 +450,10 @@ class BookingController extends Controller
         if ($min_driver_id != 0) {
             $fcm = Driver::where('id', $min_driver_id)->value('fcm_token');
             if ($fcm) {
-                $this->send_fcm('لديك طلب جديد', 'لديك طلب رحلة جديد', $fcm);
+                try {
+                    $this->send_fcm('لديك طلب جديد', 'لديك طلب رحلة جديد', $fcm);
+                } catch (Exception $e) {
+                }
             }
             $newPost = $database
                 ->getReference('/drivers/' . $min_driver_id)
@@ -459,8 +466,10 @@ class BookingController extends Controller
 
             $trip_request->update(['status' => 5]);
             $custmoer_fcm = Customer::where('id', $trip_request->customer_id)->value('fcm_token');
-            $this->send_fcm('نأسف جميع الكباتن مشغولين', 'جميع الكباتن مشغولين في رحلات أخرى', $custmoer_fcm);
-
+            try {
+                $this->send_fcm('نأسف جميع الكباتن مشغولين', 'جميع الكباتن مشغولين في رحلات أخرى', $custmoer_fcm);
+            } catch (Exception $e) {
+            }
             $newPost = $database
                 ->getReference('/customers/' . $trip_request->customer_id)
                 ->update([
@@ -691,9 +700,11 @@ class BookingController extends Controller
         $trip_rate->customer_is_rate = 0;
         $trip_rate->driver_is_rate = 0;
         $trip_rate->save();
-        $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $customer->fcm_token);
-        $this->save_notifcation($trip->customer_id, 1, $current_status->status_name, $current_status->customer_status_name, $image);
-
+        try {
+            $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $customer->fcm_token);
+            $this->save_notifcation($trip->customer_id, 1, $current_status->status_name, $current_status->customer_status_name, $image);
+        } catch (Exception $e) {
+        }
         return response()->json([
             "result" => $trip->id,
             "message" => 'Success',
@@ -790,8 +801,11 @@ class BookingController extends Controller
             $triprequest->update(['status' => 6]);
             $customer = Customer::where('id', Auth::user()->id)->first();
             if ($customer->fcm_token) {
-                $this->save_notifcation($customer->id, 1, 'إلغاء الطلب', 'تم إلغاء طلب الرحلة, ننتظرك في طلب آخر', $image);
-                $this->send_fcm('إلغاء الطلب', 'تم إلغاء طلب الرحلة, ننتظرك في طلب آخر', $customer->fcm_token);
+                try {
+                    $this->save_notifcation($customer->id, 1, 'إلغاء الطلب', 'تم إلغاء طلب الرحلة, ننتظرك في طلب آخر', $image);
+                    $this->send_fcm('إلغاء الطلب', 'تم إلغاء طلب الرحلة, ننتظرك في طلب آخر', $customer->fcm_token);
+                } catch (Exception $e) {
+                }
             }
             $driverID = $database->getReference('/triprequest/' . $triprequest->id)
                 ->getSnapshot()->getValue();
@@ -1103,7 +1117,7 @@ class BookingController extends Controller
                 $trip->end_time = $datetime1->format('Y-m-d H:i');
                 $trip->start_time = $datetime2->format('Y-m-d H:i');
             }
-            
+
             $trip->ratings = RateTrip::where('trip_id', $trip->id)->value('driver_rate');
         }
         return response()->json([
@@ -1228,8 +1242,11 @@ class BookingController extends Controller
         }
 
         if ($input['status'] == 7) {
-            $fcm = Driver::where('id', $trip->driver_id)->value('fcm_token');
-            $this->send_fcm('تم إلغاء الرحلة من قبل العميل', 'تم إلغاء الرحلة من قبل العميل', $fcm);
+            try {
+                $fcm = Driver::where('id', $trip->driver_id)->value('fcm_token');
+                $this->send_fcm('تم إلغاء الرحلة من قبل العميل', 'تم إلغاء الرحلة من قبل العميل', $fcm);
+            } catch (Exception $e) {
+            }
         }
 
 
@@ -1269,8 +1286,11 @@ class BookingController extends Controller
         if ($fcm_token) {
             $current_status = BookingStatus::where('id', $input['status'])->first();
             $new_status = BookingStatus::where('id', $input['status'])->first();
-            $this->save_notifcation($customer_id, 1, $current_status->status_name, $current_status->customer_status_name, $image);
-            $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $fcm_token);
+            try {
+                $this->save_notifcation($customer_id, 1, $current_status->status_name, $current_status->customer_status_name, $image);
+                $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $fcm_token);
+            } catch (Exception $e) {
+            }
         }
 
         $newPost = $database
@@ -1859,9 +1879,11 @@ class BookingController extends Controller
 
         TripRequest::where('id', $input['trip_id'])->update(['status' => 3]);
         $image = "image/tripaccept.png";
-        $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $customer->fcm_token);
-        $this->save_notifcation($trip_details->customer_id, 1, $current_status->status_name, $current_status->customer_status_name, $image);
-
+        try {
+            $this->send_fcm($current_status->status_name, $current_status->customer_status_name, $customer->fcm_token);
+            $this->save_notifcation($trip_details->customer_id, 1, $current_status->status_name, $current_status->customer_status_name, $image);
+        } catch (Exception $e) {
+        }
         return response()->json([
             "result" => $id,
             "message" => 'Success',
@@ -1992,8 +2014,11 @@ class BookingController extends Controller
                     $current_status = TripRequestStatus::where('id', 5)->first();
                     // dd($current_status);
                     $new_status = TripRequestStatus::where('id', 5)->first();
-                    $this->save_notifcation($customer->id, 1, 'لم يتم العثور على سائق', 'لا يتوفر حالياً سائقين', $image);
-                    $this->send_fcm('لم يتم العثور على سائق', 'لا يتوفر حالياً سائقين', $customer->fcm_token);
+                    try {
+                        $this->save_notifcation($customer->id, 1, 'لم يتم العثور على سائق', 'لا يتوفر حالياً سائقين', $image);
+                        $this->send_fcm('لم يتم العثور على سائق', 'لا يتوفر حالياً سائقين', $customer->fcm_token);
+                    } catch (Exception $e) {
+                    }
                 }
 
                 $newPost = $database
@@ -2060,13 +2085,13 @@ class BookingController extends Controller
             $data['sub_total'] = $price_per_km * $distance;
             $data['sub_total'] = number_format((float)$data['sub_total'], 2, '.', '');
             $data['waiting_time'] = $price_time * $interval;
-            $data['waiting_time']= number_format((float)$data['waiting_time'], 2, '.', '');
+            $data['waiting_time'] = number_format((float)$data['waiting_time'], 2, '.', '');
             $data['base_fare'] = $base_fare;
             $data['discount'] =  $trip->discount;
             $data['discount'] = number_format((float)$data['discount'], 2, '.', '');
             $data['total'] =  $trip->total;
 
-            if($trip->payment_method == 1) {
+            if ($trip->payment_method == 1) {
                 $data['amount_require'] =  $trip->total;
             } else {
                 $data['amount_require'] =  $trip->amount_require;
@@ -2112,12 +2137,12 @@ class BookingController extends Controller
             $data['sub_total'] = $price_per_km * $distance;
             $data['sub_total'] = number_format((float)$data['sub_total'], 2, '.', '');
             $data['waiting_time'] = $price_time * $interval;
-            $data['waiting_time']= number_format((float)$data['waiting_time'], 2, '.', '');
+            $data['waiting_time'] = number_format((float)$data['waiting_time'], 2, '.', '');
             $data['base_fare'] = $base_fare;
             $data['discount'] =  $trip->discount;
             $data['discount'] = number_format((float)$data['discount'], 2, '.', '');
             $data['total'] =  $trip->total;
-            if($trip->payment_method == 1) {
+            if ($trip->payment_method == 1) {
                 $data['amount_require'] =  $trip->total;
             } else {
                 $data['amount_require'] =  $trip->amount_require;

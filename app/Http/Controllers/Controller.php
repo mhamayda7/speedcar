@@ -41,7 +41,6 @@ class Controller extends BaseController
     {
         $factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
         $messaging = $factory->createMessaging();
-
         $message = CloudMessage::fromArray([
             'token' => $token,
             'notification' => [],
@@ -58,9 +57,7 @@ class Controller extends BaseController
                 'color' => '',
             ],
         ]);
-
         $message = $message->withAndroidConfig($config);
-
         $messaging->send($message);
     }
 
