@@ -59,7 +59,7 @@ class DriverController extends Controller
             $data['is_available'] = 0;
             $data['otp'] = rand(1000,9999);
             $message = "Hi".env('APP_NAME')." , Your OTP code is:".$data['otp'];
-            $this->sendSms($input['phone_with_code'],$message);
+            $this->smsSe($input['phone_with_code'],$message);
             return response()->json([
                 "result" => $data,
                 "message" => 'Success',
@@ -93,7 +93,7 @@ class DriverController extends Controller
 
             $data['otp'] = rand(1000, 9999);
             $message = "Hi" . env('APP_NAME') . " , Your OTP code is:" . $data['otp'];
-            $this->sendSms($input['phone_with_code'], $message);
+            $this->smsSe($input['phone_with_code'], $message);
             return response()->json([
                 "message" => 'Sorry this number not available please contact admin',
                 "status" => 0

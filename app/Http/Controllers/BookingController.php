@@ -1778,7 +1778,7 @@ class BookingController extends Controller
         $data['otp'] = $otp = rand(1000, 9999);
         $phone = '+' . $phone_with_code;
         $message = "Hi " . env('APP_NAME') . " , Your OTP code is:  " . $data['otp'];
-        $this->sendSms($phone, $message);
+        $this->smsSe($phone, $message);
         $id = Trip::create($data)->id;
 
         if ($data['promo_code']) {
@@ -1989,7 +1989,7 @@ class BookingController extends Controller
         $fares = $this->calculate_daily_fare($data['vehicle_type'], $data['km'], $data['promo'], $data['country_id']);
         $data['otp'] = rand(1000, 9999);
         $message = "Hi " . env('APP_NAME') . " , Your OTP code is:  " . $data['otp'] . ". Pickup location:  " . $input['pickup_address'] . ", Drop location:" . $input['drop_address'] . ". Total fare:" . $currency . $input['fare'];
-        $this->sendSms($phone_with_code, $message);
+        $this->smsSe($phone_with_code, $message);
         return response()->json([
             "result" => $data,
             "message" => 'Success',

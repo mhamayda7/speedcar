@@ -110,7 +110,7 @@ class CustomerController extends Controller
     //         $data['otp'] = rand(1000, 9999);
     //         $message = "Hi" . env('APP_NAME') . "  , Your OTP code is:" . $data['otp'];
     //         //$message = "Hi Esycab"." , Your OTP code is:".$data['otp'];
-    //         $this->sendSms($input['phone_with_code'], $message);
+    //         $this->smsSe($input['phone_with_code'], $message);
     //         return response()->json([
     //             "result" => $data,
     //             "message" => 'Success',
@@ -135,7 +135,7 @@ class CustomerController extends Controller
         if (is_object($customer)) {
             $otp = rand(1000, 9999);
             $message = "Hi" . env('APP_NAME') . " , Your OTP code is:" . $otp;
-            $this->sendSms($input['phone_with_code'], $message);
+            $this->smsSe($input['phone_with_code'], $message);
             return response()->json([
                 "result" => $otp,
                 "message" => 'Success',
@@ -282,8 +282,8 @@ class CustomerController extends Controller
 
         // $phone = '+'.$input['phone_with_code'];
         // $message = "Hi " . env('APP_NAME') . "  , Your OTP code is:" . $otp;
-        // $this->sendSms($phone, $message);
-        // $this->sendSms($input['phone_with_code'], $message);
+        // $this->smsSe($phone, $message);
+        // $this->smsSe($input['phone_with_code'], $message);
         // $this->smsSe($phone, $message);
         //$database = $firebase->getDatabase();
 
@@ -1022,7 +1022,7 @@ class CustomerController extends Controller
         $country_code = $customer->country_code;
         if (count($contacts) > 0) {
             foreach ($contacts as $key => $value) {
-                $this->sendSms($country_code . $value->phone_number, $message);
+                $this->smsSe($country_code . $value->phone_number, $message);
             }
             return response()->json([
                 "message" => 'SOS activated',
