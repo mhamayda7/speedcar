@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Driver;
 use App\DriverVehicle;
 use Illuminate\Console\Command;
 use Kreait\Firebase\Factory;
@@ -52,6 +53,9 @@ class changeStatusDriver extends Command
                             ->update([
                                 'online_status' => 0,
                             ]);
+                    Driver::where('id', $driver['driver_id'])->update([
+                        'online_status' => 0,
+                    ]);
                 } else {
                     DriverVehicle::where('driver_id', $driver['driver_id'])->update([
                         'lat' => $driver['lat'],
