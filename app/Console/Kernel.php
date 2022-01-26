@@ -28,7 +28,7 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
         $schedule->command(command:'TripRequest:timeout')->everyMinute();
-        // $schedule->command(command:'changeStatusDriver')->everyMinute();
+        $schedule->command(command:'changeStatusDriver')->everyTwoMinutes();
     }
 
     /**
