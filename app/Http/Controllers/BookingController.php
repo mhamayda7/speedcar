@@ -1236,6 +1236,7 @@ class BookingController extends Controller
                     'drop_address' => "",
                     'total' => ""
                 ]);
+            // $this->calculate_earn($input['trip_id']);
             $this->calculate_earnings($input['trip_id']);
             $this->reward_point($input['trip_id']);
         }
@@ -1603,8 +1604,10 @@ class BookingController extends Controller
         }
     }
 
-    public function calculate_earnings($trip_id)
+    public function calculate_earn($trip_id)
     {
+
+
         $trip = Trip::where('id', $trip_id)->first();
         $payment_method = PaymentMethod::where('id', $trip->payment_method)->first();
         $admin_commission_percent = TripSetting::value('admin_commission');
@@ -1616,7 +1619,7 @@ class BookingController extends Controller
         DriverEarning::create(['trip_id' => $trip_id, 'driver_id' => $trip->driver_id, 'amount' => $driver_earning]);
         $old_wallet = Driver::where('id', $trip->driver_id)->value('wallet');
 
-        if ($payment_method->payment_type == 2) {
+        if ($trip->payment_method == 2) {
             $old_wallet_customer = Customer::where('id', $trip->customer_id)->value('wallet');
             if ($old_wallet_customer < $total) {
                 Customer::where('id', $trip->customer_id)->update(['wallet' => 0]);
@@ -1627,16 +1630,78 @@ class BookingController extends Controller
                 Customer::where('id', $trip->customer_id)->update(['wallet' => $new_wallet_customer]);
                 Trip::where('id', $trip_id)->update(['amount_require' => 0]);
             }
+
             CustomerWalletHistory::create(['country_id' => $trip->country_id, 'customer_id' => $trip->customer_id, 'type' => 1, 'message' => 'طلب رحلة و الدفع من المحفظة', 'amount' => $total, 'transaction_type' => $payment_method->payment_type]);
             $new_wallet = $old_wallet + $driver_earning;
             Driver::where('id', $trip->driver_id)->update(['wallet' => $new_wallet]);
             DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 1, 'transaction_type' => 2, 'message' => 'تم إضافة رصيد لمحفظتك لرحلة رقم' . $trip->trip_id, 'amount' => $driver_earning]);
-        } else if ($payment_method->payment_type == 1) {
+        } else if ($trip->payment_method == 1) {
             $new_wallet = $old_wallet - $admin_commission;
             Driver::where('id', $trip->driver_id)->update(['wallet' => $new_wallet]);
             CustomerWalletHistory::create(['country_id' => $trip->country_id, 'customer_id' => $trip->customer_id, 'type' => 1, 'message' => 'طلب رحلة والدفع كاش ', 'amount' => $total, 'transaction_type' => $payment_method->payment_type]);
             DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 2, 'transaction_type' => 2, 'message' => 'تم خصم رصيد من محفظتك لرحلة ' . $trip->trip_id, 'amount' => $admin_commission]);
         }
+    }
+
+    public function calculate_earnings($trip_id)
+    {
+        $trip = Trip::where('id', $trip_id)->first();
+        $customer = Customer::where('id', $trip->customer_id)->first();
+        $driver = Driver::where('id', $trip->driver_id)->first();
+
+        $admin_commission_percent = TripSetting::value('admin_commission');
+        $total = number_format((float)$trip->total, 2, '.', '');
+
+        $admin_commission = ($admin_commission_percent / 100) * $total;
+        $admin_commission = number_format((float)$admin_commission, 2, '.', '');
+
+        $driver_earning = $total - $admin_commission;
+        $driver_earning = number_format((float)$driver_earning, 2, '.', '');
+        DriverEarning::create(['trip_id' => $trip_id, 'driver_id' => $trip->driver_id, 'amount' => $driver_earning]);
+
+        if ($trip->payment_method == 2) {
+            if ($trip->total > $customer->wallet) {
+                $amount_require  = $trip->total - $customer->wallet;
+                $amount_require = number_format((float)$amount_require, 2, '.', '');
+
+                $customer->update(['wallet' => 0]);
+                $trip->update(['amount_require' => $amount_require]);
+
+                if($admin_commission < $customer->wallet) {
+                    $to_driver = $driver->wallet + ($customer->wallet - $admin_commission);
+                    $driver->update([
+                        'wallet' => $to_driver,
+                    ]);
+                    DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 1, 'transaction_type' => 2, 'message' => 'تم إضافة رصيد لمحفظتك لرحلة رقم' . $trip->trip_id, 'amount' => ($customer->wallet - $admin_commission)]);
+                } else {
+                    $to_driver = $driver->wallet - ($admin_commission - $customer->wallet);
+                    $driver->update([
+                        'wallet' => $to_driver,
+                    ]);
+                    DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 2, 'transaction_type' => 2, 'message' => 'تم خصم رصيد من محفظتك لرحلة رقم' . $trip->trip_id, 'amount' => ($admin_commission - $customer->wallet)]);
+                }
+                CustomerWalletHistory::create(['country_id' => $trip->country_id, 'customer_id' => $trip->customer_id, 'type' => 1, 'message' => 'طلب رحلة و الدفع من المحفظة وكاش', 'amount' => $total, 'transaction_type' => $trip->payment_method]);
+            } elseif ($trip->total <= $customer->wallet) {
+                $trip->update(['amount_require' => 0]);
+                $customer_wallet = $customer->wallet - $trip->total;
+                $customer->update([
+                    'wallet' => $customer_wallet,
+                ]);
+
+                $driver_wallet = $driver->wallet + $admin_commission;
+                $driver->update([
+                    'wallet' => $driver_wallet,
+                ]);
+                CustomerWalletHistory::create(['country_id' => $trip->country_id, 'customer_id' => $trip->customer_id, 'type' => 1, 'message' => 'طلب رحلة و الدفع من المحفظة', 'amount' => $total, 'transaction_type' => $trip->payment_method]);
+                DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 1, 'transaction_type' => 2, 'message' => 'تم إضافة رصيد لمحفظتك لرحلة رقم' . $trip->trip_id, 'amount' => $driver_wallet]);
+            }
+        } elseif ($trip->payment_method == 1) {
+            $new_wallet = $driver->wallet - $admin_commission;
+            Driver::where('id', $trip->driver_id)->update(['wallet' => $new_wallet]);
+            CustomerWalletHistory::create(['country_id' => $trip->country_id, 'customer_id' => $trip->customer_id, 'type' => 1, 'message' => 'طلب رحلة والدفع كاش ', 'amount' => $total, 'transaction_type' => $trip->payment_method]);
+            DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 2, 'transaction_type' => 2, 'message' => 'تم خصم رصيد من محفظتك لرحلة ' . $trip->trip_id, 'amount' => $admin_commission]);
+        }
+
     }
 
     public function direct_booking(Request $request)
