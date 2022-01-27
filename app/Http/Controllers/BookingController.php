@@ -49,6 +49,7 @@ use Encore\Admin\Show;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use League\CommonMark\Extension\CommonMark\Node\Inline\Code;
 
 class BookingController extends Controller
 {
@@ -225,12 +226,8 @@ class BookingController extends Controller
         $validator = Validator::make($input, [
             'promo' => 'required',
             'pickup_address' => 'required',
-            // 'pickup_date' => 'required',
             'pickup_lat' => 'required',
             'pickup_lng' => 'required',
-            // 'drop_address' => 'required',
-            // 'drop_lat' => 'required',
-            // 'drop_lng' => 'required',
         ]);
         if ($validator->fails()) {
             return $this->sendError($validator->errors());
@@ -320,16 +317,17 @@ class BookingController extends Controller
         $booking_request['status'] = 2;
         // $booking_request['static_map'] = $img;
         $booking_request['promo_code'] = $input['promo'];
-        // if ($input['payment_method'] == 2) {
-        //     if ($customer->wallet < 1) {
-        //         $this->send_fcm('لا يوجد رصيد كافي', 'عذراً لا يوجد في محفظتك رصيد كافي , سيكون الدفع كاش', $customer->fcm_token);
-        //         $booking_request['payment_method'] = 1;
-        //     } else {
-        //         $booking_request['payment_method'] = 2;
-        //     }
-        // } else {
-        $booking_request['payment_method'] = $input['payment_method'];
-        // }
+        $customer = Customer::where('id', Auth::user()->id)->first();
+        if ($input['payment_method'] == 2) {
+            if ($customer->wallet = 0) {
+                $this->send_fcm('لا يوجد رصيد كافي', 'عذراً لا يوجد في محفظتك رصيد كافي , سيكون الدفع كاش', $customer->fcm_token);
+                $booking_request['payment_method'] = 1;
+            } else {
+                $booking_request['payment_method'] = 2;
+            }
+        } else {
+            $booking_request['payment_method'] = $input['payment_method'];
+        }
         $id = TripRequest::create($booking_request)->id;
 
         $newPost = $database
@@ -1147,7 +1145,6 @@ class BookingController extends Controller
             $input['status'] = $trip->status;
         }
 
-        Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
 
@@ -1163,6 +1160,8 @@ class BookingController extends Controller
                 ]);
             }
         }
+
+        Trip::where('id', $input['trip_id'])->update(['status' => $input['status']]);
 
         if ($input['status'] == 4) {
             Trip::where('id', $input['trip_id'])->update(['start_time' => date('Y-m-d H:i:s'), 'actual_pickup_address' => $input['address'], 'actual_pickup_lat' => $input['lat'], 'actual_pickup_lng' => $input['lng']]);
