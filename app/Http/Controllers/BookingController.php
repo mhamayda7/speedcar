@@ -1660,7 +1660,7 @@ class BookingController extends Controller
         $driver_earning = number_format((float)$driver_earning, 2, '.', '');
         DriverEarning::create(['trip_id' => $trip_id, 'driver_id' => $trip->driver_id, 'amount' => $driver_earning]);
 
-        if ($trip->payment_method == 2) {
+        if ( $trip->payment_method == 2 ) {
             if ($trip->total > $customer->wallet) {
                 $amount_require  = $trip->total - $customer->wallet;
                 $amount_require = number_format((float)$amount_require, 2, '.', '');
@@ -1671,7 +1671,7 @@ class BookingController extends Controller
                     ]);
                     DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 2, 'transaction_type' => 1, 'message' => 'تم خصم رصيد من محفظتك لرحلة رقم' . $trip->trip_id, 'amount' => ($admin_commission - $customer->wallet)]);
                 } else {
-                    $to_driver = $driver->wallet + ($customer->wallet - $admin_commission);
+                    $to_driver = $driver->wallet + ( $customer->wallet - $admin_commission );
                     Driver::where('id', $trip->driver_id)->update([
                         'wallet' => $to_driver,
                     ]);
@@ -1689,7 +1689,7 @@ class BookingController extends Controller
                     'wallet' => $customer_wallet,
                 ]);
 
-                $driver_wallet = $driver->wallet + $admin_commission;
+                $driver_wallet = $driver->wallet + $trip->total - $admin_commission;
                 Driver::where('id', $trip->driver_id)->update([
                     'wallet' => $driver_wallet,
                 ]);
