@@ -1665,11 +1665,7 @@ class BookingController extends Controller
                 $amount_require  = $trip->total - $customer->wallet;
                 $amount_require = number_format((float)$amount_require, 2, '.', '');
 
-                $customer->update(['wallet' => 0]);
-                Trip::where('id', $trip_id)->update([
-                    'amount_require' => $amount_require,
-                ]);
-
+                dd($admin_commission, $customer->wallet);
                 if ($admin_commission > $customer->wallet) {
                     $to_driver = $driver->wallet - ($admin_commission - $customer->wallet);
                     Driver::where('id', $trip->driver_id)->update([
@@ -1683,6 +1679,10 @@ class BookingController extends Controller
                     ]);
                     DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 1, 'transaction_type' => 1, 'message' => 'تم إضافة رصيد لمحفظتك لرحلة رقم' . $trip->trip_id, 'amount' => ($customer->wallet - $admin_commission)]);
                 }
+                $customer->update(['wallet' => 0]);
+                Trip::where('id', $trip_id)->update([
+                    'amount_require' => $amount_require,
+                ]);
                 CustomerWalletHistory::create(['country_id' => $trip->country_id, 'customer_id' => $trip->customer_id, 'type' => 1, 'message' => 'طلب رحلة و الدفع من المحفظة وكاش', 'amount' => $total, 'transaction_type' => $trip->payment_method]);
             } elseif ($trip->total <= $customer->wallet) {
                 Trip::where('id', $trip_id)->update(['amount_require' => 0]);
