@@ -1664,8 +1664,6 @@ class BookingController extends Controller
             if ($trip->total > $customer->wallet) {
                 $amount_require  = $trip->total - $customer->wallet;
                 $amount_require = number_format((float)$amount_require, 2, '.', '');
-
-                dd($admin_commission, $customer->wallet);
                 if ($admin_commission > $customer->wallet) {
                     $to_driver = $driver->wallet - ($admin_commission - $customer->wallet);
                     Driver::where('id', $trip->driver_id)->update([
