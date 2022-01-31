@@ -1145,6 +1145,13 @@ class BookingController extends Controller
             $input['status'] = $trip->status;
         }
 
+        if ($trip->status >= $input['status']) {
+            return response()->json([
+                "message" => 'هناك خطأ ما',
+                "status" => 0
+            ]);
+        }
+
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
 
