@@ -1249,6 +1249,11 @@ class BookingController extends Controller
         }
 
         if ($input['status'] == 7) {
+            $newPost = $database
+            ->getReference('/drivers/' . $trip->driver_id)
+            ->update([
+                'booking_status' => 0
+            ]);
             try {
                 $fcm = Driver::where('id', $trip->driver_id)->value('fcm_token');
                 $this->send_fcm('تم إلغاء الرحلة من قبل العميل', 'تم إلغاء الرحلة من قبل العميل', $fcm);
