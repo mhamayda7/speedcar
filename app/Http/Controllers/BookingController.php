@@ -1256,8 +1256,10 @@ class BookingController extends Controller
             ]);
             try {
                 $fcm = Driver::where('id', $trip->driver_id)->value('fcm_token');
+                dd($fcm);
                 $this->send_fcm('تم إلغاء الرحلة من قبل العميل', 'تم إلغاء الرحلة من قبل العميل', $fcm);
             } catch (Exception $e) {
+
             }
         }
 
