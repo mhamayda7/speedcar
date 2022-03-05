@@ -744,6 +744,13 @@ class BookingController extends Controller
 
         $trip = Trip::where('id', $input['trip_id'])->first();
 
+        try {
+            $fcm = Driver::where('id', $trip->driver_id)->value('fcm_token');
+            // dd($fcm);
+            $this->send_fcm('تم إلغاء الرحلة من قبل العميل', 'تم إلغاء الرحلة من قبل العميل', $fcm);
+        } catch (Exception $e) {
+
+        }
         //Firebase
         //$factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
