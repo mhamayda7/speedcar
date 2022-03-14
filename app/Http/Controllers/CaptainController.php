@@ -42,8 +42,6 @@ class CaptainController extends Controller
             'cost' => 12,
         ];
 
-
-
         $input['password'] = password_hash($input["password"], PASSWORD_DEFAULT, $options);
         $input['status'] = 1;
         $input['fcm_token'] = 0000;
@@ -119,7 +117,7 @@ class CaptainController extends Controller
     }
         //$database = $firebase->getDatabase();
 
-        return redirect()->back()->with('captain_registered','تم إرسال البيانات بنجاح');
+        return view('thankyou')->with('captain_registered','تم إرسال البيانات بنجاح');
 
 
     }
