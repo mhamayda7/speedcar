@@ -69,7 +69,7 @@ class timeoutTripRequest extends Command
                 $driver_id = $database->getReference('/tripreques/'. $triprequest)->getSnapshot()->getValue();
 
                 $newPost = $database
-                ->getReference('/drivers/' . $driver_id['driver_id'])s
+                ->getReference('/drivers/' . $driver_id['driver_id'])
                 ->update([
                     'booking_status' => 0
                 ]);
