@@ -44,19 +44,40 @@ class timeoutTripRequest extends Command
      */
     public function handle()
     {
+        $this->triprequest();
+        sleep(20);
+        $this->triprequest();
+        sleep(20);
+        $this->triprequest();
+    }
+
+    public function triprequest() {
+
         $timeNow = time();
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
+
         $triprequests = TripRequest::whereIn('status', [2, 4])->get();
+
         $image = "image/tripaccept.png";
         foreach ($triprequests as $triprequest) {
             $timeInterval = ($timeNow - strtotime($triprequest->created_at))/60;
-            if ($timeInterval > 1) {
+            if ($timeInterval > 2) {
                 $triprequest->update(['status' => 5]);
                 $customer = Customer::where('id', $triprequest->customer_id)->first();
+
+                $driver_id = $database->getReference('/tripreques/'.$triprequest)->getSnapshot()->getValue();
+
+                $newPost = $database
+                ->getReference('/drivers/' . $driver_id)
+                ->update([
+                    'booking_status' => 0
+                ]);
+
                 $newPost = $database
                 ->getReference('/triprequest/' . $triprequest->id)
                 ->remove();
+
                 if ($customer->fcm_token) {
                     $this->save_notifcation($customer->id,1,'لم يتم العثور على سائق', 'لا يتوفر حالياً سائقين',$image);
                     $this->send_fcm('لم يتم العثور على سائق', 'لا يتوفر حالياً سائقين', $customer->fcm_token);

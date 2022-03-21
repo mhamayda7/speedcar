@@ -2333,43 +2333,67 @@ class BookingController extends Controller
     {
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
-        $drivers = $database->getReference('/drivers/')
-            ->getSnapshot()->getValue();
 
-        foreach ($drivers as $driver) {
-            if ($driver['online_status'] == 1) {
-                $vehicle = DriverVehicle::where('driver_id', $driver['driver_id'])->first();
-                if ($driver['lat'] == $vehicle->lat && $driver['lng'] == $vehicle->lng) {
-                    $newPost = $database->getReference('/drivers/' . $driver['driver_id'])
-                        ->update([
-                            'online_status' => 0,
-                        ]);
-                } else {
-                    DriverVehicle::where('driver_id', $driver['driver_id'])->update([
-                        'lat' => $driver['lat'],
-                        'lng' => $driver['lng']
-                    ]);
-                }
-            }
+        $trip_requests = $database->getReference('/triprequest/')
+                            ->getValue();
+
+        foreach ($trip_requests as $trip_request) {
+            $this->triprequest($trip_request['request_id'], $trip_request['driver_id']);
+        }
+        sleep(18);
+
+        $trip_requests = $database->getReference('/triprequest/')
+                            ->getValue();
+
+        foreach ($trip_requests as $trip_request) {
+            $this->triprequest($trip_request['request_id'], $trip_request['driver_id']);
+        }
+
+        sleep(18);
+
+        $trip_requests = $database->getReference('/triprequest/')
+                            ->getValue();
+
+        foreach ($trip_requests as $trip_request) {
+            $this->triprequest($trip_request['request_id'], $trip_request['driver_id']);
         }
     }
 
-    public function request()
+
+    public function triprequest($trip_id, $driver_id)
     {
+        $input['driver_id'] = $driver_id;
+
+        $trip = TripRequest::where('id', $trip_id)->first();
+
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
-        $value = $database->getReference('/triprequest/')
-            ->getValue();
-        // dd($value);
-        foreach ($value as $triprequest) {
-            $this->change_driver($triprequest['request_id'], $triprequest['driver_id']);
+
+        $newPost = $database
+            ->getReference('/drivers/' . $input['driver_id'])
+            ->update([
+                'booking_status' => 0
+            ]);
+
+        if ($trip->booking_type == 1) {
+            TripRequest::where('id', $trip_id)->update(['status' => 4]);
         }
+
+        $data['driver_id'] = $input['driver_id'];
+        $data['trip_request_id'] = $trip_id;
+        $data['status'] = 0;
+
+        DriverTripRequest::create($data);
+        $this->find_driver($trip_id);
+        return response()->json([
+            "message" => 'Success',
+            "status" => 1
+        ]);
     }
 
 
     public function change_driver($trip_id, $driver_id)
     {
-
         $input['driver_id'] = $driver_id;
 
         $trip = TripRequest::where('id', $trip_id)->first();
