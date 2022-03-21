@@ -66,10 +66,10 @@ class timeoutTripRequest extends Command
                 $triprequest->update(['status' => 5]);
                 $customer = Customer::where('id', $triprequest->customer_id)->first();
 
-                $driver_id = $database->getReference('/tripreques/'.$triprequest)->getSnapshot()->getValue();
+                $driver_id = $database->getReference('/tripreques/'. $triprequest)->getSnapshot()->getValue();
 
                 $newPost = $database
-                ->getReference('/drivers/' . $driver_id)
+                ->getReference('/drivers/' . $driver_id['driver_id'])s
                 ->update([
                     'booking_status' => 0
                 ]);
