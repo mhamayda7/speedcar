@@ -42,6 +42,8 @@ class Kernel extends ConsoleKernel
 
         // // this command will run every 30 seconds
         $shortSchedule->command('command:test')->everySeconds(15);
+        $shortSchedule->command(command: 'TripRequest:timeout')->everySeconds(20);
+        $shortSchedule->command(command: 'changeStatusDriver')->everySeconds(600);
 
         // // this command will run every half a second
         // $shortSchedule->command('another-artisan-command')->everySeconds(0.5);
@@ -54,7 +56,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }
