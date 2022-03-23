@@ -2,16 +2,14 @@
 
 namespace App\Console\Commands;
 
+
 use App\Customer;
+use App\Models\DriverTripRequest;
 use App\Driver;
 use App\TripRequest;
-use Illuminate\Console\Command;
 use Kreait\Firebase\Factory;
-use App\Models\DriverTripRequest;
 use Exception;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Request;
-use Validator;
+use Illuminate\Console\Command;
 
 class ChangeDriver extends Command
 {
@@ -20,7 +18,7 @@ class ChangeDriver extends Command
      *
      * @var string
      */
-    protected $signature = 'ChangeDriver:timeout';
+    protected $signature = 'ChangeDriverForRequest';
 
     /**
      * The console command description.
@@ -46,44 +44,85 @@ class ChangeDriver extends Command
      */
     public function handle()
     {
-        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
-        $database = $factory->createDatabase();
+        try {
+            $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+            $database = $factory->createDatabase();
 
-        $trip_requests = $database->getReference('/triprequest/')
-            ->getValue();
+            $trip_requests = $database->getReference('/triprequest/')
+                ->getValue();
 
-        foreach ($trip_requests as $trip_request) {
-            $this->triprequest($trip_request['request_id'], $trip_request['driver_id']);
+            foreach ($trip_requests as $trip_request) {
+                $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
+            }
+        } catch (Exception $e) {
         }
         sleep(18);
+        try {
+            $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+            $database = $factory->createDatabase();
 
-        $trip_requests = $database->getReference('/triprequest/')
-            ->getValue();
+            $trip_requests = $database->getReference('/triprequest/')
+                ->getValue();
 
-        foreach ($trip_requests as $trip_request) {
-            $this->triprequest($trip_request['request_id'], $trip_request['driver_id']);
+            foreach ($trip_requests as $trip_request) {
+                $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
+            }
+        } catch (Exception $e) {
         }
-
         sleep(18);
+        try {
+            $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+            $database = $factory->createDatabase();
 
-        $trip_requests = $database->getReference('/triprequest/')
-            ->getValue();
+            $trip_requests = $database->getReference('/triprequest/')
+                ->getValue();
 
-        foreach ($trip_requests as $trip_request) {
-            $this->triprequest($trip_request['request_id'], $trip_request['driver_id']);
+            foreach ($trip_requests as $trip_request) {
+                $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
+            }
+        } catch (Exception $e) {
         }
     }
 
-    public function find_driver($trip_request_id)
+    public function getrequest($trip_id, $driver_id)
+    {
+        $input['driver_id'] = $driver_id;
+
+        $trip = TripRequest::where('id', $trip_id)->first();
+
+        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+        $database = $factory->createDatabase();
+
+        $newPost = $database
+            ->getReference('/drivers/' . $input['driver_id'])
+            ->update([
+                'booking_status' => 0
+            ]);
+
+        if ($trip->booking_type == 1) {
+            TripRequest::where('id', $trip_id)->update(['status' => 4]);
+        }
+
+        $data['driver_id'] = $input['driver_id'];
+        $data['trip_request_id'] = $trip_id;
+        $data['status'] = 0;
+
+        DriverTripRequest::create($data);
+        $this->find_car($trip_id);
+        return response()->json([
+            "message" => 'Success',
+            "status" => 1
+        ]);
+    }
+
+    public function find_car($trip_request_id)
     {
 
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
 
         $trip_request = TripRequest::where('id', $trip_request_id)->first();
-
         $drivers = $database->getReference('/drivers/')->getSnapshot()->getValue();
-
         $rejected_drivers = DriverTripRequest::where('trip_request_id', $trip_request_id)->where('status', 0)->pluck('driver_id')->toArray();
         $min_distance = 0;
         $min_driver_id = 0;
@@ -149,36 +188,5 @@ class ChangeDriver extends Command
 
             return $trip_request->id;
         }
-    }
-
-    public function triprequest($trip_id, $driver_id)
-    {
-        $input['driver_id'] = $driver_id;
-
-        $trip = TripRequest::where('id', $trip_id)->first();
-
-        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
-        $database = $factory->createDatabase();
-
-        $newPost = $database
-            ->getReference('/drivers/' . $input['driver_id'])
-            ->update([
-                'booking_status' => 0
-            ]);
-
-        if ($trip->booking_type == 1) {
-            TripRequest::where('id', $trip_id)->update(['status' => 4]);
-        }
-
-        $data['driver_id'] = $input['driver_id'];
-        $data['trip_request_id'] = $trip_id;
-        $data['status'] = 0;
-
-        DriverTripRequest::create($data);
-        $this->find_driver($trip_id);
-        return response()->json([
-            "message" => 'Success',
-            "status" => 1
-        ]);
     }
 }

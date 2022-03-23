@@ -83,41 +83,6 @@ class CustomerController extends Controller
         }
     }
 
-    // public function check_phone(Request $request)
-    // {
-
-    //     $input = $request->all();
-    //     $validator = Validator::make($input, [
-    //         'phone_with_code' => 'required',
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         return $this->sendError($validator->errors());
-    //     }
-    //     $data = array();
-    //     $customer = Customer::where('phone_with_code', $input['phone_with_code'])->first();
-
-    //     if (is_object($customer)) {
-    //         $data['is_available'] = 1;
-    //         $data['otp'] = "";
-    //         return response()->json([
-    //             "result" => $data,
-    //             "message" => 'Success',
-    //             "status" => 1
-    //         ]);
-    //     } else {
-    //         $data['is_available'] = 0;
-    //         $data['otp'] = rand(1000, 9999);
-    //         $message = "Hi" . env('APP_NAME') . "  , Your OTP code is:" . $data['otp'];
-    //         //$message = "Hi Esycab"." , Your OTP code is:".$data['otp'];
-    //         $this->smsSe($input['phone_with_code'], $message);
-    //         return response()->json([
-    //             "result" => $data,
-    //             "message" => 'Success',
-    //             "status" => 1
-    //         ]);
-    //     }
-    // }
 
     public function forgot(Request $request)
     {

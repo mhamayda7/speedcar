@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Faq;
 use App\Trip;
 use App\Customer;
 use App\AppSetting;
@@ -23,19 +22,13 @@ use App\TripCancellation;
 use App\DriverVehicle;
 use App\TripSetting;
 use App\TripRequest;
-use App\Transaction;
-use App\UserType;
 use App\Models\ScratchCardSetting;
 use App\Models\CustomerOffer;
 use App\Models\LuckyOffer;
 use App\InstantOffer;
-use App\TripType;
 use Validator;
 use Illuminate\Support\Facades\DB;
-use Kreait\Firebase;
 use Kreait\Firebase\Factory;
-use Kreait\Firebase\ServiceAccount;
-use Kreait\Firebase\Database;
 use DateTime;
 use DateTimeZone;
 use App\CustomerWalletHistory;
@@ -45,11 +38,9 @@ use App\Models\RateTrip;
 use App\Models\TripRequestStatus;
 use App\NotificationMessage;
 use App\PromoCode;
-use Encore\Admin\Show;
 use Exception;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
-use League\CommonMark\Extension\CommonMark\Node\Inline\Code;
+
 
 class BookingController extends Controller
 {
@@ -458,7 +449,7 @@ class BookingController extends Controller
             $newPost = $database
                 ->getReference('/drivers/' . $min_driver_id)
                 ->update([
-                    'booking_status' => 0
+                    'booking_status' => 1
                 ]);
         }
 
@@ -2331,33 +2322,20 @@ class BookingController extends Controller
         return response()->json($response, 200);
     }
 
-    public function test()
+    public function changeDrivers()
     {
-        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
-        $database = $factory->createDatabase();
+        try {
+            $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+            $database = $factory->createDatabase();
 
-        $trip_requests = $database->getReference('/triprequest/')
-                            ->getValue();
+            $trip_requests = $database->getReference('/triprequest/')
+                                ->getValue();
 
-        foreach ($trip_requests as $trip_request) {
-            $this->triprequest($trip_request['request_id'], $trip_request['driver_id']);
-        }
-        sleep(18);
+            foreach ($trip_requests as $trip_request) {
+                $this->triprequest($trip_request['request_id'], $trip_request['driver_id']);
+            }
+        } catch (Exception $e) {
 
-        $trip_requests = $database->getReference('/triprequest/')
-                            ->getValue();
-
-        foreach ($trip_requests as $trip_request) {
-            $this->triprequest($trip_request['request_id'], $trip_request['driver_id']);
-        }
-
-        sleep(18);
-
-        $trip_requests = $database->getReference('/triprequest/')
-                            ->getValue();
-
-        foreach ($trip_requests as $trip_request) {
-            $this->triprequest($trip_request['request_id'], $trip_request['driver_id']);
         }
     }
 
@@ -2377,9 +2355,9 @@ class BookingController extends Controller
                 'booking_status' => 0
             ]);
 
-        if ($trip->booking_type == 1) {
-            TripRequest::where('id', $trip_id)->update(['status' => 4]);
-        }
+        // if ($trip->booking_type == 1) {
+        //     TripRequest::where('id', $trip_id)->update(['status' => 4]);
+        // }
 
         $data['driver_id'] = $input['driver_id'];
         $data['trip_request_id'] = $trip_id;
