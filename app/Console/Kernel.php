@@ -41,7 +41,7 @@ class Kernel extends ConsoleKernel
         // $shortSchedule->command('artisan-command')->everySecond();
 
         // // this command will run every 30 seconds
-        $shortSchedule->command('command:test')->everySeconds(30);
+        $shortSchedule->command('command:test')->everySeconds(15);
 
         // // this command will run every half a second
         // $shortSchedule->command('another-artisan-command')->everySeconds(0.5);
