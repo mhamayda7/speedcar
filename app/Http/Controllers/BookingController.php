@@ -2333,7 +2333,7 @@ class BookingController extends Controller
 
             foreach ($trip_requests as $trip_request) {
                 $this->triprequest($trip_request['request_id'], $trip_request['driver_id']);
-                $this->find_driver($trip_request['driver_id']);
+                $this->find_driver($trip_request['request_id']);
             }
         } catch (Exception $e) {
 
