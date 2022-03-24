@@ -2333,6 +2333,7 @@ class BookingController extends Controller
 
             foreach ($trip_requests as $trip_request) {
                 $this->triprequest($trip_request['request_id'], $trip_request['driver_id']);
+                $this->find_driver($trip_request['driver_id']);
             }
         } catch (Exception $e) {
 
@@ -2364,7 +2365,7 @@ class BookingController extends Controller
         $data['status'] = 0;
 
         DriverTripRequest::create($data);
-        $this->find_driver($trip_id);
+
         return response()->json([
             "message" => 'Success',
             "status" => 1
