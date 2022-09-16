@@ -45,10 +45,10 @@ class timeoutTripRequest extends Command
     public function handle()
     {
         $this->triprequest();
-        sleep(20);
+        sleep(29);
         $this->triprequest();
-        sleep(20);
-        $this->triprequest();
+        // sleep(20);
+        // $this->triprequest();
     }
 
     public function triprequest() {
