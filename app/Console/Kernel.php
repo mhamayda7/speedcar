@@ -30,7 +30,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
         // $schedule->command(command:'TripRequest:timeout')->everyMinute();
         // $schedule->command(command:'changeStatusDriver')->everyFifteenMinutes();
-        // $schedule->command(command:'ChangeDriverForRequest')->everyMinute();
+        $schedule->command(command:'ChangeDriverForRequest')->everyMinute();
         // $schedule->command(command:'command:test')->cron('0 */2 * * *');
         // $shortSchedule->command(command:'command:test')->everySecond(20);
     }
@@ -42,8 +42,9 @@ class Kernel extends ConsoleKernel
 
         // // this command will run every 30 seconds
         // $shortSchedule->command('command:test')->everySeconds(15);
-        // $shortSchedule->command(command: 'TripRequest:timeout')->everySeconds(59);
-        // $shortSchedule->command(command: 'changeStatusDriver')->everySeconds(600);
+        $shortSchedule->command(command: 'TripRequest:timeout')->everySeconds(59);
+        $shortSchedule->command(command: 'changeStatusDriver')->everySeconds(60);
+        $shortSchedule->command(command: 'ChangeDriverForRequest')->everySeconds(60);
 
         // // this command will run every half a second
         // $shortSchedule->command('another-artisan-command')->everySeconds(0.5);
