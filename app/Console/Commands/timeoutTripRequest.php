@@ -44,171 +44,171 @@ class timeoutTripRequest extends Command
      */
     public function handle()
     {
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
-        sleep(1);
-        $this->triprequest();
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
+        // sleep(1);
+        // $this->triprequest();
     }
 
-    public function triprequest() {
+    // public function triprequest() {
 
-        $timeNow = time();
-        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
-        $database = $factory->createDatabase();
+    //     $timeNow = time();
+    //     $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+    //     $database = $factory->createDatabase();
 
-        $triprequests = TripRequest::whereIn('status', [2, 4])->get();
+    //     $triprequests = TripRequest::whereIn('status', [2, 4])->get();
 
-        $image = "image/tripaccept.png";
-        foreach ($triprequests as $triprequest) {
-            $timeInterval = ($timeNow - strtotime($triprequest->created_at))/60;
-            if ($timeInterval > 2) {
-                $triprequest->update(['status' => 5]);
-                $customer = Customer::where('id', $triprequest->customer_id)->first();
+    //     $image = "image/tripaccept.png";
+    //     foreach ($triprequests as $triprequest) {
+    //         $timeInterval = ($timeNow - strtotime($triprequest->created_at))/60;
+    //         if ($timeInterval > 2) {
+    //             $triprequest->update(['status' => 5]);
+    //             $customer = Customer::where('id', $triprequest->customer_id)->first();
 
-                $driver_id = $database->getReference('/tripreques/'. $triprequest)->getSnapshot()->getValue();
+    //             $driver_id = $database->getReference('/tripreques/'. $triprequest)->getSnapshot()->getValue();
 
-                $newPost = $database
-                ->getReference('/drivers/' . $driver_id['driver_id'])
-                ->update([
-                    'booking_status' => 0
-                ]);
+    //             $newPost = $database
+    //             ->getReference('/drivers/' . $driver_id['driver_id'])
+    //             ->update([
+    //                 'booking_status' => 0
+    //             ]);
 
-                $newPost = $database
-                ->getReference('/triprequest/' . $triprequest->id)
-                ->remove();
+    //             $newPost = $database
+    //             ->getReference('/triprequest/' . $triprequest->id)
+    //             ->remove();
 
-                if ($customer->fcm_token) {
-                    $this->save_notifcation($customer->id,1,'لم يتم العثور على سائق', 'لا يتوفر حالياً سائقين',$image);
-                    $this->send_fcm('لم يتم العثور على سائق', 'لا يتوفر حالياً سائقين', $customer->fcm_token);
-                }
-            }
-        }
-    }
+    //             if ($customer->fcm_token) {
+    //                 $this->save_notifcation($customer->id,1,'لم يتم العثور على سائق', 'لا يتوفر حالياً سائقين',$image);
+    //                 $this->send_fcm('لم يتم العثور على سائق', 'لا يتوفر حالياً سائقين', $customer->fcm_token);
+    //             }
+    //         }
+    //     }
+    // }
 
-    public function save_notifcation($id, $type, $title, $message, $image)
-    {
-        $data = [];
-        $data['user_id'] = $id;
-        $data['country_id'] = 1;
-        $data['type'] = $type;
-        $data['title'] = $title;
-        $data['message'] = $message;
-        $data['image'] = $image;
-        $data['status'] = 1;
-        NotificationMessage::create($data);
-    }
+    // public function save_notifcation($id, $type, $title, $message, $image)
+    // {
+    //     $data = [];
+    //     $data['user_id'] = $id;
+    //     $data['country_id'] = 1;
+    //     $data['type'] = $type;
+    //     $data['title'] = $title;
+    //     $data['message'] = $message;
+    //     $data['image'] = $image;
+    //     $data['status'] = 1;
+    //     NotificationMessage::create($data);
+    // }
 
-    public function send_fcm($title, $description, $token)
-    {
-        $factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
-        $messaging = $factory->createMessaging();
+    // public function send_fcm($title, $description, $token)
+    // {
+    //     $factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
+    //     $messaging = $factory->createMessaging();
 
-        $message = CloudMessage::fromArray([
-            'token' => $token,
-            'notification' => [],
-            'data' => [],
-        ]);
+    //     $message = CloudMessage::fromArray([
+    //         'token' => $token,
+    //         'notification' => [],
+    //         'data' => [],
+    //     ]);
 
-        $config = AndroidConfig::fromArray([
-            'ttl' => '3600s',
-            'priority' => 'normal',
-            'notification' => [
-                'title' => $title,
-                'body' => $description,
-                'icon' => '',
-                'color' => '',
-            ],
-        ]);
+    //     $config = AndroidConfig::fromArray([
+    //         'ttl' => '3600s',
+    //         'priority' => 'normal',
+    //         'notification' => [
+    //             'title' => $title,
+    //             'body' => $description,
+    //             'icon' => '',
+    //             'color' => '',
+    //         ],
+    //     ]);
 
-        $message = $message->withAndroidConfig($config);
+    //     $message = $message->withAndroidConfig($config);
 
-        $messaging->send($message);
-    }
+    //     $messaging->send($message);
+    // }
 }
