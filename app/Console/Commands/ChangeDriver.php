@@ -44,6 +44,68 @@ class ChangeDriver extends Command
      */
     public function handle()
     {
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+        sleep(1);
+        $this->runse();
+    }
+
+    public function runse() {
         try {
             $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
             $database = $factory->createDatabase();
@@ -55,32 +117,6 @@ class ChangeDriver extends Command
                 if (((time() - $trip_request['time']) % 20) == 0) {
                     $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
                 }
-            }
-        } catch (Exception $e) {
-        }
-        sleep(18);
-        try {
-            $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
-            $database = $factory->createDatabase();
-
-            $trip_requests = $database->getReference('/triprequest/')
-                ->getValue();
-
-            foreach ($trip_requests as $trip_request) {
-                $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
-            }
-        } catch (Exception $e) {
-        }
-        sleep(18);
-        try {
-            $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
-            $database = $factory->createDatabase();
-
-            $trip_requests = $database->getReference('/triprequest/')
-                ->getValue();
-
-            foreach ($trip_requests as $trip_request) {
-                $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
             }
         } catch (Exception $e) {
         }
