@@ -351,7 +351,7 @@ class BookingController extends Controller
                 'driver_id' => $min_driver_id,
                 'pikup_lat' => $input['pickup_lat'],
                 'pikup_lng' => $input['pickup_lng'],
-                'time' => (date('s'))
+                'time' => (time())
             ]);
 
         return response()->json([
