@@ -55,7 +55,6 @@ class timeoutTripRequest extends Command
         $this->triprequest();
         sleep(10);
         $this->triprequest();
-
     }
 
     public function triprequest() {
