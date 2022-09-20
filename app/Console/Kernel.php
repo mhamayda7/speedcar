@@ -27,7 +27,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('inspire')->hourly();
         // $schedule->command(command:'TripRequest:timeout')->everyMinute();
         // $schedule->command(command:'changeStatusDriver')->everyFifteenMinutes();
         // $schedule->command(command:'ChangeDriverForRequest')->everyMinute();
@@ -42,7 +42,7 @@ class Kernel extends ConsoleKernel
 
         // // this command will run every 30 seconds
         // $shortSchedule->command('command:test')->everySeconds(15);
-        $shortSchedule->command('command:ChangeDrive')->everySeconds(1);
+        $shortSchedule->command(command: 'ChangeDrive')->everySeconds(1);
         $shortSchedule->command(command: 'TripRequest:timeout')->everySeconds(20);
         $shortSchedule->command(command: 'changeStatusDriver')->everySeconds(60);
 

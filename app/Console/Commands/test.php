@@ -37,7 +37,7 @@ class test extends Command
      */
     public function handle()
     {
-        // $this->runChangeDrive();
+        $this->runChangeDrive();
     }
 
     public function runChangeDrive() {
@@ -58,6 +58,6 @@ class test extends Command
         ));
         curl_exec($curl);
         curl_close($curl);
-        return Command::SUCCESS;
+        // return Command::SUCCESS;
     }
 }
