@@ -42,7 +42,7 @@ class Kernel extends ConsoleKernel
 
         // // this command will run every 30 seconds
         // $shortSchedule->command('command:test')->everySeconds(15);
-        $shortSchedule->command('command:test')->everySeconds(1);
+        $shortSchedule->command(command: 'ChangeDrive')->everySeconds(1);
         $shortSchedule->command(command: 'TripRequest:timeout')->everySeconds(20);
         $shortSchedule->command(command: 'changeStatusDriver')->everySeconds(60);
 

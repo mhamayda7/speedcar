@@ -18,14 +18,14 @@ class ChangeDriver extends Command
      *
      * @var string
      */
-    protected $signature = 'ChangeDriverForRequest';
+    protected $signature = 'command: ChangeDrive';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'ChangeDriverForRequest';
+    protected $description = 'Command ChangeDrive';
 
     /**
      * Create a new command instance.
