@@ -351,7 +351,7 @@ class BookingController extends Controller
                 'driver_id' => $min_driver_id,
                 'pikup_lat' => $input['pickup_lat'],
                 'pikup_lng' => $input['pickup_lng'],
-                'time' => (time())
+                'time' => 0
             ]);
 
         return response()->json([
@@ -2324,19 +2324,40 @@ class BookingController extends Controller
 
     public function changeDrivers()
     {
+        // try {
+        //     $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+        //     $database = $factory->createDatabase();
+
+        //     $trip_requests = $database->getReference('/triprequest/')
+        //                         ->getValue();
+
+        //     foreach ($trip_requests as $trip_request) {
+        //         $this->triprequest($trip_request['request_id'], $trip_request['driver_id']);
+        //         $this->find_driver($trip_request['request_id']);
+        //     }
+        // } catch (Exception $e) {
+
+        // }
+
         try {
             $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
             $database = $factory->createDatabase();
 
             $trip_requests = $database->getReference('/triprequest/')
-                                ->getValue();
+                ->getValue();
 
             foreach ($trip_requests as $trip_request) {
-                $this->triprequest($trip_request['request_id'], $trip_request['driver_id']);
-                $this->find_driver($trip_request['request_id']);
+                $newPost1 = $database
+                ->getReference('/triprequest/' . $trip_request['request_id'])
+                ->update([
+                    'time' => $trip_request['time'] + 1,
+                ]);
+
+                if( (($trip_request['time']+1) % 20) == 0 ) {
+                    $this->getrequest($trip_request['request_id'], $trip_request['driver_id'],$trip_request['time']);
+                }
             }
         } catch (Exception $e) {
-
         }
     }
 
@@ -2419,15 +2440,21 @@ class BookingController extends Controller
                 ->getValue();
 
             foreach ($trip_requests as $trip_request) {
-                if(((time() - $trip_request['time']) % 20) == 0) {
-                    $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
+                $newPost1 = $database
+                ->getReference('/triprequest/' . $trip_request['request_id'])
+                ->update([
+                    'time' => $trip_request['time'] + 1,
+                ]);
+
+                if( (($trip_request['time']+1) % 20) == 0 ) {
+                    $this->getrequest($trip_request['request_id'], $trip_request['driver_id'],$trip_request['time']);
                 }
             }
         } catch (Exception $e) {
         }
     }
 
-    public function getrequest($trip_id, $driver_id)
+    public function getrequest($trip_id, $driver_id,$time)
     {
         $input['driver_id'] = $driver_id;
 
@@ -2451,14 +2478,14 @@ class BookingController extends Controller
         $data['status'] = 0;
 
         DriverTripRequest::create($data);
-        $this->find_car($trip_id);
+        $this->find_car($trip_id,$time);
         return response()->json([
             "message" => 'Success',
             "status" => 1
         ]);
     }
 
-    public function find_car($trip_request_id)
+    public function find_car($trip_request_id,$time)
     {
 
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
@@ -2500,6 +2527,13 @@ class BookingController extends Controller
                 ->getReference('/drivers/' . $min_driver_id)
                 ->update([
                     'booking_status' => 0
+                ]);
+                $newPost = $database
+
+                ->getReference('/triprequest/' . $trip_request->id)
+                ->update([
+                    'driver_id' => $min_driver_id,
+                    'time' => $time+1,
                 ]);
         }
 

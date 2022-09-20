@@ -38,10 +38,6 @@ class test extends Command
     public function handle()
     {
         $this->runChangeDrive();
-        // sleep(18);
-        // $this->runChangeDrive();
-        // sleep(18);
-        // $this->runChangeDrive();
     }
 
     public function runChangeDrive() {
