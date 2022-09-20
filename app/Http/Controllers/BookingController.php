@@ -2347,13 +2347,7 @@ class BookingController extends Controller
                 ->getValue();
 
             foreach ($trip_requests as $trip_request) {
-                $newPost1 = $database
-                ->getReference('/triprequest/' . $trip_request['request_id'])
-                ->update([
-                    'time' => $trip_request['time'] + 1,
-                ]);
-
-                if( (($trip_request['time']+1) % 20) == 0 ) {
+                if( ((time() - $trip_request['time']) % 20) == 0 ) {
                     $this->getrequest($trip_request['request_id'], $trip_request['driver_id'],$trip_request['time']);
                 }
             }
