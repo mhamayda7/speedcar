@@ -2347,7 +2347,7 @@ class BookingController extends Controller
                 ->getValue();
 
             foreach ($trip_requests as $trip_request) {
-                $newPost = $database
+                $newPost1 = $database
                 ->getReference('/triprequest/' . $trip_request->id)
                 ->update([
                     'time' => $trip_request['time']+1,

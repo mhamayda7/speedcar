@@ -37,7 +37,7 @@ class test extends Command
      */
     public function handle()
     {
-        $this->runChangeDrive();
+        // $this->runChangeDrive();
     }
 
     public function runChangeDrive() {
