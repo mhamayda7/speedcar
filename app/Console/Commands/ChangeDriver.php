@@ -45,64 +45,6 @@ class ChangeDriver extends Command
     public function handle()
     {
         $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
-        sleep(1);
-        $this->runse();
     }
 
     public function runse() {
