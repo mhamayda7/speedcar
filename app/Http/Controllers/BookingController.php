@@ -2527,7 +2527,6 @@ class BookingController extends Controller
                 ->getReference('/triprequest/' . $trip_request->id)
                 ->update([
                     'driver_id' => $min_driver_id,
-                    'time' => $time+1,
                 ]);
         }
 
