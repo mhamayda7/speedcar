@@ -2333,7 +2333,7 @@ class BookingController extends Controller
 
             foreach ($trip_requests as $trip_request) {
                 $newPost1 = $database
-                ->getReference('/triprequest/' . $trip_request->id)
+                ->getReference('/triprequest/' . $trip_request['request_id'])
                 ->update([
                     'time' => $trip_request['time']+1,
                 ]);
