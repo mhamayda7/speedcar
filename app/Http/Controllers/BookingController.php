@@ -351,7 +351,7 @@ class BookingController extends Controller
                 'driver_id' => $min_driver_id,
                 'pikup_lat' => $input['pickup_lat'],
                 'pikup_lng' => $input['pickup_lng'],
-                'time' => time(),
+                'time' => 0,
             ]);
 
         return response()->json([
@@ -2347,7 +2347,13 @@ class BookingController extends Controller
                 ->getValue();
 
             foreach ($trip_requests as $trip_request) {
-                if( ((time() - $trip_request['time']) % 20) == 0 ) {
+                $newPost = $database
+                ->getReference('/triprequest/' . $trip_request->id)
+                ->update([
+                    'time' => $trip_request['time']+1,
+                ]);
+
+                if( (($trip_request['time']) % 20) == 0 ) {
                     $this->getrequest($trip_request['request_id'], $trip_request['driver_id'],$trip_request['time']);
                 }
             }
