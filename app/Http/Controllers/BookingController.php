@@ -2324,21 +2324,6 @@ class BookingController extends Controller
 
     public function changeDrivers()
     {
-        // try {
-        //     $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
-        //     $database = $factory->createDatabase();
-
-        //     $trip_requests = $database->getReference('/triprequest/')
-        //                         ->getValue();
-
-        //     foreach ($trip_requests as $trip_request) {
-        //         $this->triprequest($trip_request['request_id'], $trip_request['driver_id']);
-        //         $this->find_driver($trip_request['request_id']);
-        //     }
-        // } catch (Exception $e) {
-
-        // }
-
         try {
             $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
             $database = $factory->createDatabase();
