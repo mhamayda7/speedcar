@@ -343,15 +343,15 @@ class BookingController extends Controller
                 'trip_type' => DB::table('trip_types')->where('id', $input['trip_type'])->value('name')
             ]);
 
-        $newPost = $database
+        sleep(time() % 20);
 
+        $newPost = $database
             ->getReference('/triprequest/' . $id)
             ->update([
                 'request_id' => $id,
                 'driver_id' => $min_driver_id,
                 'pikup_lat' => $input['pickup_lat'],
                 'pikup_lng' => $input['pickup_lng'],
-                'time' => 1
             ]);
 
         return response()->json([
@@ -744,7 +744,6 @@ class BookingController extends Controller
             // dd($fcm);
             $this->send_fcm('تم إلغاء الرحلة من قبل العميل', 'تم إلغاء الرحلة من قبل العميل', $fcm);
         } catch (Exception $e) {
-
         }
         //Firebase
         //$factory = (new Factory)->withServiceAccount(config_path().'/'.env('FIREBASE_FILE'));
@@ -1250,16 +1249,15 @@ class BookingController extends Controller
 
         if ($input['status'] == 7) {
             $newPost = $database
-            ->getReference('/drivers/' . $trip->driver_id)
-            ->update([
-                'booking_status' => 0
-            ]);
+                ->getReference('/drivers/' . $trip->driver_id)
+                ->update([
+                    'booking_status' => 0
+                ]);
             try {
                 $fcm = Driver::where('id', $trip->driver_id)->value('fcm_token');
                 // dd($fcm);
                 $this->send_fcm('تم إلغاء الرحلة من قبل العميل', 'تم إلغاء الرحلة من قبل العميل', $fcm);
             } catch (Exception $e) {
-
             }
         }
 
@@ -1674,7 +1672,7 @@ class BookingController extends Controller
         $driver_earning = number_format((float)$driver_earning, 2, '.', '');
         DriverEarning::create(['trip_id' => $trip_id, 'driver_id' => $trip->driver_id, 'amount' => $driver_earning]);
 
-        if ( $trip->payment_method == 2 ) {
+        if ($trip->payment_method == 2) {
             if ($trip->total > $customer->wallet) {
                 $amount_require  = $trip->total - $customer->wallet;
                 $amount_require = number_format((float)$amount_require, 2, '.', '');
@@ -1685,7 +1683,7 @@ class BookingController extends Controller
                     ]);
                     DriverWalletHistory::create(['driver_id' => $trip->driver_id, 'type' => 2, 'transaction_type' => 1, 'message' => 'تم خصم رصيد من محفظتك لرحلة رقم' . $trip->trip_id, 'amount' => ($admin_commission - $customer->wallet)]);
                 } else {
-                    $to_driver = $driver->wallet + ( $customer->wallet - $admin_commission );
+                    $to_driver = $driver->wallet + ($customer->wallet - $admin_commission);
                     Driver::where('id', $trip->driver_id)->update([
                         'wallet' => $to_driver,
                     ]);
@@ -2333,21 +2331,19 @@ class BookingController extends Controller
 
             foreach ($trip_requests as $trip_request) {
                 $newPost1 = $database
-                ->getReference('/triprequest/' . $trip_request['request_id'])
-                ->update([
-                    'time' => $trip_request['time'] + 1,
-                ]);
+                    ->getReference('/triprequest/' . $trip_request['request_id'])
+                    ->update([
+                        'time' => $trip_request['time'] + 1,
+                    ]);
 
-                if( (($trip_request['time']) % 20) == 0 ) {
-                    $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
-                }
+                $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
             }
         } catch (Exception $e) {
         }
     }
 
-    public function tests() {
-
+    public function tests()
+    {
     }
 
     public function getrequest($trip_id, $driver_id)
@@ -2422,7 +2418,7 @@ class BookingController extends Controller
                 ->update([
                     'booking_status' => 0
                 ]);
-                $newPost = $database
+            $newPost = $database
 
                 ->getReference('/triprequest/' . $trip_request->id)
                 ->update([
