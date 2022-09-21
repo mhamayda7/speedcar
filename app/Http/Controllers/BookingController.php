@@ -2332,14 +2332,15 @@ class BookingController extends Controller
                 ->getValue();
 
             foreach ($trip_requests as $trip_request) {
-                if( (($trip_request['time']) % 20) == 0 ) {
-                    $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
-                }
                 $newPost1 = $database
                 ->getReference('/triprequest/' . $trip_request['request_id'])
                 ->update([
                     'time' => $trip_request['time'] + 1,
                 ]);
+
+                if( (($trip_request['time']) % 20) == 0 ) {
+                    $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
+                }
             }
         } catch (Exception $e) {
         }
@@ -2426,7 +2427,7 @@ class BookingController extends Controller
                 ->getReference('/triprequest/' . $trip_request->id)
                 ->update([
                     'driver_id' => $min_driver_id,
-                    'time' => 0,
+                    'time' => 1,
                 ]);
         }
 
