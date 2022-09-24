@@ -141,15 +141,15 @@ class test extends Command
                 ->update([
                     'booking_status' => 1
                 ]);
-            $newPost = $database
 
+            $newPost = $database
                 ->getReference('/triprequest/' . $trip_request->id)
                 ->update([
                     'driver_id' => $min_driver_id,
                     'time' => 1
                 ]);
 
-            return $trip_request->id;
+            // return $trip_request->id;
         }
 
         if ($min_driver_id == 0) {
