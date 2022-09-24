@@ -100,6 +100,7 @@ class DriverController extends Controller
             ]);
         }
     }
+
     public function register(Request $request)
     {
         $input = $request->all();

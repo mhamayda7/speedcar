@@ -41,7 +41,7 @@ class test extends Command
     }
 
     public function runChangeDrive() {
-        sleep(time() % 20);
+        sleep(time() % 30);
         $curl = curl_init();
         curl_setopt_array($curl, array(
             CURLOPT_URL => "https://speedcar-jo.com/api/speedV1/changeDrive",

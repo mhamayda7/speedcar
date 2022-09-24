@@ -343,7 +343,7 @@ class BookingController extends Controller
                 'trip_type' => DB::table('trip_types')->where('id', $input['trip_type'])->value('name')
             ]);
 
-        sleep(time() % 20);
+        sleep(time() % 30);
 
         $newPost = $database
             ->getReference('/triprequest/' . $id)
@@ -1189,6 +1189,7 @@ class BookingController extends Controller
             if (is_null(Trip::where('id', $input['trip_id'])->value('time_minutes'))) {
                 Trip::where('id', $input['trip_id'])->update(['time_minutes' => $time]);
             }
+
             $minutes = Trip::where('id', $input['trip_id'])->value('time_minutes');
             $price_time = $minutes * $vehicle->price_time;
             $price_time = number_format((float)$price_time, 2, '.', '');
@@ -1198,6 +1199,7 @@ class BookingController extends Controller
                 $fare = 1;
             }
             $fare = number_format((float)$fare, 2, '.', '');
+
             Trip::where('id', $input['trip_id'])->update(['sub_total' => $fare]);
 
             if ($trip->promo_code == 0) {
