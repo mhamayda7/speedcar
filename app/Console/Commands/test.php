@@ -57,9 +57,8 @@ class test extends Command
 
             foreach ($trip_requests as $trip_request) {
                 if($trip_request['time'] % 22 == 0) {
-
+                    $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
                 }
-                $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
                 $newPost = $database
                 ->getReference('/triprequest/' . $trip_request['request_id'])
                 ->update([
