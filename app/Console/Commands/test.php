@@ -56,7 +56,7 @@ class test extends Command
                 ->getValue();
 
             foreach ($trip_requests as $trip_request) {
-                if($trip_request['time'] % 22 == 0) {
+                if($trip_request['time'] % 25 == 0) {
                     $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
                 }
                 $newPost = $database
@@ -171,16 +171,5 @@ class test extends Command
                 ->getReference('/triprequest/' . $trip_request->id)
                 ->remove();
         }
-        //  else {
-        //     $newPost = $database
-
-        //         ->getReference('/triprequest/' . $trip_request->id)
-        //         ->update([
-        //             'driver_id' => $min_driver_id,
-        //             'time' => 1
-        //         ]);
-
-        //     return $trip_request->id;
-        // }
     }
 }
