@@ -56,14 +56,15 @@ class test extends Command
                 ->getValue();
 
             foreach ($trip_requests as $trip_request) {
-                if($trip_request['time'] % 25 == 0) {
-                    $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
-                }
                 $newPost = $database
                 ->getReference('/triprequest/' . $trip_request['request_id'])
                 ->update([
                     'time' => $trip_request['time'] + 1
                 ]);
+
+                if($trip_request['time'] % 25 == 0) {
+                    $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
+                }
             }
         } catch (Exception $e) {
         }
