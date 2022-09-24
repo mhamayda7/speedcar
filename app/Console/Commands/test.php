@@ -49,20 +49,22 @@ class test extends Command
     public function changeDrivers()
     {
         try {
-            $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+            $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))
+                ->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'));
             $database = $factory->createDatabase();
 
             $trip_requests = $database->getReference('/triprequest/')
                 ->getValue();
 
             foreach ($trip_requests as $trip_request) {
+                $timer = $trip_request['time'];
                 $newPost = $database
-                ->getReference('/triprequest/' . $trip_request['request_id'])
-                ->update([
-                    'time' => $trip_request['time'] + 1
-                ]);
+                    ->getReference('/triprequest/' . $trip_request['request_id'])
+                    ->update([
+                        'time' => $trip_request['time'] + 2
+                    ]);
 
-                if($trip_request['time'] % 25 == 0) {
+                if ($timer % 20 == 0) {
                     $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
                 }
             }
@@ -102,6 +104,7 @@ class test extends Command
 
     public function find_car($trip_request_id)
     {
+
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
 
@@ -140,17 +143,8 @@ class test extends Command
             $newPost = $database
                 ->getReference('/drivers/' . $min_driver_id)
                 ->update([
-                    'booking_status' => 1
+                    'booking_status' => 0
                 ]);
-
-            $newPost = $database
-                ->getReference('/triprequest/' . $trip_request->id)
-                ->update([
-                    'driver_id' => $min_driver_id,
-                    'time' => 1
-                ]);
-
-            // return $trip_request->id;
         }
 
         if ($min_driver_id == 0) {
@@ -173,13 +167,13 @@ class test extends Command
                 ->remove();
         } else {
             $newPost = $database
-            ->getReference('/triprequest/' . $trip_request->id)
-            ->update([
-                'driver_id' => $min_driver_id,
-                'time' => 1
-            ]);
 
-        return $trip_request->id;
+                ->getReference('/triprequest/' . $trip_request->id)
+                ->update([
+                    'driver_id' => $min_driver_id,
+                ]);
+
+            return $trip_request->id;
         }
     }
 }

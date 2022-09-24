@@ -343,7 +343,7 @@ class BookingController extends Controller
                 'trip_type' => DB::table('trip_types')->where('id', $input['trip_type'])->value('name')
             ]);
 
-        sleep(time() % 30);
+        // sleep(time() % 30);
 
         $newPost = $database
             ->getReference('/triprequest/' . $id)
@@ -352,7 +352,7 @@ class BookingController extends Controller
                 'driver_id' => $min_driver_id,
                 'pikup_lat' => $input['pickup_lat'],
                 'pikup_lng' => $input['pickup_lng'],
-                'time' => 1
+                'time' => 2
             ]);
 
         return response()->json([

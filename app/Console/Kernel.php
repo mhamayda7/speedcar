@@ -37,7 +37,7 @@ class Kernel extends ConsoleKernel
 
     protected function shortSchedule(ShortSchedule $shortSchedule)
     {
-        $shortSchedule->command('command:test')->everySeconds(1);
+        $shortSchedule->command('command:test')->everySeconds(2);
         // $shortSchedule->command(command: 'TripRequest:timeout')->everySeconds(20);
         // $shortSchedule->command(command: 'changeStatusDriver')->everySeconds(60);
 
