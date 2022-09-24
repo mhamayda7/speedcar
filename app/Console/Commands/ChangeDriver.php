@@ -44,7 +44,7 @@ class ChangeDriver extends Command
      */
     public function handle()
     {
-        // $this->runse();
+        $this->runse();
     }
 
     public function runse() {
