@@ -170,6 +170,15 @@ class test extends Command
             $newPost = $database
                 ->getReference('/triprequest/' . $trip_request->id)
                 ->remove();
+        } else {
+            $newPost = $database
+            ->getReference('/triprequest/' . $trip_request->id)
+            ->update([
+                'driver_id' => $min_driver_id,
+                'time' => 1
+            ]);
+
+        return $trip_request->id;
         }
     }
 }
