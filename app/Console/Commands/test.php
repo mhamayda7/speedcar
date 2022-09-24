@@ -57,6 +57,11 @@ class test extends Command
 
             foreach ($trip_requests as $trip_request) {
                 $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
+                $newPost = $database
+                ->getReference('/triprequest/' . $trip_request['request_id'])
+                ->update([
+                    'time' => $trip_request['time'] + 1
+                ]);
             }
         } catch (Exception $e) {
         }
