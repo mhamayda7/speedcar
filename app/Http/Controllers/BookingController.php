@@ -278,6 +278,7 @@ class BookingController extends Controller
             ]);
         }
 
+        sleep(time()%60);
         if ($min_driver_id != 0) {
             $fcm = Driver::where('id', $min_driver_id)->value('fcm_token');
             if ($fcm) {
