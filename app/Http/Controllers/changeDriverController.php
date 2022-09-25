@@ -108,7 +108,7 @@ class changeDriverController extends Controller
             $newPost = $database
                 ->getReference('/drivers/' . $min_driver_id)
                 ->update([
-                    'booking_status' => 0
+                    'booking_status' => 1
                 ]);
         }
 

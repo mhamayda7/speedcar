@@ -2343,7 +2343,7 @@ class BookingController extends Controller
             TripRequest::where('id', $trip_id)->update(['status' => 4]);
         }
 
-        $newcaptin = $this->find_car($trip_id);
+        $newcaptin = $this->find_driver($trip_id);
 
         $data['driver_id'] = $driver_id;
         $data['trip_request_id'] = $trip_id;
