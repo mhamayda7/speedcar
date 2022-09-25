@@ -28,7 +28,7 @@ class changeDriverController extends Controller
                 $newPost = $database
                     ->getReference('/triprequest/' . $trip_request['request_id'])
                     ->update([
-                        'time' => $trip_request['time'] + 2
+                        'time' => $timer + 2
                     ]);
 
                 if ($timer % 20 == 0) {

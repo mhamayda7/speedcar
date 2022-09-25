@@ -59,7 +59,6 @@ class test extends Command
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
             CURLOPT_CUSTOMREQUEST => "POST",
-            // CURLOPT_POSTFIELDS => "sender=Speed Car&mobile=" . $phone . "&content=".$message,
             CURLOPT_HTTPHEADER => array(
                 "Authorization: Bearer qrVfXQ54M5MBDPPuVtUzUoxM0Fnh7hq9ULkSj8r9"
             ),

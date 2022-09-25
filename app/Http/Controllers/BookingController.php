@@ -248,13 +248,12 @@ class BookingController extends Controller
 
         $drivers = $database->getReference('/drivers/')
             ->getSnapshot()->getValue();
-        // dd($drivers);
+
         $min_distance = 0;
         $min_driver_id = 0;
         $booking_searching_radius = TripSetting::value('booking_searching_radius');
 
-        foreach ($drivers as  $value) {
-            // dd($value);
+        foreach ($drivers as  $key => $value) {
             if ($value['online_status'] == 1 && $value['booking_status'] == 0) {
                 $amount = Driver::where('id', $value['driver_id'])->value('wallet');
                 if ($amount > (-1)) {
@@ -292,25 +291,13 @@ class BookingController extends Controller
                 ]);
         }
 
-        // $url = 'https://maps.googleapis.com/maps/api/staticmap?center=' . $input['pickup_lat'] . ',' . $input['pickup_lng'] . '&zoom=16&size=600x300&maptype=roadmap&markers=color:red%7Clabel:L%7C' . $input['pickup_lat'] . ',' . $input['pickup_lng'] . '&key=' . env('MAP_KEY');
-        // $img = 'trip_request_static_map/' . md5(time()) . '.png';
-        // file_put_contents('uploads/' . $img, file_get_contents($url));
-
-        // if ($input['trip_type'] == 1) {
-        //     $fares = $this->calculate_daily_fare($input['vehicle_type'], $input['km'], $input['promo'], $input['country_id']);
-        // }
-
         $booking_request = $input;
-        // $booking_request['distance'] = $input['km'];
         unset($booking_request['km']);
-        // $booking_request['total'] = $fares['total_fare'];
-        // $booking_request['sub_total'] = $fares['fare'];
-        // $booking_request['discount'] = $fares['discount'];
         $booking_request['tax'] = 0;
         $booking_request['status'] = 2;
-        // $booking_request['static_map'] = $img;
         $booking_request['promo_code'] = $input['promo'];
         $customer = Customer::where('id', Auth::user()->id)->first();
+
         if ($input['payment_method'] == 2) {
             if ($customer->wallet = 0) {
                 $this->send_fcm('لا يوجد رصيد كافي', 'عذراً لا يوجد في محفظتك رصيد كافي , سيكون الدفع كاش', $customer->fcm_token);
@@ -321,6 +308,7 @@ class BookingController extends Controller
         } else {
             $booking_request['payment_method'] = $input['payment_method'];
         }
+
         $id = TripRequest::create($booking_request)->id;
 
         $newPost = $database
@@ -336,14 +324,9 @@ class BookingController extends Controller
                 'booking_id' => $id,
                 'booking_status' => 1,
                 'pickup_address' => $input['pickup_address'],
-                // 'drop_address' => $input['drop_address'],
-                // 'total' => $fares['total_fare'],
                 'customer_name' => Customer::where('id', $input['customer_id'])->value('full_name'),
-                // 'static_map' => $img,
                 'trip_type' => DB::table('trip_types')->where('id', $input['trip_type'])->value('name')
             ]);
-
-        // sleep(time() % 30);
 
         $newPost = $database
             ->getReference('/triprequest/' . $id)
