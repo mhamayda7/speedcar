@@ -53,17 +53,19 @@ class changeDriverController extends Controller
         $min_driver_id = 0;
 
         foreach ($drivers as $key => $value) {
-            if (!in_array($value['driver_id'], $rejected_drivers)) {
-                if ($value['online_status'] == 1 && $value['booking_status'] == 0) {
-                    $amount = Driver::where('id', $value['driver_id'])->value('wallet');
-                    if ($amount > (-1)) {
-                        $distance = $this->distance($trip_request->pickup_lat, $trip_request->pickup_lng, $value['lat'], $value['lng'], 'K');
-                        if ($min_distance == 0) {
-                            $min_distance = $distance;
-                            $min_driver_id = $value['driver_id'];
-                        } else if ($distance < $min_distance) {
-                            $min_distance = $distance;
-                            $min_driver_id = $value['driver_id'];
+            if (isset($value)) {
+                if (!in_array($value['driver_id'], $rejected_drivers)) {
+                    if ($value['online_status'] == 1 && $value['booking_status'] == 0) {
+                        $amount = Driver::where('id', $value['driver_id'])->value('wallet');
+                        if ($amount > (-1)) {
+                            $distance = $this->distance($trip_request->pickup_lat, $trip_request->pickup_lng, $value['lat'], $value['lng'], 'K');
+                            if ($min_distance == 0) {
+                                $min_distance = $distance;
+                                $min_driver_id = $value['driver_id'];
+                            } else if ($distance < $min_distance) {
+                                $min_distance = $distance;
+                                $min_driver_id = $value['driver_id'];
+                            }
                         }
                     }
                 }
