@@ -23,12 +23,12 @@ class changeDriverController extends Controller
             $tripRequests = $database->getReference('/triprequest/')->getValue();
 
             foreach ($tripRequests as $key => $tripRequest) {
-                $trip_request = TripRequest::where('id', $tripRequest['request_id'])->first();
-                $driver = $database->getReference('/drivers/'.$tripRequest['driver_id'])->getSnapshot()->getValue();
-                // $this->newDriver($tripRequest['request_id'], $tripRequest['driver_id']);
+                // $trip_request = TripRequest::where('id', $tripRequest['request_id'])->first();
+                // $driver = $database->getReference('/drivers/'.$tripRequest['driver_id'])->getSnapshot()->getValue();
+                $this->newDriver($tripRequest['request_id'], $tripRequest['driver_id']);
                 // dd($trip_request->pickup_lat. $trip_request->pickup_lng. $driver['lat']. $driver['lng']);
-                $distance = $this->distance($trip_request->pickup_lat, $trip_request->pickup_lng, $driver['lat'], $driver['lng'], 'K');
-                dd($distance);
+                // $distance = $this->distance($trip_request->pickup_lat, $trip_request->pickup_lng, $driver['lat'], $driver['lng'], 'K');
+                // dd($distance);
             }
         } catch (Exception $e) {
         }
