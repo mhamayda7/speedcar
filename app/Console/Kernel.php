@@ -39,7 +39,7 @@ class Kernel extends ConsoleKernel
     {
         $shortSchedule->command('command:test')->everySeconds(2);
         $shortSchedule->command(command: 'TripRequest:timeout')->everySeconds(20);
-        // $shortSchedule->command(command: 'changeStatusDriver')->everySeconds(60);
+        $shortSchedule->command(command: 'changeStatusDriver')->everySeconds(60);
 
         // // this command will run every half a second
         // $shortSchedule->command('another-artisan-command')->everySeconds(0.5);
