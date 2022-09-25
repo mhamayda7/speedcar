@@ -97,7 +97,7 @@ class changeDriverController extends Controller
                 }
             }
         }
-
+        dd($min_driver_id);
         if ($min_driver_id == 0 || $min_driver_id  == $oldDriver) {
 
             $trip_request->update(['status' => 5]);
