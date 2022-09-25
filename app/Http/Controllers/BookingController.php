@@ -254,16 +254,18 @@ class BookingController extends Controller
         $booking_searching_radius = TripSetting::value('booking_searching_radius');
 
         foreach ($drivers as  $key => $value) {
-            if ($value['online_status'] == 1 && $value['booking_status'] == 0) {
-                $amount = Driver::where('id', $value['driver_id'])->value('wallet');
-                if ($amount > (-1)) {
-                    $distance = $this->distance($input['pickup_lat'], $input['pickup_lng'], $value['lat'], $value['lng'], 'K');
-                    if ($min_distance == 0) {
-                        $min_distance = $distance;
-                        $min_driver_id = $value['driver_id'];
-                    } else if ($distance < $min_distance) {
-                        $min_distance = $distance;
-                        $min_driver_id = $value['driver_id'];
+            if (isset($value)) {
+                if ($value['online_status'] == 1 && $value['booking_status'] == 0) {
+                    $amount = Driver::where('id', $value['driver_id'])->value('wallet');
+                    if ($amount > (-1)) {
+                        $distance = $this->distance($input['pickup_lat'], $input['pickup_lng'], $value['lat'], $value['lng'], 'K');
+                        if ($min_distance == 0) {
+                            $min_distance = $distance;
+                            $min_driver_id = $value['driver_id'];
+                        } else if ($distance < $min_distance) {
+                            $min_distance = $distance;
+                            $min_driver_id = $value['driver_id'];
+                        }
                     }
                 }
             }
