@@ -43,7 +43,7 @@ class test extends Command
      */
     public function handle()
     {
-        $this->changeDrivers();
+        $this->runChangeDrive();
     }
 
     public function changeDrivers()
