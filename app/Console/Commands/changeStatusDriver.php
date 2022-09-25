@@ -40,13 +40,17 @@ class changeStatusDriver extends Command
      */
     public function handle()
     {
+        $this->changeStatus();
+    }
+
+    public function changeStatus() {
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
         $drivers = $database->getReference('/drivers/')
             ->getSnapshot()->getValue();
 
         foreach($drivers as $driver) {
-            if($driver['online_status'] == 1) {
+            if($driver['online_status'] == 1 && $driver['booking_status'] == 0) {
                 $vehicle = DriverVehicle::where('driver_id', $driver['driver_id'])->first();
                 if($driver['lat'] == $vehicle->lat && $driver['lng'] == $vehicle->lng) {
                     $newPost = $database->getReference('/drivers/' . $driver['driver_id'])
