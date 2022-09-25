@@ -72,7 +72,7 @@ class changeDriverController extends Controller
         }
 
         if ($min_driver_id == 0 || $min_driver_id  == $driverID) {
-            TripRequest::where('id',$trip_request->id)->update(['status' => 5]);
+            TripRequest::where('id', $trip_request->id)->update(['status' => 5]);
             // dd($trip_request);
             $custmoer_fcm = Customer::where('id', $trip_request->customer_id)->value('fcm_token');
             try {
@@ -174,17 +174,19 @@ class changeDriverController extends Controller
         $oldDriver = $database->getReference('/triprequest/' . $trip_request_id)->getSnapshot()->getValue()['driver_id'];
 
         foreach ($drivers as $key => $value) {
-            if (!in_array($value['driver_id'], $rejected_drivers)) {
-                if ($value['online_status'] == 1 && $value['booking_status'] == 0) {
-                    $amount = Driver::where('id', $value['driver_id'])->value('wallet');
-                    if ($amount > (-1)) {
-                        $distance = $this->distance($trip_request->pickup_lat, $trip_request->pickup_lng, $value['lat'], $value['lng'], 'K');
-                        if ($min_distance == 0) {
-                            $min_distance = $distance;
-                            $min_driver_id = $value['driver_id'];
-                        } else if ($distance < $min_distance) {
-                            $min_distance = $distance;
-                            $min_driver_id = $value['driver_id'];
+            if (isset($value)) {
+                if (!in_array($value['driver_id'], $rejected_drivers)) {
+                    if ($value['online_status'] == 1 && $value['booking_status'] == 0) {
+                        $amount = Driver::where('id', $value['driver_id'])->value('wallet');
+                        if ($amount > (-1)) {
+                            $distance = $this->distance($trip_request->pickup_lat, $trip_request->pickup_lng, $value['lat'], $value['lng'], 'K');
+                            if ($min_distance == 0) {
+                                $min_distance = $distance;
+                                $min_driver_id = $value['driver_id'];
+                            } else if ($distance < $min_distance) {
+                                $min_distance = $distance;
+                                $min_driver_id = $value['driver_id'];
+                            }
                         }
                     }
                 }
@@ -192,7 +194,7 @@ class changeDriverController extends Controller
         }
         if ($min_driver_id == 0 || $min_driver_id  == $oldDriver) {
 
-            TripRequest::where('id',$trip_request->id)->update(['status' => 5]);
+            TripRequest::where('id', $trip_request->id)->update(['status' => 5]);
             $custmoer_fcm = Customer::where('id', $trip_request->customer_id)->value('fcm_token');
             try {
                 $this->send_fcm('نأسف جميع الكباتن مشغولين', 'جميع الكباتن مشغولين في رحلات أخرى', $custmoer_fcm);
