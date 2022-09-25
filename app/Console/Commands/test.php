@@ -168,21 +168,35 @@ class test extends Command
         }
     }
 
-    // public function runChangeDrive() {
-    //     // sleep(time() % 30);
-    //     $curl = curl_init();
-    //     curl_setopt_array($curl, array(
-    //         CURLOPT_URL => "https://speedcar-jo.com/api/speedV1/changeDrive",
-    //         CURLOPT_RETURNTRANSFER => true,
-    //         CURLOPT_ENCODING => "",
-    //         CURLOPT_MAXREDIRS => 10,
-    //         CURLOPT_TIMEOUT => 0,
-    //         CURLOPT_FOLLOWLOCATION => true,
-    //         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-    //         CURLOPT_CUSTOMREQUEST => "POST",
-    //         CURLOPT_HTTPHEADER => array(
-    //             "Authorization: Bearer qrVfXQ54M5MBDPPuVtUzUoxM0Fnh7hq9ULkSj8r9"
-    //         ),
-    //     ));
-    // }
+    public function runChangeDrive() {
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL,"https://speedcar-jo.com/api/speedV1/changeDrive");
+        curl_setopt($ch, CURLOPT_POST, 1);
+        // curl_setopt($ch, CURLOPT_POSTFIELDS);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $server_output = curl_exec($ch);
+
+        curl_close ($ch);
+
+        // Further processing ...
+        // if ($server_output == "OK") { ... } else { ... }
+        // sleep(time() % 30);
+        // $curl = curl_init();
+        // curl_setopt_array($curl, array(
+        //     CURLOPT_URL => "https://speedcar-jo.com/api/speedV1/changeDrive",
+        //     CURLOPT_RETURNTRANSFER => true,
+        //     CURLOPT_ENCODING => "",
+        //     CURLOPT_MAXREDIRS => 10,
+        //     CURLOPT_TIMEOUT => 0,
+        //     CURLOPT_FOLLOWLOCATION => true,
+        //     CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        //     CURLOPT_CUSTOMREQUEST => "POST",
+        //     CURLOPT_HTTPHEADER => array(
+        //         "Authorization: Bearer qrVfXQ54M5MBDPPuVtUzUoxM0Fnh7hq9ULkSj8r9"
+        //     ),
+        // ));
+    }
 }
