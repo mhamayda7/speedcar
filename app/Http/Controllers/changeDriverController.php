@@ -78,6 +78,7 @@ class changeDriverController extends Controller
         $rejected_drivers = DriverTripRequest::where('trip_request_id', $trip_request_id)->where('status', 0)->pluck('driver_id')->toArray();
         $min_distance = 0;
         $min_driver_id = 0;
+        $oldDriver = $database->getReference('/triprequest/'.$trip_request_id)->getSnapshot()->getValue()['driver_id'];
 
         foreach ($drivers as $key => $value) {
             if (!in_array($value['driver_id'], $rejected_drivers)) {
@@ -97,22 +98,7 @@ class changeDriverController extends Controller
             }
         }
 
-        if ($min_driver_id != 0) {
-            $fcm = Driver::where('id', $min_driver_id)->value('fcm_token');
-            if ($fcm) {
-                try {
-                    $this->send_fcm('لديك طلب جديد', 'لديك طلب رحلة جديد', $fcm);
-                } catch (Exception $e) {
-                }
-            }
-            $newPost = $database
-                ->getReference('/drivers/' . $min_driver_id)
-                ->update([
-                    'booking_status' => 1
-                ]);
-        }
-
-        if ($min_driver_id == 0) {
+        if ($min_driver_id == 0 || $min_driver_id  == $oldDriver) {
 
             $trip_request->update(['status' => 5]);
             $custmoer_fcm = Customer::where('id', $trip_request->customer_id)->value('fcm_token');
@@ -130,16 +116,21 @@ class changeDriverController extends Controller
             $newPost = $database
                 ->getReference('/triprequest/' . $trip_request->id)
                 ->remove();
-        } else {
+        } elseif ($min_driver_id != 0) {
+            $fcm = Driver::where('id', $min_driver_id)->value('fcm_token');
+            if ($fcm) {
+                try {
+                    $this->send_fcm('لديك طلب جديد', 'لديك طلب رحلة جديد', $fcm);
+                } catch (Exception $e) {
+                }
+            }
             $newPost = $database
-
-                ->getReference('/triprequest/' . $trip_request->id)
+                ->getReference('/drivers/' . $min_driver_id)
                 ->update([
-                    'driver_id' => $min_driver_id,
+                    'booking_status' => 1
                 ]);
-
-            return $trip_request->id;
         }
+
     }
 
     function distance($lat1, $lon1, $lat2, $lon2, $unit)
