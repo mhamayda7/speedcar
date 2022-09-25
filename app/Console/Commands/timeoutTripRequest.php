@@ -58,7 +58,7 @@ class timeoutTripRequest extends Command
         $image = "image/tripaccept.png";
         foreach ($triprequests as $triprequest) {
             $timeInterval = ($timeNow - strtotime($triprequest->created_at))/60;
-            if ($timeInterval > 5) {
+            if ($timeInterval > 4.5) {
                 $triprequest->update(['status' => 5]);
                 $customer = Customer::where('id', $triprequest->customer_id)->first();
 
