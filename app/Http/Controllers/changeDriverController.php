@@ -31,7 +31,8 @@ class changeDriverController extends Controller
                         'time' => $trip_request['time'] + 2
                     ]);
 
-                $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
+                $tt = $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
+                dd($tt);
             }
         } catch (Exception $e) {
         }
