@@ -39,8 +39,8 @@ class changeDriverController extends Controller
         $data['driver_id'] = $driverID;
         $data['trip_request_id'] = $requestID;
         $data['status'] = 0;
-        DriverTripRequest::create($data);
-
+        $rejctDriver = DriverTripRequest::create($data);
+        dd($rejctDriver);
 
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
