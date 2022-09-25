@@ -26,7 +26,7 @@ class changeDriverController extends Controller
                 $trip_request = TripRequest::where('id', $tripRequest['request_id'])->first();
                 $driver = $database->getReference('/drivers/'.$tripRequest['driver_id'])->getSnapshot()->getValue();
                 // $this->newDriver($tripRequest['request_id'], $tripRequest['driver_id']);
-                $distance = $this->distance($trip_request->pickup_lat, $trip_request->pickup_lng, $driver['lat'], $driver['lng'], 'K');
+                $distance = $this->distance(31.222, 34.222, 31.333, 34.333, 'K');
                 dd($distance);
             }
         } catch (Exception $e) {
