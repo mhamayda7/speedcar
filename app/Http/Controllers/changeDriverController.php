@@ -24,14 +24,14 @@ class changeDriverController extends Controller
                 ->getValue();
 
             foreach ($trip_requests as $trip_request) {
-                $timer = $trip_request['time'];
-                $newPost = $database
+                // $timer = $trip_request['time'];
+                $newPost2 = $database
                     ->getReference('/triprequest/' . $trip_request['request_id'])
                     ->update([
-                        'time' => $timer + 2
+                        'time' => $trip_request['time'] + 2
                     ]);
 
-                if ($timer % 20 == 0) {
+                if ($trip_request['time'] % 20 == 0) {
                     $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
                 }
             }
@@ -83,9 +83,9 @@ class changeDriverController extends Controller
 
         foreach ($drivers as $key => $value) {
             if (!in_array($value['driver_id'], $rejected_drivers)) {
-                $amount = Driver::where('id', $value['driver_id'])->value('wallet');
-                if ($amount > (-1)) {
-                    if ($value['online_status'] == 1 && $value['booking_status'] == 0) {
+                if ($value['online_status'] == 1 && $value['booking_status'] == 0) {
+                    $amount = Driver::where('id', $value['driver_id'])->value('wallet');
+                    if ($amount > (-1)) {
                         $distance = $this->distance($trip_request->pickup_lat, $trip_request->pickup_lng, $value['lat'], $value['lng'], 'K');
                         if ($min_distance == 0) {
                             $min_distance = $distance;
