@@ -18,21 +18,43 @@ class changeDriverController extends Controller
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))
             ->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'));
         $database = $factory->createDatabase();
-
-        try {
-            $tripRequests = $database->getReference('/triprequest/')->getValue();
-
-            foreach ($tripRequests as $key => $tripRequest) {
-                $trip_request = TripRequest::where('id', $tripRequest['request_id'])->first();
-                $driver = $database->getReference('/drivers/'.$tripRequest['driver_id'])->getSnapshot()->getValue();
-                dd($driver);
-                // $this->newDriver($tripRequest['request_id'], $tripRequest['driver_id']);
-                dd($trip_request->pickup_lat. $trip_request->pickup_lng. $driver['lat']. $driver['lng']);
-                $distance = $this->distance($trip_request->pickup_lat, $trip_request->pickup_lng, $driver['lat'], $driver['lng'], 'K');
-
-            }
-        } catch (Exception $e) {
+        $drivers = Driver::all();
+        foreach ($drivers as $key => $driver) {
+            $newPost = $database
+            ->getReference('/drivers/' . $driver->id)
+            ->update([
+                'accuracy' => 0,
+                'booking_status' => 0,
+                'distance' => 0,
+                'driver_id' => $driver->id,
+                'driver_name' => $driver->full_name,
+                'heading' => 0,
+                'lat' => 0,
+                'lng' => 0,
+                'online_status' => 0,
+                'startlat' => 0,
+                'startlng' => 0,
+                'status' => $driver->status,
+            ]);
         }
+        // $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))
+        //     ->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'));
+        // $database = $factory->createDatabase();
+
+        // try {
+        //     $tripRequests = $database->getReference('/triprequest/')->getValue();
+
+        //     foreach ($tripRequests as $key => $tripRequest) {
+        //         $trip_request = TripRequest::where('id', $tripRequest['request_id'])->first();
+        //         $driver = $database->getReference('/drivers/'.$tripRequest['driver_id'])->getSnapshot()->getValue();
+        //         dd($driver);
+        //         // $this->newDriver($tripRequest['request_id'], $tripRequest['driver_id']);
+        //         dd($trip_request->pickup_lat. $trip_request->pickup_lng. $driver['lat']. $driver['lng']);
+        //         $distance = $this->distance($trip_request->pickup_lat, $trip_request->pickup_lng, $driver['lat'], $driver['lng'], 'K');
+
+        //     }
+        // } catch (Exception $e) {
+        // }
     }
 
     public function newDriver($requestID, $driverID)
@@ -105,7 +127,6 @@ class changeDriverController extends Controller
         } else {
             return false;
         }
-
     }
     // try {
     //     $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))
