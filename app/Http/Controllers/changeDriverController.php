@@ -47,13 +47,13 @@ class changeDriverController extends Controller
         $trip_request = TripRequest::where('id', $requestID)->first();
         $drivers = $database->getReference('/drivers/')->getSnapshot()->getValue();
         $rejected_drivers = DriverTripRequest::where('trip_request_id', $requestID)->where('status', 0)->pluck('driver_id')->toArray();
-        dd($rejected_drivers);
 
         $min_distance = 0;
         $min_driver_id = 0;
 
         foreach ($drivers as $key => $value) {
             if (isset($value)) {
+                dd($value);
                 if (!in_array($value['driver_id'], $rejected_drivers)) {
                     if ($value['online_status'] == 1 && $value['booking_status'] == 0) {
                         $amount = Driver::where('id', $value['driver_id'])->value('wallet');
