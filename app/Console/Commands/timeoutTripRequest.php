@@ -45,10 +45,6 @@ class timeoutTripRequest extends Command
     public function handle()
     {
         $this->triprequest();
-        sleep(20);
-        $this->triprequest();
-        sleep(20);
-        $this->triprequest();
     }
 
     public function triprequest() {
@@ -79,7 +75,6 @@ class timeoutTripRequest extends Command
                 ->remove();
 
                 if ($customer->fcm_token) {
-                    $this->save_notifcation($customer->id,1,'لم يتم العثور على سائق', 'لا يتوفر حالياً سائقين',$image);
                     $this->send_fcm('لم يتم العثور على سائق', 'لا يتوفر حالياً سائقين', $customer->fcm_token);
                 }
             }
