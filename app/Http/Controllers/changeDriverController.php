@@ -53,10 +53,10 @@ class changeDriverController extends Controller
 
         foreach ($drivers as $key => $value) {
             if (isset($value)) {
-                dd($value);
                 if (!in_array($value['driver_id'], $rejected_drivers)) {
                     if ($value['online_status'] == 1 && $value['booking_status'] == 0) {
                         $amount = Driver::where('id', $value['driver_id'])->value('wallet');
+                        dd($amount);
                         if ($amount > (-1)) {
                             $distance = $this->distance($trip_request->pickup_lat, $trip_request->pickup_lng, $value['lat'], $value['lng'], 'K');
                             if ($min_distance == 0) {
