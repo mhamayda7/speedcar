@@ -72,7 +72,6 @@ class changeDriverController extends Controller
         }
 
         if ($min_driver_id == 0 || $min_driver_id  == $driverID) {
-
             TripRequest::where('id',$trip_request->id)->update(['status' => 5]);
             // dd($trip_request);
             $custmoer_fcm = Customer::where('id', $trip_request->customer_id)->value('fcm_token');
