@@ -72,9 +72,9 @@ class changeDriverController extends Controller
         }
 
         if ($min_driver_id == 0 || $min_driver_id  == $driverID) {
-            dd($trip_request);
 
-            $trip_request->update(['status' => 5]);
+            $trip_request->update(['status' => 55]);
+            dd($trip_request);
             $custmoer_fcm = Customer::where('id', $trip_request->customer_id)->value('fcm_token');
             try {
                 $this->send_fcm('نأسف جميع الكباتن مشغولين', 'جميع الكباتن مشغولين في رحلات أخرى', $custmoer_fcm);
