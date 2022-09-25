@@ -31,13 +31,13 @@ class Kernel extends ConsoleKernel
         $schedule->command(command:'TripRequest:timeout')->everyMinute();
         $schedule->command(command:'changeStatusDriver')->everyMinute();
         // $schedule->command(command:'ChangeDriverForRequest')->everyMinute();
-        $schedule->command(command:'command:test')->everyMinute();
+        // $schedule->command(command:'command:test')->everyMinute();
         // $shortSchedule->command(command:'command:test')->everySecond(20);
     }
 
     protected function shortSchedule(ShortSchedule $shortSchedule)
     {
-        // $shortSchedule->command('command:test')->everySeconds(2);
+        $shortSchedule->command('command:test')->everySeconds(40);
         // $shortSchedule->command(command: 'TripRequest:timeout')->everySeconds(20);
         // $shortSchedule->command(command: 'changeStatusDriver')->everySeconds(60);
 
