@@ -15,27 +15,34 @@ class changeDriverController extends Controller
 
     public function changeDrivers()
     {
-        try {
-            $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))
-                ->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'));
-            $database = $factory->createDatabase();
+        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))
+            ->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'));
+        $database = $factory->createDatabase();
 
-            $trip_requests = $database->getReference('/triprequest/')
-                ->getValue();
+        $trip_requests = $database->getReference('/triprequest/')
+            ->getValue();
+        dd($trip_requests);
+        // try {
+        //     $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))
+        //         ->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'));
+        //     $database = $factory->createDatabase();
 
-            foreach ($trip_requests as $trip_request) {
-                // $timer = $trip_request['time'];
-                $newPost2 = $database
-                    ->getReference('/triprequest/' . $trip_request['request_id'])
-                    ->update([
-                        'time' => $trip_request['time'] + 2
-                    ]);
+        //     $trip_requests = $database->getReference('/triprequest/')
+        //         ->getValue();
 
-                $tt = $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
-                dd($tt . "good");
-            }
-        } catch (Exception $e) {
-        }
+        //     foreach ($trip_requests as $trip_request) {
+        //         // $timer = $trip_request['time'];
+        //         $newPost2 = $database
+        //             ->getReference('/triprequest/' . $trip_request['request_id'])
+        //             ->update([
+        //                 'time' => $trip_request['time'] + 2
+        //             ]);
+
+        //         $tt = $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
+        //         dd($tt . "good");
+        //     }
+        // } catch (Exception $e) {
+        // }
     }
 
     public function getrequest($trip_id, $driver_id)
@@ -79,7 +86,7 @@ class changeDriverController extends Controller
         $rejected_drivers = DriverTripRequest::where('trip_request_id', $trip_request_id)->where('status', 0)->pluck('driver_id')->toArray();
         $min_distance = 0;
         $min_driver_id = 0;
-        $oldDriver = $database->getReference('/triprequest/'.$trip_request_id)->getSnapshot()->getValue()['driver_id'];
+        $oldDriver = $database->getReference('/triprequest/' . $trip_request_id)->getSnapshot()->getValue()['driver_id'];
 
         foreach ($drivers as $key => $value) {
             if (!in_array($value['driver_id'], $rejected_drivers)) {
@@ -131,7 +138,6 @@ class changeDriverController extends Controller
                     'booking_status' => 1
                 ]);
         }
-
     }
 
     function distance($lat1, $lon1, $lat2, $lon2, $unit)
