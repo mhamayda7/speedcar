@@ -32,7 +32,7 @@ class changeDriverController extends Controller
                     ]);
 
                 $tt = $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
-                dd($tt . "good");
+                dd("good");
             }
         } catch (Exception $e) {
         }
@@ -77,6 +77,7 @@ class changeDriverController extends Controller
         $trip_request = TripRequest::where('id', $trip_request_id)->first();
         $drivers = $database->getReference('/drivers/')->getSnapshot()->getValue();
         $rejected_drivers = DriverTripRequest::where('trip_request_id', $trip_request_id)->where('status', 0)->pluck('driver_id')->toArray();
+
         $min_distance = 0;
         $min_driver_id = 0;
         $oldDriver = $database->getReference('/triprequest/' . $trip_request_id)->getSnapshot()->getValue()['driver_id'];
