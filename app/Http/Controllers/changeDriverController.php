@@ -40,12 +40,12 @@ class changeDriverController extends Controller
         $data['trip_request_id'] = $requestID;
         $data['status'] = 0;
         $rejctDriver = DriverTripRequest::create($data);
-        dd($rejctDriver);
 
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
 
         $trip_request = TripRequest::where('id', $requestID)->first();
+        dd($trip_request);
         $drivers = $database->getReference('/drivers/')->getSnapshot()->getValue();
         $rejected_drivers = DriverTripRequest::where('trip_request_id', $requestID)->where('status', 0)->pluck('driver_id')->toArray();
 
