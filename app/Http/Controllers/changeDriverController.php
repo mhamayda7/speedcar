@@ -131,6 +131,8 @@ class changeDriverController extends Controller
                 ->update([
                     'booking_status' => 1
                 ]);
+        } else {
+            return false;
         }
     }
 
