@@ -15,13 +15,17 @@ class changeDriverController extends Controller
 
     public function changeDrivers()
     {
-        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))
-            ->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'));
-        $database = $factory->createDatabase();
+        try {
+            $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))
+                ->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'));
+            $database = $factory->createDatabase();
 
-        $trip_requests = $database->getReference('/triprequest/')
-            ->getValue();
-        dd($trip_requests);
+            $trip_requests = $database->getReference('/triprequest/')
+                ->getValue();
+            dd($trip_requests);
+        } catch (Exception $e) {
+        }
+
         // try {
         //     $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))
         //         ->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'));
