@@ -46,7 +46,7 @@ class changeDriverController extends Controller
 
         $trip_request = TripRequest::where('id', $requestID)->first();
         $drivers = $database->getReference('/drivers/')->getSnapshot()->getValue();
-        dd($drivers);
+        // dd($drivers);
         $rejected_drivers = DriverTripRequest::where('trip_request_id', $requestID)->where('status', 0)->pluck('driver_id')->toArray();
 
         $min_distance = 0;
