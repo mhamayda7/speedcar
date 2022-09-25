@@ -22,31 +22,20 @@ class changeDriverController extends Controller
 
             $trip_requests = $database->getReference('/triprequest/')
                 ->getValue();
-            dd($trip_requests);
+
+            foreach ($trip_requests as $trip_request) {
+                // $timer = $trip_request['time'];
+                $newPost2 = $database
+                    ->getReference('/triprequest/' . $trip_request['request_id'])
+                    ->update([
+                        'time' => $trip_request['time'] + 2
+                    ]);
+
+                $tt = $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
+                dd($tt . "good");
+            }
         } catch (Exception $e) {
         }
-
-        // try {
-        //     $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))
-        //         ->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'));
-        //     $database = $factory->createDatabase();
-
-        //     $trip_requests = $database->getReference('/triprequest/')
-        //         ->getValue();
-
-        //     foreach ($trip_requests as $trip_request) {
-        //         // $timer = $trip_request['time'];
-        //         $newPost2 = $database
-        //             ->getReference('/triprequest/' . $trip_request['request_id'])
-        //             ->update([
-        //                 'time' => $trip_request['time'] + 2
-        //             ]);
-
-        //         $tt = $this->getrequest($trip_request['request_id'], $trip_request['driver_id']);
-        //         dd($tt . "good");
-        //     }
-        // } catch (Exception $e) {
-        // }
     }
 
     public function getrequest($trip_id, $driver_id)
@@ -73,10 +62,10 @@ class changeDriverController extends Controller
         $data['status'] = 0;
 
         DriverTripRequest::create($data);
-        return response()->json([
-            "message" => 'Success',
-            "status" => 1
-        ]);
+        // return response()->json([
+        //     "message" => 'Success',
+        //     "status" => 1
+        // ]);
     }
 
     public function find_car($trip_request_id)
