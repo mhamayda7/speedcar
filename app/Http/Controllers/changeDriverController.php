@@ -225,6 +225,11 @@ class changeDriverController extends Controller
                 ->update([
                     'booking_status' => 1
                 ]);
+            $newPost = $database
+                ->getReference('/triprequest/' . $trip_request->id)
+                ->update([
+                    'driver_id' => $min_driver_id
+                ]);
         } else {
             return false;
         }
