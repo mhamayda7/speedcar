@@ -2340,7 +2340,6 @@ class BookingController extends Controller
         // }
         // dd($drivers);
         foreach ($drivers as $key => $driver) {
-
             $newPost = $database->getReference('drivers/' . $driver->id )
                 ->set([
                     'driver_id' => $driver->id,
@@ -2357,6 +2356,8 @@ class BookingController extends Controller
                     'startlat' => 0,
                 ]);
         }
+        $driverss = $database->getReference('/customers/')->getValue();
+        dd($driverss);
     }
 
     public function getrequest($trip_id, $driver_id)
