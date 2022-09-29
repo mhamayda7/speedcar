@@ -2331,13 +2331,13 @@ class BookingController extends Controller
         $factory = (new Factory)->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'))
             ->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
-        $drivers = $database->getReference('/drivers/')->getValue();
+        $drivers = $database->getReference('/customers/')->getValue();
         // dd($drivers);
-        foreach ($drivers as $key => $driver) {
-            if($driver == null) {
-                $newPost = $database->getReference('/drivers/' . $driver->id).remove();
-            }
-        }
+        // foreach ($drivers as $key => $driver) {
+        //     if($driver == null) {
+        //         $newPost = $database->getReference('/drivers/' . $driver->id).remove();
+        //     }
+        // }
         dd($drivers);
         // foreach ($drivers as $key => $driver) {
 
