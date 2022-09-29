@@ -2352,7 +2352,7 @@ class BookingController extends Controller
         $factory = (new Factory)->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'))
             ->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
-        $newpost = $database->getReference('driver')->push($i);
+        $newpost = $database->getReference('drivers')->push($i);
         // foreach ($drivers as $driver) {
         //     $newPost = $database->getReference('drivers/' . $driver->id )
         //         ->set([
