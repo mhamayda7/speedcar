@@ -2355,21 +2355,36 @@ class BookingController extends Controller
         $database = $factory->createDatabase();
         // $newpost = $database->getReference('drivers')->push($i);
         foreach ($drivers as $driver) {
-            $newPost = $database->getReference('drivers/' . $driver->id)
-                ->push([
-                    'driver_id' => $driver->id,
-                    'driver_name' => $driver->full_name,
-                    'status' => $driver->status,
-                    'lat' => 0,
-                    'lng' => 0,
-                    'online_status' => 0,
-                    'booking_status' => 0,
-                    'accuracy' => 0,
-                    'heading' => 0,
-                    'distance' => 0,
-                    'startlng' => 0,
-                    'startlat' => 0,
-                ]);
+            $drive = new Driver();
+            $drive->driver_id =$driver->id;
+            $drive->driver_name = $driver->full_name;
+            $drive->status = $driver->status;
+            $drive->lat = 0;
+            $drive->lng = 0;
+            $drive->online_statu = 0;
+            $drive->booking_status = 0;
+            $drive->accuracy = 0;
+            $drive->heading = 0;
+            $drive->distance = 0;
+            $drive->startlng = 0;
+            $drive->startlat = 0;
+
+            $newPost = $database->getReference('drivers/')
+                ->push($drive);
+
+            //         'driver_id' => $driver->id,
+            //         'driver_name' => $driver->full_name,
+            //         'status' => $driver->status,
+            //         'lat' => 0,
+            //         'lng' => 0,
+            //         'online_status' => 0,
+            //         'booking_status' => 0,
+            //         'accuracy' => 0,
+            //         'heading' => 0,
+            //         'distance' => 0,
+            //         'startlng' => 0,
+            //         'startlat' => 0,
+            //     ]);
             // $newpost = $database->getReference('drivers'.$driver->id)->push($i);
         }
         $driverss = $database->getReference('/drivers/')->getValue();
