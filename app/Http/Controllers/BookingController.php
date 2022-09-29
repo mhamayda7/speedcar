@@ -2369,8 +2369,8 @@ class BookingController extends Controller
             $drive->startlng = 0;
             $drive->startlat = 0;
 
-            $newPost = $database->getReference('drivers/'.$drive->driver_id)
-                ->set($drive);
+            $newPost = $database->getReference('drivers/')
+                ->push($drive, $drive->driver_id);
 
             //         'driver_id' => $driver->id,
             //         'driver_name' => $driver->full_name,
