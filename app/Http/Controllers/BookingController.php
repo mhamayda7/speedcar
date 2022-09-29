@@ -2346,12 +2346,13 @@ class BookingController extends Controller
             ];
             // Driver::where('id', $driver->id)->update(['id' => $key]);
         }
-        $arr = array_map('utf8_encode', $i);
-        dd(json_encode($i.'arr'));
+        // $arr = array_map('utf8_encode', $i);
+        // dd(json_encode($i));
         // $drivers1 = Driver::all();
-        // $factory = (new Factory)->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'))
-        //     ->withDatabaseUri(env('FIREBASE_DB'));
-        // $database = $factory->createDatabase();
+        $factory = (new Factory)->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'))
+            ->withDatabaseUri(env('FIREBASE_DB'));
+        $database = $factory->createDatabase();
+        $newpost = $database->getReference('driver')->set(json_encode($i));
         // foreach ($drivers as $driver) {
         //     $newPost = $database->getReference('drivers/' . $driver->id )
         //         ->set([
@@ -2369,8 +2370,8 @@ class BookingController extends Controller
         //             'startlat' => 0,
         //         ]);
         // }
-        // $driverss = $database->getReference('/drivers/')->getValue();
-        // dd($driverss);
+        $driverss = $database->getReference('/drivers/')->getValue();
+        dd($driverss);
     }
 
     public function getrequest($trip_id, $driver_id)
