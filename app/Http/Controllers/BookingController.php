@@ -255,6 +255,7 @@ class BookingController extends Controller
 
         foreach ($drivers as  $key => $value) {
             if (isset($value)) {
+                dd($value);
                 if ($value['online_status'] == 1 && $value['booking_status'] == 0) {
                     $amount = Driver::where('id', $value['driver_id'])->value('wallet');
                     if ($amount > (-1)) {
