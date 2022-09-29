@@ -2346,7 +2346,7 @@ class BookingController extends Controller
             ];
             // Driver::where('id', $driver->id)->update(['id' => $key]);
         }
-        dd($i);
+        dd(json_encode($i));
         // $drivers1 = Driver::all();
         // $factory = (new Factory)->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'))
         //     ->withDatabaseUri(env('FIREBASE_DB'));
