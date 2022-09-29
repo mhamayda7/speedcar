@@ -2354,6 +2354,22 @@ class BookingController extends Controller
             ->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
         // $newpost = $database->getReference('drivers')->push($i);
+        $drive = new Driver();
+        $drive->driver_id =2000;
+        $drive->driver_name = "test";
+        $drive->status = 1;
+        $drive->lat = 0;
+        $drive->lng = 0;
+        $drive->online_status = 0;
+        $drive->booking_status = 0;
+        $drive->accuracy = 0;
+        $drive->heading = 0;
+        $drive->distance = 0;
+        $drive->startlng = 0;
+        $drive->startlat = 0;
+        $newPost = $database->getReference('/drivers/' .$drive->driver_id)
+        ->push($drive);
+
         foreach ($drivers as $driver) {
             $drive = new Driver();
             $drive->driver_id =$driver->id;
