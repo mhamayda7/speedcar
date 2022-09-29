@@ -2332,6 +2332,12 @@ class BookingController extends Controller
             ->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
         $drivers = $database->getReference('/drivers/')->getValue();
+        // dd($drivers);
+        foreach ($drivers as $key => $driver) {
+            if($driver == null) {
+                $newPost = $database->getReference('/drivers/' . $driver->id).remove();
+            }
+        }
         dd($drivers);
         // foreach ($drivers as $key => $driver) {
 
