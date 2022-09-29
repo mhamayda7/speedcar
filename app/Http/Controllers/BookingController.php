@@ -2361,7 +2361,7 @@ class BookingController extends Controller
             $drive->status = $driver->status;
             $drive->lat = 0;
             $drive->lng = 0;
-            $drive->online_statu = 0;
+            $drive->online_status = 0;
             $drive->booking_status = 0;
             $drive->accuracy = 0;
             $drive->heading = 0;
