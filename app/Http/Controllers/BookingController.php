@@ -278,7 +278,7 @@ class BookingController extends Controller
             ]);
         }
 
-        sleep((time()%60) + 2 );
+        sleep((time() % 60) + 2);
         if ($min_driver_id != 0) {
             $fcm = Driver::where('id', $min_driver_id)->value('fcm_token');
             if ($fcm) {
@@ -2327,6 +2327,28 @@ class BookingController extends Controller
 
     public function tests()
     {
+        $drivers = Driver::all();
+        $factory = (new Factory)->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'))
+            ->withDatabaseUri(env('FIREBASE_DB'));
+        $database = $factory->createDatabase();
+        foreach ($drivers as $key => $driver) {
+
+            $newPost = $database->getReference('/drivers/' . $driver->id)
+                ->set([
+                    'driver_id' => $driver->id,
+                    'driver_name' => $driver->full_name,
+                    'status' => $driver->status,
+                    'lat' => 0,
+                    'lng' => 0,
+                    'online_status' => 0,
+                    'booking_status' => 0,
+                    'accuracy' => 0,
+                    'heading' => 0,
+                    'distance' => 0,
+                    'startlng' => 0,
+                    'startlat' => 0,
+                ]);
+        }
     }
 
     public function getrequest($trip_id, $driver_id)
