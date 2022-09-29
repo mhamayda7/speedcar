@@ -2329,21 +2329,14 @@ class BookingController extends Controller
     {
         $drivers = Driver::all();
         // $i = 0;
-        // foreach ($drivers as $key => $driver) {
-        //     # code...
-        // }
+        foreach ($drivers as $key => $driver) {
+            Driver::where('id', $driver->id)->update(['id'=> $key]);
+        }
+        $drivers1 = Driver::all();
         $factory = (new Factory)->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'))
             ->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
-        // $drivers = $database->getReference('/customers/')->getValue();
-        // dd($drivers);
-        // foreach ($drivers as $key => $driver) {
-        //     if($driver == null) {
-        //         $newPost = $database->getReference('/drivers/' . $driver->id).remove();
-        //     }
-        // }
-        // dd($drivers);
-        foreach ($drivers as $driver) {
+        foreach ($drivers1 as $driver) {
             $newPost = $database->getReference('drivers/' . $driver->id )
                 ->set([
                     'driver_id' => $driver->id,
