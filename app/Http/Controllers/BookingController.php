@@ -2356,7 +2356,7 @@ class BookingController extends Controller
         // $newpost = $database->getReference('drivers')->push($i);
         foreach ($drivers as $driver) {
             $newPost = $database->getReference('drivers/' . $driver->id)
-                ->set([
+                ->push([
                     'driver_id' => $driver->id,
                     'driver_name' => $driver->full_name,
                     'status' => $driver->status,
