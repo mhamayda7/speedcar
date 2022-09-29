@@ -2328,6 +2328,10 @@ class BookingController extends Controller
     public function tests()
     {
         $drivers = Driver::all();
+        // $i = 0;
+        // foreach ($drivers as $key => $driver) {
+        //     # code...
+        // }
         $factory = (new Factory)->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'))
             ->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
@@ -2339,7 +2343,7 @@ class BookingController extends Controller
         //     }
         // }
         // dd($drivers);
-        foreach ($drivers as $key => $driver) {
+        foreach ($drivers as $driver) {
             $newPost = $database->getReference('drivers/' . $driver->id )
                 ->set([
                     'driver_id' => $driver->id,
