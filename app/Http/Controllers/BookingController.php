@@ -2328,33 +2328,48 @@ class BookingController extends Controller
     public function tests()
     {
         $drivers = Driver::all();
-        // $i = 0;
-        foreach ($drivers as $key => $driver) {
-            Driver::where('id', $driver->id)->update(['id'=> $key]);
+        $i = array();
+        foreach ($drivers as $driver) {
+            $i[$driver->id] = [
+                'driver_id' => $driver->id,
+                'driver_name' => $driver->full_name,
+                'status' => $driver->status,
+                'lat' => 0,
+                'lng' => 0,
+                'online_status' => 0,
+                'booking_status' => 0,
+                'accuracy' => 0,
+                'heading' => 0,
+                'distance' => 0,
+                'startlng' => 0,
+                'startlat' => 0,
+            ];
+            // Driver::where('id', $driver->id)->update(['id' => $key]);
         }
-        $drivers1 = Driver::all();
-        $factory = (new Factory)->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'))
-            ->withDatabaseUri(env('FIREBASE_DB'));
-        $database = $factory->createDatabase();
-        foreach ($drivers1 as $driver) {
-            $newPost = $database->getReference('drivers/' . $driver->id )
-                ->set([
-                    'driver_id' => $driver->id,
-                    'driver_name' => $driver->full_name,
-                    'status' => $driver->status,
-                    'lat' => 0,
-                    'lng' => 0,
-                    'online_status' => 0,
-                    'booking_status' => 0,
-                    'accuracy' => 0,
-                    'heading' => 0,
-                    'distance' => 0,
-                    'startlng' => 0,
-                    'startlat' => 0,
-                ]);
-        }
-        $driverss = $database->getReference('/drivers/')->getValue();
-        dd($driverss);
+        dd($i);
+        // $drivers1 = Driver::all();
+        // $factory = (new Factory)->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'))
+        //     ->withDatabaseUri(env('FIREBASE_DB'));
+        // $database = $factory->createDatabase();
+        // foreach ($drivers as $driver) {
+        //     $newPost = $database->getReference('drivers/' . $driver->id )
+        //         ->set([
+        //             'driver_id' => $driver->id,
+        //             'driver_name' => $driver->full_name,
+        //             'status' => $driver->status,
+        //             'lat' => 0,
+        //             'lng' => 0,
+        //             'online_status' => 0,
+        //             'booking_status' => 0,
+        //             'accuracy' => 0,
+        //             'heading' => 0,
+        //             'distance' => 0,
+        //             'startlng' => 0,
+        //             'startlat' => 0,
+        //         ]);
+        // }
+        // $driverss = $database->getReference('/drivers/')->getValue();
+        // dd($driverss);
     }
 
     public function getrequest($trip_id, $driver_id)
