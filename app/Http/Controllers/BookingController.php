@@ -279,7 +279,7 @@ class BookingController extends Controller
             ]);
         }
 
-        sleep((time() % 60) + 2);
+        // sleep((time() % 60) + 2);
         if ($min_driver_id != 0) {
             $fcm = Driver::where('id', $min_driver_id)->value('fcm_token');
             if ($fcm) {
@@ -1486,8 +1486,6 @@ class BookingController extends Controller
             $vehicle = DriverVehicle::where('driver_id', $trip->driver_id)->get(['vehicle_image', 'brand', 'vehicle_name', 'vehicle_number'])->last();
             $trip_rate = RateTrip::where('trip_id', $trip->id)->get()->last();
 
-            // $trip_rate = DB::table('rate_trips')->where('trip_id', $trip->id)->get()->last();
-            // dd($trip);
             if ($trip->status == 2) {
                 $driver['duration'] = $this->distanc_driver($trip->id);
             }
