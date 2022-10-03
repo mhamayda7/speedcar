@@ -2355,7 +2355,6 @@ class BookingController extends Controller
         $database = $factory->createDatabase();
 
         foreach ($drivers as $driver) {
-            $newpost = $database->getReference('drivers/')->push($driver->id);
             $i = [
                 'driver_id' => $driver->id,
                 'driver_name' => $driver->full_name,
@@ -2370,10 +2369,14 @@ class BookingController extends Controller
                 'startlng' => 0,
                 'startlat' => 0,
             ];
-            $newpost = $database->getReference('/drivers/'. $driver->id)->set($i);
+            $newKey = $database->getReference('drivers/'.$driver->id);
+            $update = [
+                'drivers/'.$newKey => $i,
+            ];
+            $newpost = $database->getReference()->update($update);
         }
-        $driverss = $database->getReference('/drivers/')->getValue();
-        dd($driverss);
+        // $driverss = $database->getReference('/drivers/')->getValue();
+        // dd($driverss);
     }
 
     public function getrequest($trip_id, $driver_id)
