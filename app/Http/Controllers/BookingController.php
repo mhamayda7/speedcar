@@ -2369,11 +2369,11 @@ class BookingController extends Controller
                 'startlng' => 0,
                 'startlat' => 0,
             ];
-            $newKey = $database->getReference('drivers/'.$driver->id);
-            $update = [
-                'drivers/'.$newKey => $i,
-            ];
-            $newpost = $database->getReference('drivers/'.$newKey)->update($update);
+            // $newKey = $database->getReference('drivers/'.$driver->id);
+            // $update = [
+            //     'drivers/'.$newKey => $i,
+            // ];
+            $newpost = $database->getReference('drivers/'.$driver->id)->update($i);
         }
         // $driverss = $database->getReference('/drivers/')->getValue();
         // dd($driverss);
