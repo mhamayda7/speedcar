@@ -2355,7 +2355,7 @@ class BookingController extends Controller
         $database = $factory->createDatabase();
         // $newpost = $database->getReference('drivers')->push($i);
         $drive = new Driver();
-        $drive->driver_id =30000;
+        $drive->driver_id =0;
         $drive->driver_name = "test";
         $drive->status = 1;
         $drive->lat = 0;
@@ -2368,7 +2368,20 @@ class BookingController extends Controller
         $drive->startlng = 0;
         $drive->startlat = 0;
         $newPost = $database->getReference('/drivers/' .$drive->driver_id)
-        ->push($drive);
+        ->push([
+            'driver_id' => 0,
+            'driver_name' =>  "test",
+            'status' =>  1,
+            'lat' =>  0,
+            'lng' =>  0,
+            'online_status' =>  10,
+            'booking_status' =>  0,
+            'accuracy' =>  0,
+            'heading' =>  0,
+            'distance' =>  0,
+            'startlng' =>  0,
+            'startlat' =>  0,
+        ]);
 
         foreach ($drivers as $driver) {
             $drive = new Driver();
