@@ -2353,35 +2353,6 @@ class BookingController extends Controller
         $factory = (new Factory)->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'))
             ->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
-        // $newpost = $database->getReference('drivers')->push($i);
-        $drive = new Driver();
-        $drive->driver_id =0;
-        $drive->driver_name = "test";
-        $drive->status = 1;
-        $drive->lat = 0;
-        $drive->lng = 0;
-        $drive->online_status = 0;
-        $drive->booking_status = 0;
-        $drive->accuracy = 0;
-        $drive->heading = 0;
-        $drive->distance = 0;
-        $drive->startlng = 0;
-        $drive->startlat = 0;
-        $newPost = $database->getReference('/drivers/' .$drive->driver_id)
-        ->push([
-            'driver_id' => 0,
-            'driver_name' =>  "test",
-            'status' =>  1,
-            'lat' =>  0,
-            'lng' =>  0,
-            'online_status' =>  10,
-            'booking_status' =>  0,
-            'accuracy' =>  0,
-            'heading' =>  0,
-            'distance' =>  0,
-            'startlng' =>  0,
-            'startlat' =>  0,
-        ]);
 
         foreach ($drivers as $driver) {
             $drive = new Driver();
@@ -2398,8 +2369,24 @@ class BookingController extends Controller
             $drive->startlng = 0;
             $drive->startlat = 0;
 
-            $newPost = $database->getReference('/drivers/' .$drive->driver_id)
-                ->set($drive);
+            dd($driver);
+            // $newPost = $database->getReference('/drivers/' .$drive->driver_id)
+            // ->push({
+            //     'driver_id' : $driver->id,
+            //     'driver_name' =>  $driver->full_name,
+            //     'status' =>  1,
+            //     'lat' =>  0,
+            //     'lng' =>  0,
+            //     'online_status' =>  10,
+            //     'booking_status' =>  0,
+            //     'accuracy' =>  0,
+            //     'heading' =>  0,
+            //     'distance' =>  0,
+            //     'startlng' =>  0,
+            //     'startlat' =>  0,
+            // }
+
+            // );
 
             //         'driver_id' => $driver->id,
             //         'driver_name' => $driver->full_name,
