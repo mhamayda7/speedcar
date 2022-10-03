@@ -315,7 +315,7 @@ class BookingController extends Controller
         }
         $trip_request = TripRequest::create($booking_request);
         $id = $trip_request->id;
-        TripRequest::where('id', $id)->upadte(['driver_id' => $min_driver_id]);
+        TripRequest::where('id', $id)->update(['driver_id' => $min_driver_id]);
 
         $newPost = $database
             ->getReference('/customers/' . $input['customer_id'])
