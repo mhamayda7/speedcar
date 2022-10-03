@@ -20,7 +20,7 @@ class changeDriverController extends Controller
         try {
             foreach ($tripRequests as $key => $tripRequest) {
                 if((time() - strtotime($tripRequest->updated_at)) > 19) {
-                    $this->getrequest($tripRequest['request_id'], $tripRequest['driver_id']);
+                    $this->getrequest($tripRequest->id, $tripRequest->driver_id);
                 }
             }
         } catch (Exception $e) {
