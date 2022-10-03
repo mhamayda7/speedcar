@@ -314,8 +314,8 @@ class BookingController extends Controller
             $booking_request['payment_method'] = $input['payment_method'];
         }
         $trip_request = TripRequest::create($booking_request);
-        $trip_request->upadte(['driver_id' => $min_driver_id]);
         $id = $trip_request->id;
+        TripRequest::where('id', $id)->upadte(['driver_id' => $min_driver_id]);
 
         $newPost = $database
             ->getReference('/customers/' . $input['customer_id'])
