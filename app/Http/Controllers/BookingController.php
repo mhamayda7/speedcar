@@ -2373,7 +2373,7 @@ class BookingController extends Controller
             $update = [
                 'drivers/'.$newKey => $i,
             ];
-            $newpost = $database->getReference()->update($update);
+            $newpost = $database->getReference('drivers/'.$newKey)->update($update);
         }
         // $driverss = $database->getReference('/drivers/')->getValue();
         // dd($driverss);
