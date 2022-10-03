@@ -299,6 +299,7 @@ class BookingController extends Controller
         unset($booking_request['km']);
         $booking_request['tax'] = 0;
         $booking_request['status'] = 2;
+        $booking_request['driver_id'] = $min_driver_id;
         $booking_request['promo_code'] = $input['promo'];
         $customer = Customer::where('id', Auth::user()->id)->first();
 
@@ -429,6 +430,7 @@ class BookingController extends Controller
 
         if ($min_driver_id != 0) {
             $fcm = Driver::where('id', $min_driver_id)->value('fcm_token');
+            TripRequest::where('id', $trip_request_id)->update(['driver_id' => $min_driver_id]);
             if ($fcm) {
                 try {
                     $this->send_fcm('لديك طلب جديد', 'لديك طلب رحلة جديد', $fcm);
@@ -2466,6 +2468,7 @@ class BookingController extends Controller
 
         if ($min_driver_id != 0) {
             $fcm = Driver::where('id', $min_driver_id)->value('fcm_token');
+            TripRequest::where('id', $trip_request->id)->update(['driver_id' => $min_driver_id]);
             if ($fcm) {
                 try {
                     $this->send_fcm('لديك طلب جديد', 'لديك طلب رحلة جديد', $fcm);
