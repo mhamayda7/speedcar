@@ -2370,30 +2370,7 @@ class BookingController extends Controller
                 'startlng' => 0,
                 'startlat' => 0,
             ];
-
-
-            // dd($driver);
-            // $newPost = $database->getReference('/drivers/' .$drive->driver_id)
-            // ->push({
-            //     'driver_id' : $driver->id,
-            //     'driver_name' =>  $driver->full_name,
-            //     'status' =>  1,
-            //     'lat' =>  0,
-            //     'lng' =>  0,
-            //     'online_status' =>  10,
-            //     'booking_status' =>  0,
-            //     'accuracy' =>  0,
-            //     'heading' =>  0,
-            //     'distance' =>  0,
-            //     'startlng' =>  0,
-            //     'startlat' =>  0,
-            // }
-
-            // );
-
-
-            //     ]);
-            $newpost = $database->getReference('drivers'. $driver->id)->set($i);
+            $newpost = $database->getReference('/drivers/'. $driver->id)->set($i);
         }
         $driverss = $database->getReference('/drivers/')->getValue();
         dd($driverss);
