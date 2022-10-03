@@ -299,7 +299,7 @@ class BookingController extends Controller
         unset($booking_request['km']);
         $booking_request['tax'] = 0;
         $booking_request['status'] = 2;
-        $booking_request['driver_id'] = $min_driver_id;
+        // $booking_request['driver_id'] = ;
         $booking_request['promo_code'] = $input['promo'];
         $customer = Customer::where('id', Auth::user()->id)->first();
 
@@ -313,8 +313,9 @@ class BookingController extends Controller
         } else {
             $booking_request['payment_method'] = $input['payment_method'];
         }
-
-        $id = TripRequest::create($booking_request)->id;
+        $trip_request = TripRequest::create($booking_request);
+        $trip_request->upadte(['driver_id' => $min_driver_id]);
+        $id = $trip_request->id;
 
         $newPost = $database
             ->getReference('/customers/' . $input['customer_id'])
@@ -340,7 +341,6 @@ class BookingController extends Controller
                 'driver_id' => $min_driver_id,
                 'pikup_lat' => $input['pickup_lat'],
                 'pikup_lng' => $input['pickup_lng'],
-                'time' => 1
             ]);
 
         return response()->json([
