@@ -6,6 +6,7 @@ use App\Customer;
 use App\Driver;
 use App\Models\DriverTripRequest;
 use App\Models\TripRequest;
+use App\Trip;
 use Exception;
 use Illuminate\Http\Request;
 use Kreait\Firebase\Factory;
@@ -15,20 +16,12 @@ class changeDriverController extends Controller
 
     public function changeDrivers()
     {
-        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'))
-            ->withServiceAccount(config_path() . '/' . env('FIREBASE_FILE'));
-        $database = $factory->createDatabase();
-
+        $tripRequests = TripRequest::where('status', 2)->get();
         try {
-            $tripRequests = $database->getReference('/triprequest/')->getValue();
-
             foreach ($tripRequests as $key => $tripRequest) {
-                // $trip_request = TripRequest::where('id', $tripRequest['request_id'])->first();
-                // $driver = $database->getReference('/drivers/'.$tripRequest['driver_id'])->getSnapshot()->getValue();
-                $this->getrequest($tripRequest['request_id'], $tripRequest['driver_id']);
-                // dd($trip_request->pickup_lat. $trip_request->pickup_lng. $driver['lat']. $driver['lng']);
-                // $distance = $this->distance($trip_request->pickup_lat, $trip_request->pickup_lng, $driver['lat'], $driver['lng'], 'K');
-                // dd($distance);
+                if((time() - strtotime($tripRequest->updated_at)) > 19) {
+                    $this->getrequest($tripRequest['request_id'], $tripRequest['driver_id']);
+                }
             }
         } catch (Exception $e) {
         }
@@ -91,6 +84,7 @@ class changeDriverController extends Controller
                 ->remove();
         } elseif ($min_driver_id != 0) {
             $fcm = Driver::where('id', $min_driver_id)->value('fcm_token');
+            TripRequest::where('id', $trip_request->id)->update(['driver_id' => $min_driver_id]);
             if ($fcm) {
                 try {
                     $this->send_fcm('لديك طلب جديد', 'لديك طلب رحلة جديد', $fcm);

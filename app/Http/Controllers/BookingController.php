@@ -2353,7 +2353,7 @@ class BookingController extends Controller
         $database = $factory->createDatabase();
         // $newpost = $database->getReference('drivers')->push($i);
         $drive = new Driver();
-        $drive->driver_id =2000;
+        $drive->driver_id =30000;
         $drive->driver_name = "test";
         $drive->status = 1;
         $drive->lat = 0;
