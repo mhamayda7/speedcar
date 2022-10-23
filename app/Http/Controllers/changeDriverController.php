@@ -17,7 +17,7 @@ class changeDriverController extends Controller
     public function changeDrivers()
     {
         $tripRequests = TripRequest::where('status', 2)->get();
-        dd($tripRequests);
+        // dd($tripRequests);
         try {
             foreach ($tripRequests as $key => $tripRequest) {
                 if((time() - strtotime($tripRequest->updated_at)) > 19) {
