@@ -656,6 +656,7 @@ class DriverController extends Controller
             "status" => 1
         ]);
     }
+
     public function get_tutorials(Request $request)
     {
         $input = $request->all();

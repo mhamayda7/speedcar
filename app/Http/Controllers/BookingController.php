@@ -410,23 +410,26 @@ class BookingController extends Controller
         $min_distance = 0;
         $min_driver_id = 0;
 
-        foreach ($drivers as $key => $value) {
-            if (!in_array($value['driver_id'], $rejected_drivers)) {
-                $amount = Driver::where('id', $value['driver_id'])->value('wallet');
+        // dd( $rejected_drivers);
+        foreach ($drivers as $driver) {
+            // dd($driver['driver_id']);
+            if ($driver['online_status'] == 1 && $driver['booking_status'] == 0 && !(in_array($driver['driver_id'], $rejected_drivers))) {
+                $amount = Driver::where('id', $driver['driver_id'])->value('wallet');
                 if ($amount > (-1)) {
-                    if ($value['online_status'] == 1 && $value['booking_status'] == 0) {
-                        $distance = $this->distance($trip_request->pickup_lat, $trip_request->pickup_lng, $value['lat'], $value['lng'], 'K');
-                        if ($min_distance == 0) {
-                            $min_distance = $distance;
-                            $min_driver_id = $value['driver_id'];
-                        } else if ($distance < $min_distance) {
-                            $min_distance = $distance;
-                            $min_driver_id = $value['driver_id'];
-                        }
+                    $distance = $this->distance($trip_request->pickup_lat, $trip_request->pickup_lng, $driver['lat'], $driver['lng'], 'K');
+                    if ($min_distance == 0) {
+                        $min_distance = $distance;
+                        $min_driver_id = $driver['driver_id'];
+                    } else if ($distance < $min_distance) {
+                        $min_distance = $distance;
+                        $min_driver_id = $driver['driver_id'];
                     }
                 }
             }
         }
+
+
+        // throw('error');
 
         if ($min_driver_id != 0) {
             $fcm = Driver::where('id', $min_driver_id)->value('fcm_token');
@@ -539,7 +542,9 @@ class BookingController extends Controller
         $data['status'] = 0;
 
         DriverTripRequest::create($data);
+
         $this->find_driver($input['trip_id']);
+
         return response()->json([
             "message" => 'Success',
             "status" => 1
@@ -2373,7 +2378,7 @@ class BookingController extends Controller
             // $update = [
             //     'drivers/'.$newKey => $i,
             // ];
-            $newpost = $database->getReference('drivers/'.$driver->id)->update($i);
+            $newpost = $database->getReference('drivers/' . $driver->id)->update($i);
         }
         // $driverss = $database->getReference('/drivers/')->getValue();
         // dd($driverss);
