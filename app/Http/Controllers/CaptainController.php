@@ -131,7 +131,7 @@ class CaptainController extends Controller
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
         $drivers = $database->getReference('/drivers/')
-            ->orderByChild('online_status')
+            ->OrderByKey('online_status')
             ->equalTo(1)
             ->getSnapshot();
 
