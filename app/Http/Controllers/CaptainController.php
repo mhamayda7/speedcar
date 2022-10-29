@@ -132,7 +132,7 @@ class CaptainController extends Controller
         $database = $factory->createDatabase();
         $drivers = $database->getReference('/drivers/')
             ->OrderByKey('online_status')
-            ->equalTo(1)
+            ->equalTo('1')
             ->getSnapshot();
 
         foreach ($drivers as $driver) {
