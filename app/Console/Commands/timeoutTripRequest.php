@@ -65,14 +65,14 @@ class timeoutTripRequest extends Command
                 $driver_id = $database->getReference('/tripreques/'. $triprequest)->getSnapshot()->getValue();
 
                 $newPost = $database
+                ->getReference('/triprequest/' . $triprequest->id)
+                ->remove();
+
+                $newPost = $database
                 ->getReference('/drivers/' . $driver_id['driver_id'])
                 ->update([
                     'booking_status' => 0
                 ]);
-
-                $newPost = $database
-                ->getReference('/triprequest/' . $triprequest->id)
-                ->remove();
 
                 if ($customer->fcm_token) {
                     $this->send_fcm('لم يتم العثور على سائق', 'لا يتوفر حالياً سائقين', $customer->fcm_token);
