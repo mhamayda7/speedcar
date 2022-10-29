@@ -39,7 +39,18 @@ class StatusDriver extends Command
      */
     public function handle()
     {
-        $this->changeStatus();
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL,"https://speedcar-jo.com/api/speedV1/driverStauts/change");
+        curl_setopt($ch, CURLOPT_POST, 1);
+        // curl_setopt($ch, CURLOPT_POSTFIELDS);
+
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        $server_output = curl_exec($ch);
+
+        curl_close ($ch);
+        // $this->changeStatus();
     }
 
 

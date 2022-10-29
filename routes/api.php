@@ -95,7 +95,7 @@ Route::prefix('speedV1')->group(function () {
     Route::get('driver/ride_details', 'App\Http\Controllers\RideDetailsController@driver_ride_details');
     Route::post('driver/withdrawal_request', 'App\Http\Controllers\DriverController@driver_withdrawal_request');
     Route::post('driver/withdrawal_history', 'App\Http\Controllers\DriverController@driver_withdrawal_history');
-    Route::get('test', 'App\Http\Controllers\CaptainController@changeStatus');
+    Route::post('driverStauts/change', 'App\Http\Controllers\CaptainController@changeStatus');
 });
 
 Route::prefix('speedV1/driver/')->middleware('auth:sanctum')->group(function () {
