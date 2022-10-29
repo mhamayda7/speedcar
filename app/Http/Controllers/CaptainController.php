@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Country;
 use App\Currency;
 use App\Driver;
+use App\Trip;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -122,5 +123,45 @@ class CaptainController extends Controller
         //$database = $firebase->getDatabase();
 
         return view('thankyou')->with('captain_registered', 'تم إرسال البيانات بنجاح');
+    }
+
+
+    public function changeStatus()
+    {
+        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+        $database = $factory->createDatabase();
+        $drivers = $database->getReference('/drivers/')
+            ->orderByChild('online_status')
+            ->equalTo(1)
+            ->getSnapshot()
+            ->getValue();
+
+        foreach ($drivers as $driver) {
+            $excute = $this->checkDriverTrip($driver['driver_id']);
+        }
+    }
+
+    public function checkDriverTrip($driverId)
+    {
+        $driverTrip  = Trip::where('driver_id', $driverId)->get()->last();
+
+        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+        $database = $factory->createDatabase();
+
+        if (isset($driverTrip) && $driverTrip->status > 5) {
+            $driver = $database
+                ->getReference('/drivers/' . $driverId)
+                ->update([
+                    'booking_status' => 0
+                ]);
+        } else {
+            if (!isset($driverTrip)) {
+                $driver = $database
+                    ->getReference('/drivers/' . $driverId)
+                    ->update([
+                        'booking_status' => 0
+                    ]);
+            }
+        }
     }
 }

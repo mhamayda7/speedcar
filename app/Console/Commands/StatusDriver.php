@@ -66,8 +66,6 @@ class StatusDriver extends Command
         $database = $factory->createDatabase();
 
         if (isset($driverTrip) && $driverTrip->status > 5) {
-
-
             $driver = $database
                 ->getReference('/drivers/' . $driverId)
                 ->update([
