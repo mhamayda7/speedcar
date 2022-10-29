@@ -125,4 +125,45 @@ class CaptainController extends Controller
         return view('thankyou')->with('captain_registered', 'تم إرسال البيانات بنجاح');
     }
 
+
+
+    public function changeStatus()
+    {
+        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+        $database = $factory->createDatabase();
+
+        $drivers = $database->getReference('/drivers/')
+        ->getSnapshot()->getValue();
+
+        foreach ($drivers as $driver) {
+            if($driver['booking_status']) {
+                $excute = $this->checkDriverTrip($driver['driver_id']);
+            }
+
+        }
+    }
+
+    public function checkDriverTrip($driverId)
+    {
+        $driverTrip  = Trip::where('driver_id', $driverId)->get()->last();
+
+        $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
+        $database = $factory->createDatabase();
+
+        if (isset($driverTrip) && $driverTrip->status > 5) {
+            $driver = $database
+                ->getReference('/drivers/' . $driverId)
+                ->update([
+                    'booking_status' => 0
+                ]);
+        } else {
+            if (!isset($driverTrip)) {
+                $driver = $database
+                    ->getReference('/drivers/' . $driverId)
+                    ->update([
+                        'booking_status' => 0
+                    ]);
+            }
+        }
+    }
 }
