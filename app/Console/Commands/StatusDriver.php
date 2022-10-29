@@ -59,7 +59,7 @@ class StatusDriver extends Command
     }
 
     public function checkDriverTrip($driverId) {
-        $driverTrip  = Trip::where('driver_id', $driverId)->last();
+        $driverTrip  = Trip::where('driver_id', $driverId)->get()->last();
 
         if(isset($driverTrip) && $driverTrip->status > 5 ) {
             $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
