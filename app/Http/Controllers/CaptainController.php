@@ -130,13 +130,15 @@ class CaptainController extends Controller
     {
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
+
         $drivers = $database->getReference('/drivers/')
-            ->OrderByKey('online_status')
-            ->equalTo('1')
-            ->getSnapshot();
-        dd($drivers);
+        ->getSnapshot()->getValue();
+
         foreach ($drivers as $driver) {
-            $excute = $this->checkDriverTrip($driver['driver_id']);
+            if($driver['booking_status']) {
+                $excute = $this->checkDriverTrip($driver['driver_id']);
+            }
+
         }
     }
 
