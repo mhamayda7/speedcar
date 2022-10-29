@@ -134,7 +134,7 @@ class CaptainController extends Controller
             ->OrderByKey('online_status')
             ->equalTo('1')
             ->getSnapshot();
-
+        dd($drivers);
         foreach ($drivers as $driver) {
             $excute = $this->checkDriverTrip($driver['driver_id']);
         }
