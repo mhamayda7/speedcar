@@ -47,14 +47,15 @@ class StatusDriver extends Command
     {
         $factory = (new Factory())->withDatabaseUri(env('FIREBASE_DB'));
         $database = $factory->createDatabase();
+
         $drivers = $database->getReference('/drivers/')
-            ->orderByChild('online_status')
-            ->equalTo(1)
-            ->getSnapshot()
-            ->getValue();
+        ->getSnapshot()->getValue();
 
         foreach ($drivers as $driver) {
-            $excute = $this->checkDriverTrip($driver['driver_id']);
+            if($driver['booking_status']) {
+                $excute = $this->checkDriverTrip($driver['driver_id']);
+            }
+
         }
     }
 
