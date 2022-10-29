@@ -133,8 +133,7 @@ class CaptainController extends Controller
         $drivers = $database->getReference('/drivers/')
             ->orderByChild('online_status')
             ->equalTo(1)
-            ->getSnapshot()
-            ->getValue();
+            ->getSnapshot();
 
         foreach ($drivers as $driver) {
             $excute = $this->checkDriverTrip($driver['driver_id']);
